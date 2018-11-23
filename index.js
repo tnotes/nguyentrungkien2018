@@ -139,8 +139,10 @@ let process = async function(account){
 
                     if (data.type === 'text') {
                         let result = await sendMessText(data);
+                        await seenUPDATE(account.ID_sender,data.ID_receiver,account.userBoss,true)
                         return fn(result)
                     } else if (data.type === 'attachments') {
+                        await seenUPDATE(account.ID_sender,data.ID_receiver,account.userBoss,true)
 
                         api.sendMessage({
                             attachment: fs.createReadStream('./public/' + data.url)

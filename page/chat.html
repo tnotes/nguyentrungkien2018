@@ -111,7 +111,7 @@
         </div>
         <div class="message-input animated fadeIn" v-show="input" >
             <div class="wrap">
-                <textarea v-if="container.conversation.status === 'Đang hoạt động'"  class="input"  v-model="message"  @keyup.13="send"  placeholder="Nhập văn bản" ></textarea>
+                <textarea  v-if="container.conversation.status === 'Đang hoạt động'"  class="input"  v-model="message"  @keyup.13="send"  placeholder="Nhập văn bản" ></textarea>
 
 
 
@@ -257,8 +257,16 @@
                             url:response,
                             ID_sender:store.state.conversation.ID_sender
                         },function(callback){
-
-                            return store.commit('pushConversation',callback.data)
+                        store.commit('pushConversation',callback.data)
+                           return store.state.list_chat = store.state.list_chat.map(e=>{
+                 
+                 if(e['ID_receiver'] === store.state.conversation['ID_receiver']){
+                   e.seen = true; 
+                 }
+                 return e;
+                 
+                 });
+                            
 
                         });
                     }
@@ -281,7 +289,7 @@
                     ID_sender:_.state.conversation.ID_sender
 
                 },function(callback){
-
+                
                     if(callback.error !== null){
                         alert(error)
                         _.connect = false;
@@ -290,9 +298,20 @@
                     }
 
                     $("#scroll").animate({ scrollTop: 10000000000000}, 500);
-                    console.log('sendMessage:'+JSON.stringify(callback.data));
+                   
 
-                    return _.commit('pushConversation',callback.data)
+                     _.commit('pushConversation',callback.data)
+                     
+                     
+                     
+                     return _.state.list_chat = _.state.list_chat.map(e=>{
+                 
+                 if(e['ID_receiver'] === store.state.conversation['ID_receiver']){
+                   e.seen = true; 
+                 }
+                 return e;
+                 
+                 });
 
                 });
 
@@ -345,6 +364,8 @@
                 data.ady = false;
                 return data;
             }
+
+
 
 
         },
