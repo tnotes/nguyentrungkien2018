@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<!--[if IE 8]>
+<html lang="en" class="ie8"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en">
+<!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <title>Hẹn giờ - Phần mềm quản lí tin nhắn Facebook Manager</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+    <meta content="" name="description">
+    <meta content="" name="author">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+    <script src="https://unpkg.com/vuex@3.0.1/dist/vuex.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link href="/css/css.css" rel="stylesheet">
+    <link href="/css/jquery-ui.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/all.min.css" rel="stylesheet">
+    <link href="/css/ionicons.min.css" rel="stylesheet">
+    <link href="/css/animate.min.css" rel="stylesheet">
+    <link href="/css/style.min.css" rel="stylesheet">
+    <link href="/css/style-responsive.min.css" rel="stylesheet">
+    <link href="/css/default.css" rel="stylesheet" id="theme">
+    <script src="/js/socketconnect.js"></script>
+
+    <!-- ================== END BASE CSS STYLE ================== -->
+    <link href="/css/jquery.gritter.css" rel="stylesheet">
+    <!-- ================== BEGIN PAGE LEVEL STYLE ================== -->
+    <link href="/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="/css/fixedColumns.bootstrap.min.css" rel="stylesheet">
+    <!-- ================== END PAGE LEVEL STYLE ================== -->
+
+    <!-- ================== BEGIN BASE JS ================== -->
+    <script src="/js/pace.min.js"></script>
+    <style>
+        .trashremove{
+
+        }
+        .trashremove:hover{
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<!-- begin #page-loader -->
+<div id="page-loader" class="fade show"><span class="spinner"></span></div>
+
+<div id="frame">
+
+    <div class="panel panel-inverse col-md-12 col-ms-12" >
+        <div class="row" style="margin-left:20px">
+        <img width="60px;" height="60px" src="https://cdn.iconscout.com/icon/free/png-256/facebook-social-media-fb-logo-square-44659.png" alt="">
+        <h3 style="margin-left: 20px;margin-top:20px" class="animated bounceInDown ">System admin <i class="fa fa-caret-right animated bounceInRight" style="margin-left: 10px"></i></h3>
+            <hr>
+        </div>
+        <br>
+        <code style="margin-left:20px;background-color: #e4e7e8;color:black">Xuất hiện {{clientINFO.length}} users</code>
+        <select class="form-control" style="width: 150px;float: right;margin-right: 20px" v-model="categorySearch">
+            <option value="email">Email</option>
+            <option value="phone">Số điện thoại</option>
+            <option value="name">Họ và tên</option>
+        </select>
+
+         <input v-model="search" placeholder="Từ khóa ..." type="text" style="float: right;width: 150px;margin-right: 20px;" class="form-control">
+        <span style="float: right;margin-right: 10px;margin-top:15px">Tìm kiếm:</span>
+
+        <br><br>
+        <div>
+
+
+
+            <div class="modal fade" id="modal-dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title"><i class="fas fa-pencil-alt fa-fw"></i> Chỉnh sửa thông tin </h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="panel panel-inverse" data-sortable-id="form-validation-1">
+
+                                <div class="panel-body">
+                                    <div class="form-horizontal" data-parsley-validate="true" >
+                                        <div class="form-group row m-b-15">
+                                            <label class="col-md-3 col-sm-3 col-form-label" for="fullname">Họ và Tên * :</label>
+                                            <div class="col-md-9 col-sm-9">
+                                                <input  class="form-control" type="text" v-model="editINFO.name" id="fullname" name="fullname" placeholder="Required" data-parsley-required="true">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row m-b-15">
+                                            <label class="col-md-3 col-sm-3 col-form-label" for="email">Email * :</label>
+                                            <div class="col-md-9 col-sm-9">
+                                                <input class="form-control" disabled type="email"  v-model="editINFO.email" id="email" name="email" data-parsley-type="email" placeholder="Email" data-parsley-required="true">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row m-b-15">
+                                            <label class="col-md-3 col-sm-3 col-form-label" for="website">Số điện thoại :</label>
+                                            <div class="col-md-9 col-sm-9">
+                                                <input class="form-control" v-model="editINFO.phone" type="text" id="website" name="website" data-parsley-type="url" placeholder="url">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row m-b-15">
+                                            <label class="col-md-3 col-sm-3 col-form-label" for="website">Phục hồi :</label>
+                                            <div class="col-md-9 col-sm-9">
+                                                <button @click="deleteFacebook" class="btn btn-primary" style="background-color: #2c3e50;margin-top:5px;"><i class="fas fa-sync " v-bind:class="{ 'fa-spin': spinDeleteFacebook }"></i>  Xóa tài khoản Facebook</button>
+                                                <button @click="deleteMessage" class="btn btn-primary" style="background-color: #2c3e50;margin-top:5px;"><i class="fas fa-redo " v-bind:class="{ 'fa-spin': spinDeleteConversations }"></i>  Xóa tất cả tin nhắn</button>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row m-b-15">
+                                            <label class="col-md-3 col-sm-3 col-form-label" for="message">Ngày đăng kí :</label>
+                                            <div class="col-md-9 col-sm-9">
+                                                <span class="row"> <input class="form-control" disabled style="width: 80px;text-align: center;margin-left:10px;background-color: #2c3e50;color:white"  v-model="editINFO.TimeStartHour" type="text">  <input class="form-control" disabled style="width: 65px;margin-left:15px;background-color: #2c3e50;color:white" v-model="editINFO.TimeStartDay" type="text"> <input class="form-control" disabled style="width: 65px;margin-left:3px;background-color: #2c3e50;color:white" v-model="editINFO.TimeStartMonth" type="text"><input class="form-control" disabled style="width: 80px;background-color: #2c3e50;color:white;margin-left:10px;" v-model="editINFO.TimeStartYear" type="text"></span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row m-b-15">
+                                            <label class="col-md-3 col-sm-4 col-form-label" for="message">Ngày hết hạn :</label>
+                                            <div class="col-md-9 col-sm-8">
+                                                <span class="row"> <input class="form-control" disabled style="width: 80px;text-align: center;margin-left:10px;background-color: #2c3e50;color:white"  v-model="editINFO.TimeEndHour" type="text">
+                                                    <select  class="form-control" style="width: 65px;margin-left:15px;background-color: #2c3e50;color:white" v-model="editINFO.TimeEndDay" >
+                                                        <option v-for="day in 31" :value="day.toString().padStart(2,0)">{{day.toString().padStart(2,0)}}</option>
+                                                    </select>
+
+
+                                                     <select  class="form-control" style="width: 65px;margin-left:3px;background-color: #2c3e50;color:white" v-model="editINFO.TimeEndMonth" >
+                                                        <option v-for="month in 12" :value="month.toString().padStart(2,0)">{{month.toString().padStart(2,0)}}</option>
+                                                    </select>
+
+                                                     <select  class="form-control" style="width: 80px;margin-left:10px;background-color: #2c3e50;color:white" v-model="editINFO.TimeEndYear" >
+                                                        <option v-for="year in 2030" v-if="year > 2017" :value="year.toString().padStart(2,0)">{{year.toString().padStart(2,0)}}</option>
+                                                    </select>
+
+
+
+
+
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row m-b-15">
+                                            <label class="col-md-3 col-sm-4 col-form-label" for="message">Gói cước :</label>
+                                            <div class="col-md-9 col-sm-8">
+                                                <span class="row">
+                                                    <select style="width: 80px;margin-left:10px;background-color: #2c3e50;color:#ff958c" class="form-control" v-model="editINFO.package">
+                                                        <option value="Trial">Trial </option>
+                                                        <option value="F90">F90 </option>
+                                                        <option value="F365">F365 </option>
+
+                                                    </select>
+
+
+
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row m-b-15">
+                                            <label class="col-md-3 col-sm-4 col-form-label" for="message">Lịch sử thanh toán :</label>
+                                            <div class="col-md-9 col-sm-8">
+                                                <br>
+                                                 <center><i style="color:#96564e">Chưa thanh toán</i></center>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="javascript:;" class="btn btn-white" data-dismiss="modal">Hủy</a>
+                            <a @click="accept" href="javascript:;" id="add-without-image" class="btn btn-default" style="background-color:#2c3e50;color:#ffdfb2 ">Xác Nhận</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- begin panel -->
+            <div class="panel panel-inverse">
+
+
+                <div class="panel-body">
+                    <table  class="table table-striped table-bordered">
+                        <thead>
+                        <tr>
+                            <th width="1%">STT</th>
+                            <th class="text-nowrap">Họ và Tên</th>
+                            <th class="text-nowrap">Email</th>
+                            <th class="text-nowrap">Số điện thoại</th>
+                            <th>Mật khẩu</th>
+                            <th>Gói cước</th>
+                            <th>Số lượng Facebook</th>
+                            <th>Số lượng cuộc hội thoại</th>
+                            <th>Ngày Đăng Kí</th>
+                            <th>Ngày hết hạn</th>
+                            <th></th>
+                            <th></th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="(data,index) in filteredList" :key="index" class="odd gradeX">
+                            <td width="1%" class="f-s-600 text-inverse">{{index+1}}</td>
+                            <td>{{data.name}}</td>
+                            <td>{{data.email}}</td>
+                            <td>{{data.phone}}</td>
+                            <td>{{data.password}}</td>
+                            <td style="text-align: center"><span class="badge badge-secondary">{{data.package}}</span>
+                            </td>
+                            <td style="text-align: center">{{data.dataAccountLength}}</td>
+                            <td style="text-align: center">{{data.dataConversationsLength}}</td>
+                            <td>{{data.startTimeConvert}}</td>
+                            <td>{{data.limitTimeConvert}}</td>
+                            <td style="text-align: center"><a @click="editUSER(data)" href="#modal-dialog" data-toggle="modal"><i  class="fas fa-pencil-alt fa-fw trashremove"  style="color: green;"></i></a></td>
+                            <td style="text-align: center"><a @click="deleteUSER(data)" ><i class="fa fa-trash-alt trashremove" style="color: red;"></i></a></td>
+
+
+
+
+
+                        </tr>
+
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- end panel-body -->
+            </div>
+
+        </div>
+
+
+        <!-- end panel-body -->
+    </div>
+</div>
+
+<!-- end page container -->
+<!-- ================== BEGIN BASE JS ================== -->
+<script src="/js/jquery-3.3.1.min.js"></script>
+<script src="/js/jquery-ui.min.js"></script>
+<script src="/js/bootstrap.bundle.min.js"></script>
+
+<script src="/js/jquery.slimscroll.min.js"></script>
+<script src="/js/js.cookie.js"></script>
+<script src="/js/apple.min.js"></script>
+<script src="/js/apps.min.js"></script>
+
+<script src="/js/jquery.dataTables.js"></script>
+<script src="/js/dataTables.bootstrap.min.js"></script>
+<script src="/js/dataTables.fixedColumns.min.js"></script>
+<script src="/js/table-manage-fixed-columns.demo.min.js"></script>
+<!-- ================== END PAGE LEVEL JS ================== -->
+<!-- ================== BEGIN PAGE LEVEL JS ================== -->
+<script src="/js/jquery.gritter.js"></script>
+<script src="/js/sweetalert.min.js"></script>
+<script src="/js/ui-modal-notification.demo.min.js"></script>
+<!-- ================== END PAGE LEVEL JS ================== -->
+<script>
+    $(document).ready(function () {
+        App.init();
+        Notification.init();
+    });
+</script>
+
+<script>
+
+
+    var app = new Vue({
+        el: '#frame',
+
+        data() {
+            return {
+                search:'',
+                clientINFO:[],
+                editINFO:{},
+                selected:'',
+                categorySearch:'email',
+                spinDeleteFacebook:false,
+                spinDeleteConversations:false
+            }
+        },
+
+        created: async function () {
+          let access = await axios.post('/admin/list');
+          return this.clientINFO = access.data
+        },
+        computed: {
+
+            filteredList() {
+                let _ = this;
+                return this.clientINFO.filter(e => {
+                    if(_.categorySearch === 'email'){
+                        return e.email.toLowerCase().includes(_.search.toLowerCase())
+                    }else if(_.categorySearch === 'phone'){
+                        return e.phone.toLowerCase().includes(_.search.toLowerCase())
+
+                    }else if(_.categorySearch === 'name'){
+                        return e.name.toLowerCase().includes(_.search.toLowerCase())
+
+                    }
+
+                })
+
+            }
+        },
+
+
+        methods: {
+
+            editUSER:async function(data){
+                data.TimeStartHour = data.startTimeConvert.split(' ')[0];
+                data.TimeStartDay = data.startTimeConvert.split(' ')[1].split('/')[0];
+                data.TimeStartMonth = data.startTimeConvert.split(' ')[1].split('/')[1];
+                data.TimeStartYear = data.startTimeConvert.split(' ')[1].split('/')[2];
+
+                data.TimeEndHour = data.limitTimeConvert.split(' ')[0];
+                data.TimeEndDay = data.limitTimeConvert.split(' ')[1].split('/')[0];
+                data.TimeEndMonth = data.limitTimeConvert.split(' ')[1].split('/')[1];
+                data.TimeEndYear = data.limitTimeConvert.split(' ')[1].split('/')[2];
+
+                return this.editINFO = data
+            },
+            deleteUSER:async function(data){
+                await axios.post('/admin/deleteUser',{email:data.email})
+                return this.clientINFO = this.clientINFO.filter(e=>{
+                    if(e.email !== data.email){
+                        return e
+                    }
+                })
+            },
+
+            deleteFacebook:async function(){
+                this.spinDeleteFacebook = true;
+                let deleteAction = await axios.post('/admin/deleteFacebook',{userBoss:this.editINFO.email});
+                return this.spinDeleteFacebook = false;
+
+            },
+            deleteMessage:async function(){
+                this.spinDeleteConversations = true;
+                let deleteAction = await axios.post('/admin/deleteConversations',{userBoss:this.editINFO.email})
+                return this.spinDeleteConversations = false;
+
+            },
+            accept:async function(){
+               let update = await axios.post('/admin/update',{data:this.editINFO});
+
+            }
+        },
+    })
+
+</script>
+</body>
+</html>

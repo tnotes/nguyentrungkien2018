@@ -5,7 +5,7 @@
 <!--<![endif]-->
 <head>
 	<meta charset="utf-8">
-	<title>Đăng nhập | Register Page</title>
+	<title>Đăng kí | Register Page</title>
 	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
 	<meta content="" name="description">
 	<meta content="" name="author">
@@ -14,34 +14,30 @@
     <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue-chat-scroll@1.3.3/dist/vue-chat-scroll.min.js"></script>
-    <script src="js/jquery.min.js"></script>
+    <script src="/js/jquery.min.js"></script>
 
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="store/index.js"></script>
-	
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 	<!-- ================== BEGIN BASE CSS STYLE ================== -->
-	<link href="css/css.css" rel="stylesheet">
-	<link href="css/jquery-ui.min.css" rel="stylesheet">
-	<link href="css/bootstrap.min.css" rel="stylesheet">
-	<link href="css/fontawesome-all.min.css" rel="stylesheet">
-	<link href="css/ionicons.min.css" rel="stylesheet">
-	<link href="css/animate.min.css" rel="stylesheet">
-	<link href="css/style.min.css" rel="stylesheet">
-	<link href="css/style-responsive.min.css" rel="stylesheet">
-	<link href="css/default.css" rel="stylesheet" id="theme">
+	<link href="/css/css.css" rel="stylesheet">
+	<link href="/css/jquery-ui.min.css" rel="stylesheet">
+	<link href="/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/css/fontawesome-all.min.css" rel="stylesheet">
+	<link href="/css/ionicons.min.css" rel="stylesheet">
+	<link href="/css/animate.min.css" rel="stylesheet">
+	<link href="/css/style.min.css" rel="stylesheet">
+	<link href="/css/style-responsive.min.css" rel="stylesheet">
+	<link href="/css/default.css" rel="stylesheet" id="theme">
 	<!-- ================== END BASE CSS STYLE ================== -->
 	
 	<!-- ================== BEGIN BASE JS ================== -->
-	<script src="js/pace.min.js"></script>
+	<script src="/js/pace.min.js"></script>
 	<!-- ================== END BASE JS ================== -->
 </head>
 <body class="pace-top bg-white">
-	<!-- begin #page-loader -->
-	<div id="page-loader" class="fade show"><span class="spinner"></span></div>
-	<!-- end #page-loader -->
-	
-	<!-- begin #page-container -->
-	<div id="page-container" class="fade">
+<div  id="bodyC">
+	<div  id="page-container"  class="fade">
 	    <!-- begin register -->
         <div class="register register-with-news-feed">
             <!-- begin news-feed -->
@@ -57,67 +53,73 @@
             <!-- end news-feed -->
             <!-- begin right-content -->
             <div class="right-content">
+
                 <!-- begin register-header -->
                 <h1 class="register-header">
                     Tạo tài khoản
-                    <small>Create your Facebook Manager. It’s free and always will be.</small>
+                    <small>Trải nghiệm công cụ quản lí tin nhắn một cách đầy đủ và tiện ích nhất.</small>
                 </h1>
                 <!-- end register-header -->
                 <!-- begin register-content -->
-                <form method="post" action="/register" class="register-content">
+                <div class="register-content">
                     <div class="margin-bottom-0">
-                        <label class="control-label">Name <span class="text-danger">*</span></label>
-                        <div class="row row-space-10">
-                            <div class="col-md-6 m-b-15">
-                                <input type="text" name="firstname" class="form-control" placeholder="First name" required>
-                            </div>
-                            <div class="col-md-6 m-b-15">
-                                <input type="text" name="lastname" class="form-control" placeholder="Last name" required>
-                            </div>
-                        </div>
-                        <label class="control-label">Tên tài khoản <span class="text-danger">*</span></label>
+                        <label class="control-label">Họ và Tên <span class="text-danger">*</span><code v-show="nameShow" class="text-danger animated flash">Họ và Tên không được bỏ trống</code><code v-show="errorShow" class="text-warning animated flash">{{error}}</code></label>
                         <div class="row m-b-15">
                             <div class="col-md-12">
-                                <input type="text" name="username" class="form-control" placeholder="Tên tài khoản dùng để đăng nhập" required>
+                                <input type="text" name="fullname" autocomplete="off" v-model="name" class="form-control" placeholder="Họ và Tên" required>
+                            </div>
+                        </div>
+                        <label class="control-label">Email <span class="text-danger">*</span> <code v-show="emailShow" class="text-danger animated flash">Bắt buộc phải nhập email</code></label>
+                        <div class="row m-b-15">
+                            <div class="col-md-12">
+                                <input type="email" name="email" autocomplete="off" v-model="email" class="form-control" placeholder="Email" required>
                             </div>
                         </div>
 
-                        <label class="control-label">Password <span class="text-danger">*</span></label>
+                        <label class="control-label">Password <span class="text-danger">*</span><code v-show="passwordShow" class="text-danger  animated flash">Bắt buộc phải nhập mật khẩu</code></label>
                         <div class="row m-b-15">
                             <div class="col-md-12">
-                                <input type="password" name="password" class="form-control" placeholder="Mật khẩu" required>
+                                <input type="password" name="password" class="form-control" v-model="password" placeholder="Mật khẩu" required>
+                            </div>
+                        </div>
+
+                        <label class="control-label">Số điện thoại <span class="text-danger">*</span><code v-show="phoneShow" class="text-danger  animated flash">Vui lòng nhập chính xác số điện thoại của bạn</code></label>
+                        <div class="row m-b-15">
+                            <div class="col-md-12">
+                                <input type="text" name="phone" class="form-control" v-model="phone" placeholder="Số điện thoại" required>
                             </div>
                         </div>
 
                         <div class="register-buttons">
-                            <button type="submit"  class="btn btn-primary btn-block btn-lg">Đăng Kí</button>
+                            <button type="submit" @click="register" class="btn btn-primary btn-block btn-lg">Đăng Kí</button>
                         </div>
                         <div class="m-t-20 m-b-40 p-b-40 text-inverse">
-                            Đã có tài khoản? Click <a href="index.html">Đăng Nhập</a> .
+                            Đã có tài khoản? Click <a href="/">Đăng Nhập</a> .
                         </div>
                         <hr>
                         <p class="text-center">
                             &copy; Facebook Team All Right Reserved 2018
                         </p>
                     </div>
-                </form>
+                </div>
                 <!-- end register-content -->
             </div>
             <!-- end right-content -->
         </div>
 
 	</div>
+</div>
 	<!-- end page container -->
 	
 	<!-- ================== BEGIN BASE JS ================== -->
-	<script src="js/jquery-3.2.1.min.js"></script>
-	<script src="js/jquery-ui.min.js"></script>
-	<script src="js/bootstrap.bundle.min.js"></script>
+	<script src="/js/jquery-3.2.1.min.js"></script>
+	<script src="/js/jquery-ui.min.js"></script>
+	<script src="/js/bootstrap.bundle.min.js"></script>
 
-	<script src="js/jquery.slimscroll.min.js"></script>
-	<script src="js/js.cookie.js"></script>
-	<script src="js/apple.min.js"></script>
-	<script src="js/apps.min.js"></script>
+	<script src="/js/jquery.slimscroll.min.js"></script>
+	<script src="/js/js.cookie.js"></script>
+	<script src="/js/apple.min.js"></script>
+	<script src="/js/apps.min.js"></script>
 	<!-- ================== END BASE JS ================== -->
 
 	<script>
@@ -125,7 +127,60 @@
 			App.init();
 		});
 	</script>
-   
+    <script>
+
+        var app = new Vue({
+            el: "#bodyC",
+            data(){
+                return {
+                    text:'hello world',
+                    phoneShow:false,
+                    nameShow:false,
+                    emailShow:false,
+                    passwordShow:false,
+                    errorShow:false,
+                    phone:'',
+                    name:'',
+                    email:'',
+                    password:'',
+                    error:''
+                }
+            },
+
+            methods:{
+                register:async function(){
+                    this.phoneShow = false;
+                    this.emailShow = false;
+                    this.nameShow = false;
+                    this.passwordShow = false;
+                    if(this.name === ''){
+                        this.nameShow = true;
+                        return false;
+                    }
+                    if(this.email.includes('@') === false){
+                        this.emailShow = true;
+                        return false;
+                    }
+                    if(this.password === ''){
+                        this.passwordShow = true;
+                        return false;
+                    }
+                    if(this.phone.length !== 10){
+                        this.phoneShow = true;
+                        return false
+                    }
+                    let send = await axios.post('/register',{name:this.name,email:this.email,password:this.password,phone:this.phone})
+                    if(send.data.status === 'Đăng kí thành công !'){
+                        window.location.href = "/";
+                    }else{
+                        this.errorShow = true;
+                        this.error = send.data.status;
+                    }
+
+                }
+            },
+        });
+    </script>
 
 </body>
 </html>

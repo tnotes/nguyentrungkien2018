@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const url = 'mongodb://localhost:27017/nguyentrungkien';
+const config = require('./config');
+const url = config.mongodb;
 mongoose.connect(url, { useNewUrlParser: true });
 const Schema = mongoose.Schema;
 const SchemaChat = new Schema({},{strict:false});
@@ -69,6 +70,13 @@ module.exports = {
             })
         })
     },
+    chatDELETEall:userBoss=>{
+        return new Promise(resolve => {
+            ModelChat.deleteMany({userBoss:userBoss}, (err, result) => {
+                resolve(result);
+            })
+        })
+    },
   accountINSERT : account=>{
 
     return new Promise(resolve=>{
@@ -89,6 +97,15 @@ module.exports = {
         return new Promise(resolve=>{
             ModelAccount.find({},(err,result)=>{
                 resolve(result)
+            })
+        })
+    },
+    accountDELETEall: userBoss=>{
+        return new Promise(resolve=>{
+            ModelAccount.deleteOne({userBoss:userBoss},(err,res)=>{
+                if(!err){
+                    resolve(true)
+                }
             })
         })
     },
@@ -121,16 +138,37 @@ module.exports = {
       })
     })
   },
+    accountALL_manager:()=>{
+        return new Promise(resolve=>{
+            ModelAccountManager.find({},(err,result)=>{
+                resolve(result)
+            })
+        })
+    },
     accountFIND_manager : nick=>{
     return new Promise(resolve=>{
-      ModelAccountManager.find({"username":nick},(err,result)=>{
+      ModelAccountManager.find({"email":nick},(err,result)=>{
         resolve(result)
       })
     })
     },
+    accountUPDATE_manager : (nick,newValue)=>{
+        return new Promise(resolve=>{
+            ModelAccountManager.updateOne({"email":nick},newValue,(err,result)=>{
+                resolve(result)
+            })
+        })
+    },
+    accountDELETE_manager:nick=>{
+        return new Promise(resolve=>{
+            ModelAccountManager.deleteMany({"email":nick},(err,result)=>{
+                resolve(result)
+            })
+        })
+    },
     accountCHECK_manager : (nick,pass)=>{
         return new Promise(resolve=>{
-            ModelAccountManager.find({"username":nick,"password":pass},(err,result)=>{
+            ModelAccountManager.find({"email":nick,"password":pass},(err,result)=>{
                 resolve(result)
             })
         })
@@ -159,9 +197,16 @@ module.exports = {
             })
         })
     },
-    changePASSWORD:(username,passwordOLD,passwordNEW)=>{
+    changePASSWORD:(email,passwordOLD,passwordNEW)=>{
       return new Promise(resolve => {
-          ModelAccountManager.updateOne({username:username,password:passwordOLD},{password:passwordNEW},(err,result)=>{
+          ModelAccountManager.updateOne({email:email,password:passwordOLD},{password:passwordNEW},(err,result)=>{
+              resolve(result)
+          })
+      })
+    },
+    chatFINDall:()=>{
+      return new Promise(resolve=>{
+          ModelChat.find({},(err,result)=>{
               resolve(result)
           })
       })

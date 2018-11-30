@@ -14,26 +14,26 @@
 	<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-	<link href="css/css.css" rel="stylesheet">
-	<link href="css/jquery-ui.min.css" rel="stylesheet">
-	<link href="css/bootstrap.min.css" rel="stylesheet">
-	<link href="css/all.min.css" rel="stylesheet">
-	<link href="css/ionicons.min.css" rel="stylesheet">
-	<link href="css/animate.min.css" rel="stylesheet">
-	<link href="css/style.min.css" rel="stylesheet">
-	<link href="css/style-responsive.min.css" rel="stylesheet">
-	<link href="css/default.css" rel="stylesheet" id="theme">
+	<link href="/css/css.css" rel="stylesheet">
+	<link href="/css/jquery-ui.min.css" rel="stylesheet">
+	<link href="/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/css/all.min.css" rel="stylesheet">
+	<link href="/css/ionicons.min.css" rel="stylesheet">
+	<link href="/css/animate.min.css" rel="stylesheet">
+	<link href="/css/style.min.css" rel="stylesheet">
+	<link href="/css/style-responsive.min.css" rel="stylesheet">
+	<link href="/css/default.css" rel="stylesheet" id="theme">
 	<script src="/js/socketconnect.js"></script>
 
 	<!-- ================== END BASE CSS STYLE ================== -->
 
 	<!-- ================== BEGIN PAGE LEVEL STYLE ================== -->
-	<link href="css/dataTables.bootstrap.min.css" rel="stylesheet">
-	<link href="css/fixedColumns.bootstrap.min.css" rel="stylesheet">
+	<link href="/css/dataTables.bootstrap.min.css" rel="stylesheet">
+	<link href="/css/fixedColumns.bootstrap.min.css" rel="stylesheet">
 	<!-- ================== END PAGE LEVEL STYLE ================== -->
 
 	<!-- ================== BEGIN BASE JS ================== -->
-	<script src="js/pace.min.js"></script>
+	<script src="/js/pace.min.js"></script>
 </head>
 <body>
 	<!-- begin #page-loader -->
@@ -177,19 +177,19 @@
 
 	<!-- end page container -->
 	<!-- ================== BEGIN BASE JS ================== -->
-	<script src="js/jquery-3.3.1.min.js"></script>
-	<script src="js/jquery-ui.min.js"></script>
-	<script src="js/bootstrap.bundle.min.js"></script>
+	<script src="/js/jquery-3.3.1.min.js"></script>
+	<script src="/js/jquery-ui.min.js"></script>
+	<script src="/js/bootstrap.bundle.min.js"></script>
 
-	<script src="js/jquery.slimscroll.min.js"></script>
-	<script src="js/js.cookie.js"></script>
-	<script src="js/apple.min.js"></script>
-	<script src="js/apps.min.js"></script>
+	<script src="/js/jquery.slimscroll.min.js"></script>
+	<script src="/js/js.cookie.js"></script>
+	<script src="/js/apple.min.js"></script>
+	<script src="/js/apps.min.js"></script>
 
-	<script src="js/jquery.dataTables.js"></script>
-	<script src="js/dataTables.bootstrap.min.js"></script>
-	<script src="js/dataTables.fixedColumns.min.js"></script>
-	<script src="js/table-manage-fixed-columns.demo.min.js"></script>
+	<script src="/js/jquery.dataTables.js"></script>
+	<script src="/js/dataTables.bootstrap.min.js"></script>
+	<script src="/js/dataTables.fixedColumns.min.js"></script>
+	<script src="/js/table-manage-fixed-columns.demo.min.js"></script>
 	<!-- ================== END PAGE LEVEL JS ================== -->
 
 	<script>
@@ -247,7 +247,7 @@
 					aid:null,
 					month:'',
 					time:'',
-                    username:getCookie("username"),
+                    username:getCookie("email"),
                     password:getCookie("password"),
                     connect:true,
 					submit:true,
@@ -305,13 +305,7 @@
                     return this.listFriend.filter(e=>{
                         return e.fullName.toLowerCase().includes(_.search.toLowerCase())
 					})
-                    /*
-                    return this.listFriend.filter(post => {
-                            return post.fullName.toLowerCase().includes(this.search.toLowerCase())
 
-
-                    })
-                    */
                 }
             },
             beforeMount:function(){

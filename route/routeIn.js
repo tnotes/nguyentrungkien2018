@@ -1,6 +1,7 @@
 const express = require('express');
 const route =  express.Router();
 const path = require('path');
+const moment = require('moment-timezone');
 const process = require('./../index');
 var randomstring = require("randomstring");
 
@@ -12,41 +13,26 @@ function generateRandomInteger() {
 }
 
 
-route.get('/cookie',async (req,res)=>{
-    res.send(req.cookies)
-});
-
 route.post('/changePassword',async (req,res)=>{
-    if(req.cookies.username !== undefined && req.cookies.password !== undefined){
-        let check = await accountCHECK_manager(req.cookies.username,req.cookies.password);
 
-        if(check.length > 0){
-           let change = await changePASSWORD(req.cookies.username,req.cookies.password,req.body.password);
+           let change = await changePASSWORD(req.cookies.email,req.cookies.password,req.body.password);
            res.send(change)
-        }else {
-            res.sendFile(path.join(__dirname + '/../page/index.html'));
 
-        }
-
-    }else {
-        res.sendFile(path.join(__dirname + '/../page/index.html'));
-
-    }
 });
+
 route.post('/account',async (req,res)=>{
-    if(req.cookies.username !== undefined && req.cookies.password !== undefined){
-        let check = await accountCHECK_manager(req.cookies.username,req.cookies.password);
+
         let author = randomstring.generate()+generateRandomInteger();
-        if(check.length > 0){
+
 
             if(req.body.type === 'pass') {
                let result = await accountINSERT({
                     status: 'Đang hoạt động',
                     type:'pass',
                     author:author,
-                    ID_sender: req.body.username,
-                    userBoss:req.cookies.username,
-                    username: req.body.username,
+                    ID_sender: req.body.email,
+                    userBoss:req.cookies.email,
+                    email: req.body.email,
                     password: req.body.password,
                     date: req.body.date,
                     month: req.body.month,
@@ -58,9 +44,9 @@ route.post('/account',async (req,res)=>{
                         status: 'Đang hoạt động',
                         type: 'pass',
                         author:author,
-                        ID_sender: req.body.username,
-                        userBoss: req.cookies.username,
-                        username: req.body.username,
+                        ID_sender: req.body.email,
+                        userBoss: req.cookies.email,
+                        email: req.body.email,
                         password: req.body.password,
                         date: req.body.date,
                         month: req.body.month,
@@ -71,10 +57,10 @@ route.post('/account',async (req,res)=>{
                 }else {
                     res.send({
                         error:"Tài khoản Facebook này đã xuất hiện trong danh sách của bạn !",
-                        ID_sender: req.body.username,
+                        ID_sender: req.body.email,
                         status: 'Đang hoạt động',
                         type:'pass',
-                        userBoss: req.cookies.username,
+                        userBoss: req.cookies.email,
                     })
                 }
 
@@ -136,7 +122,7 @@ route.post('/account',async (req,res)=>{
                         status: 'Đang hoạt động',
                         author:author,
                         type:'cookie',
-                        userBoss: req.cookies.username,
+                        userBoss: req.cookies.email,
 
                         cookie: OBJ_template
                     });
@@ -148,7 +134,7 @@ route.post('/account',async (req,res)=>{
                             status: 'Đang hoạt động',
                             author:author,
                             type:'cookie',
-                            userBoss: req.cookies.username,
+                            userBoss: req.cookies.email,
                             cookie: OBJ_template
                         });
 
@@ -161,22 +147,14 @@ route.post('/account',async (req,res)=>{
                             ID_sender: req.body.data[i]['c_user'],
                             status: 'Đang hoạt động',
                             type:'cookie',
-                            userBoss: req.cookies.username,
+                            userBoss: req.cookies.email,
                         })
                     }
 
 
                 }
             }
-        }else {
-            res.sendFile(path.join(__dirname + '/../page/index.html'));
 
-        }
-
-    }else {
-        res.sendFile(path.join(__dirname + '/../page/index.html'));
-
-    }
 
 });
 
@@ -184,28 +162,11 @@ route.get('/',async (req,res)=>{
     res.sendFile(__dirname+'/page/index.html');
 });
 route.post('/alarmData',async (req,res)=>{
-    if(req.cookies.username !== undefined && req.cookies.password !== undefined) {
-
-        let check = await accountCHECK_manager(req.cookies.username, req.cookies.password)
-
-        if (check.length > 0) {
-
-            let alarmDATA = await AlarmFIND(req.cookies.username)
+            let alarmDATA = await AlarmFIND(req.cookies.email)
             res.send(alarmDATA)
-        } else {
-            res.send({error: 'Mời bạn thực hiện đăng nhập lại'})
-        }
-    }else {
-        res.send({error: 'Mời bạn thực hiện đăng nhập lại'})
-
-    }
 });
 route.post('/hen-gio',async (req,res)=>{
-    if(req.cookies.username !== undefined && req.cookies.password !== undefined) {
 
-        let check = await accountCHECK_manager(req.cookies.username, req.cookies.password)
-
-        if (check.length > 0) {
             let aid = null;
 
             if (req.body.data.aid === undefined || req.body.data.aid === null || req.body.data.aid === 0 || req.body.data.aid === '' ){
@@ -215,104 +176,53 @@ route.post('/hen-gio',async (req,res)=>{
                 aid = req.body.data.aid;
             }
 
-            let alarm = await AlarmINSERT(req.cookies.username,req.body.data,true,aid)
+            let alarm = await AlarmINSERT(req.cookies.email,req.body.data,true,aid)
             res.send(alarm)
-         } else {
-            res.send({error: 'Mời bạn thực hiện đăng nhập lại'})
-        }
-    }else {
-        res.send({error: 'Mời bạn thực hiện đăng nhập lại'})
 
-    }
 });
 route.post('/xoa-hen-gio',async (req,res)=>{
-    if(req.cookies.username !== undefined && req.cookies.password !== undefined) {
 
-        let check = await accountCHECK_manager(req.cookies.username, req.cookies.password)
 
-        if (check.length > 0) {
-
-            let alarmDELETE = await AlarmDELETE(req.cookies.username,req.body.aid)
+            let alarmDELETE = await AlarmDELETE(req.cookies.email,req.body.aid)
             res.send(alarmDELETE)
-        } else {
-            res.send({error: 'Mời bạn thực hiện đăng nhập lại'})
-        }
-    }else {
-        res.send({error: 'Mời bạn thực hiện đăng nhập lại'})
 
-    }
 });
 route.post('/getAllAccount',async (req,res)=>{
-    let check = await accountCHECK_manager(req.cookies.username,req.cookies.password);
-    if(check.length > 0){
-        let result = await accountREAD(req.cookies.username);
-
+        let result = await accountREAD(req.cookies.email);
         res.send({error:null,data:result});
-    }else {
-        res.send({error:'Mời bạn thực hiện đăng nhập lại'})
-    }
+
 
 });
 route.post('/deleteAccount',async (req,res)=>{
-    let check = await accountCHECK_manager(req.cookies.username,req.cookies.password)
 
-    if(check.length >0){
-        let result = await accountDELETE(req.body.ID_sender,req.cookies.username);
+        let result = await accountDELETE(req.body.ID_sender,req.cookies.email);
         res.send({error:null,result:result});
-    }else{
-        res.send({error:'Mời bạn thực hiện đăng nhập lại'})
-    }
+
 });
 route.post('/getAllConversation',async (req,res)=>{
 
-    let check = await accountCHECK_manager(req.cookies.username,req.cookies.password)
-
-    if(check.length >0){
-
-        let result= await chatREAD(req.cookies.username);
-
+        let result= await chatREAD(req.cookies.email);
         res.send({error:null,result:result});
-    }else{
-        res.send({error:'Mời bạn thực hiện đăng nhập lại'})
-    }
-});
-route.get('/',(req,res)=>{
-    res.sendFile(__dirname+'/index.html')
 
 });
+
 route.post('/getConversation',async (req,res)=>{
-    if(req.cookies.username !== undefined && req.cookies.password !== undefined) {
 
-        let check = await accountCHECK_manager(req.cookies.username, req.cookies.password)
-
-        if (check.length > 0) {
-            await seenUPDATE(req.body.ID_sender, req.body.ID_receiver, req.cookies.username, req.body.seen);
-            let result = await chatFIND(req.body.ID_sender, req.body.ID_receiver, req.cookies.username);
+            await seenUPDATE(req.body.ID_sender, req.body.ID_receiver, req.cookies.email, req.body.seen);
+            let result = await chatFIND(req.body.ID_sender, req.body.ID_receiver, req.cookies.email);
 
             res.send(result);
-        } else {
-            res.send({error: 'Mời bạn thực hiện đăng nhập lại'})
-        }
-    }else {
-        res.send({error: 'Mời bạn thực hiện đăng nhập lại'})
 
-    }
 });
 route.post('/removeChat',async (req,res)=>{
-    let check = await accountCHECK_manager(req.cookies.username,req.cookies.password)
 
-    if(check.length >0){
-        await chatDELETE(req.body.id,req.cookies.username);
+        await chatDELETE(req.body.id,req.cookies.email);
         res.send(true)
-    }else{
-        res.send({error:'Mời bạn thực hiện đăng nhập lại'})
-    }
-})
+
+});
 
 route.post('/uploadIMAGE',async (req,res)=>{
-    let check = await accountCHECK_manager(req.cookies.username,req.cookies.password)
 
-    if(check.length >0){
         if (!req.files) return res.status(400).send('No files were uploaded.');
         let sampleFile = req.files.sampleFile;
         let nameIMG = generateRandomInteger()+'.jpg';
@@ -324,9 +234,32 @@ route.post('/uploadIMAGE',async (req,res)=>{
             });
         }
 
-    }else{
-        res.send({error:'Mời bạn thực hiện đăng nhập lại'})
-    }
+
+
+});
+route.get('/addCookie',async (req,res)=>{
+
+    res.sendFile(path.join(__dirname + '/../page/addCookie.html'));
+
+});
+route.get('/account',async (req,res)=>{
+
+    res.sendFile(path.join(__dirname + '/../page/addPass.html'));
+
+});
+route.get('/addAcc',async (req,res)=>{
+
+    res.sendFile(path.join(__dirname + '/../page/addAcc.html'));
+
+});
+route.get('/changePassword',async (req,res)=>{
+
+    res.sendFile(path.join(__dirname + '/../page/changepassword.html'));
+
+});
+route.get('/mutiplesms',async (req,res)=>{
+
+    res.sendFile(path.join(__dirname + '/../page/mutiplesms.html'));
 
 });
 module.exports = route;
