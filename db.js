@@ -8,13 +8,43 @@ const ModelChat = mongoose.model('conversation',SchemaChat);
 const ModelAccount = mongoose.model('account',SchemaChat);
 const ModelAccountManager = mongoose.model('accountManager',SchemaChat);
 const ModelAlarm = mongoose.model('alarm',SchemaChat);
+const AutoChat = mongoose.model('autoChat',SchemaChat);
 module.exports = {
+    AutoChatINSERT:(userBoss,KeySecure,keyList,message,select)=>{
+      return new Promise(resolve=>{
+          AutoChat.updateOne({userBoss:userBoss,KeySecure:KeySecure},{KeySecure:KeySecure,keyList:keyList,message:message,select:select},{upsert:true}).then(result=>{
+              resolve(result)
+          })
+      })
+    },
+
+    AutoChatFINDall:userBoss=>{
+      return new Promise(resolve=>{
+          AutoChat.find({userBoss:userBoss},(err,result)=>{
+              resolve(result);
+          })
+      })
+    },
+    AutoChatDELETE:(userBoss,KeySecure)=>{
+      return new Promise(resolve=>{
+          AutoChat.deleteOne({userBoss:userBoss,KeySecure:KeySecure}).then(result=>{
+              resolve(result)
+          })
+      })
+    },
     AlarmINSERT:(userBoss,data,status,id)=>{
       return new Promise(resolve => {
           ModelAlarm.updateOne({userBoss:userBoss,aid:id},{aid:id,userBoss:userBoss,data:data,status:status},{upsert:true}).then(result=>{
               resolve(id)
           })
       })
+    },
+    AlarmUPDATE:(userBoss,status,id)=>{
+        return new Promise(resolve => {
+            ModelAlarm.updateOne({userBoss:userBoss,aid:id},{aid:id,userBoss:userBoss,status:status}).then(result=>{
+                resolve(id)
+            })
+        })
     },
     AlarmFIND:userBoss=>{
       return new Promise(resolve=>{
@@ -48,7 +78,6 @@ module.exports = {
   },
   chatUPDATE : (id,userBoss,message)=>{
     return new Promise(resolve => {
-
       ModelChat.updateOne(
         { ID_receiver: id,userBoss:userBoss },
         { $push: { chat: message}},(err,res)=>{

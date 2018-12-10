@@ -67,7 +67,13 @@
 
 							<div class="col-md-12" >
 							 <input v-model="time" type="number" style="margin-top:10px;width: 250px;margin-left:20px;" type="text" placeholder="Khoảng cách thời gian mỗi lần gửi" class="form-control"> giây
-								<br> <br>
+
+
+								<br>
+
+								<br>
+								<code style="color:blue;background-color: #a3baff;margin-left:20px">{{thongbao}} </code>
+
 								<code v-show="time_blank" style="margin-left: 20px;color:#800a05" class="animated flash ">Bạn phải chọn khoảng cách thời gian gửi tin nhắn.</code>
 							</div>
 
@@ -195,7 +201,7 @@
 	<script>
         $(document).ready(function() {
             App.init();
-            TableManageFixedColumns.init();
+
         });
 	</script>
 
@@ -254,7 +260,8 @@
 					cancel:false,
 					search:'',
                     time_blank:false,
-                    receiver_blank:false
+                    receiver_blank:false,
+					thongbao:''
 
                 }
             },
@@ -271,27 +278,44 @@
                 if(chat.data.error === null){
 
                     this.listAcc = chat.data.data;
-                    console.log(this.listAcc)
+
                 }else{
                     window.location.href = "/"
                 }
                 let alarmDATA = await axios.post('/api/alarmData');
 
                 if(alarmDATA.data.length > 0){
-                    this.hour = alarmDATA.data[0].data.hour;
-                    this.minute = alarmDATA.data[0].data.minute;
-                    this.date = alarmDATA.data[0].data.date;
-                    this.month = alarmDATA.data[0].data.month;
-                    this.time = alarmDATA.data[0].data.time;
-                    this.message = alarmDATA.data[0].data.message;
-                    this.aid = alarmDATA.data[0].aid;
-                    this.listFriend = alarmDATA.data[0].data.receiver;
-                    this.listFriendSelect = alarmDATA.data[0].data.receiver;
-
-                    this.submit = false;
-                    this.cancel = true;
 
 
+
+
+                    if( alarmDATA.data[0].status === true){
+						this.submit = true;
+						this.cancel = false;
+						this.hour = timenow.getHours();
+						this.minute = timenow.getMinutes()+1;
+						this.date = timenow.getDate();
+						this.month = timenow.getMonth()+1;
+
+						this.message = null;
+						this.aid = null;
+						this.listFriend = [];
+						this.listFriendSelect = [];
+						this.thongbao = 'Đã gửi tin nhắn lúc : '+alarmDATA.data[0].data.hour+'h'+alarmDATA.data[0].data.minute+'p Ngày '+alarmDATA.data[0].data.date+'/'+alarmDATA.data[0].data.month
+
+					}else {
+						this.submit = false;
+						this.cancel = true;
+						this.hour = alarmDATA.data[0].data.hour;
+						this.minute = alarmDATA.data[0].data.minute;
+						this.date = alarmDATA.data[0].data.date;
+						this.month = alarmDATA.data[0].data.month;
+						this.time = alarmDATA.data[0].data.time;
+						this.message = alarmDATA.data[0].data.message;
+						this.aid = alarmDATA.data[0].aid;
+						this.listFriend = alarmDATA.data[0].data.receiver;
+						this.listFriendSelect = alarmDATA.data[0].data.receiver;
+					}
 
                 }
 
@@ -320,6 +344,22 @@
                     });
                     return _.listFriend = _.listFriend.concat(result.data)
                 });
+                socket.on('perfect',function (data) {
+					let timenow = new Date();
+
+					_.submit = true;
+					_.cancel = false;
+				    _.hour = timenow.getHours();
+					_.minute = timenow.getMinutes()+1;
+					_.date = timenow.getDate();
+					_.month = timenow.getMonth()+1;
+
+					_.message = null;
+					_.aid = null;
+					_.listFriend = [];
+					_.listFriendSelect = [];
+					_.thongbao = data.thongbao
+				})
 
 
             },
@@ -367,7 +407,7 @@
 					})
 				},
 				sendMessFriend:async function(){
-                    console.log(this.listFriendSelect)
+
 				},
 				selectAll:async function(){
                     if(this.listFriendSelect.length >0){
@@ -379,6 +419,7 @@
                     }
 				},
 				alarm:async function(){
+                	this.thongbao = '';
                     if(this.time === ''){
                         this.time_blank = true;
                         return false;

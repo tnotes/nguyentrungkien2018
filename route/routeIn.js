@@ -5,7 +5,7 @@ const moment = require('moment-timezone');
 const process = require('./../index');
 var randomstring = require("randomstring");
 
-const {accountFIND_manager,AlarmFIND,accountINSERT,chatFIND,AlarmINSERT,AlarmDELETE,accountCREATE_manager,changePASSWORD,statusUPDATE,accountCHECK_manager,chatREAD,accountREAD,accountDELETE,seenUPDATE,chatDELETE} = require('./../db');
+const {accountFIND_manager,accountALL_manager,accountUPDATE_manager,AlarmFIND,AutoChatFINDall,AutoChatDELETE,AutoChatINSERT,accountINSERT,chatFIND,AlarmINSERT,AlarmDELETE,accountCREATE_manager,changePASSWORD,statusUPDATE,accountCHECK_manager,chatREAD,accountREAD,accountDELETE,seenUPDATE,chatDELETE} = require('./../db');
 function generateRandomInteger() {
     let min = 0;
     let max=1000000000000;
@@ -23,10 +23,15 @@ route.post('/changePassword',async (req,res)=>{
 route.post('/account',async (req,res)=>{
 
         let author = randomstring.generate()+generateRandomInteger();
+        let infoBoss = await accountFIND_manager(req.cookies.email);
+        let accountCountNow = await accountREAD(req.cookies.email);
+        let limit = parseInt(infoBoss[0]['_doc'].FacebookCount);
+        let present = accountCountNow.length;
 
+        if(present < limit){
 
             if(req.body.type === 'pass') {
-               let result = await accountINSERT({
+                let result = await accountINSERT({
                     status: 'Đang hoạt động',
                     type:'pass',
                     author:author,
@@ -57,10 +62,6 @@ route.post('/account',async (req,res)=>{
                 }else {
                     res.send({
                         error:"Tài khoản Facebook này đã xuất hiện trong danh sách của bạn !",
-                        ID_sender: req.body.email,
-                        status: 'Đang hoạt động',
-                        type:'pass',
-                        userBoss: req.cookies.email,
                     })
                 }
 
@@ -144,16 +145,17 @@ route.post('/account',async (req,res)=>{
                     }else {
                         res.send({
                             error:"Tài khoản Facebook này đã xuất hiện trong danh sách của bạn !",
-                            ID_sender: req.body.data[i]['c_user'],
-                            status: 'Đang hoạt động',
-                            type:'cookie',
-                            userBoss: req.cookies.email,
                         })
                     }
 
 
                 }
             }
+        }else {
+            res.send({
+                error:"Hiện tại bạn chỉ thêm được tối đa "+limit+" tài khoản . Vui lòng nâng cấp để tiếp tục sử dụng !",
+            })
+        }
 
 
 });
@@ -176,7 +178,7 @@ route.post('/hen-gio',async (req,res)=>{
                 aid = req.body.data.aid;
             }
 
-            let alarm = await AlarmINSERT(req.cookies.email,req.body.data,true,aid)
+            let alarm = await AlarmINSERT(req.cookies.email,req.body.data,false,aid)
             res.send(alarm)
 
 });
@@ -200,12 +202,11 @@ route.post('/deleteAccount',async (req,res)=>{
 
 });
 route.post('/getAllConversation',async (req,res)=>{
-
+        let getUSER = await accountFIND_manager(req.cookies.email);
         let result= await chatREAD(req.cookies.email);
-        res.send({error:null,result:result});
+        res.send({error:null,result:{user:getUSER[0],conversation:result}});
 
 });
-
 route.post('/getConversation',async (req,res)=>{
 
             await seenUPDATE(req.body.ID_sender, req.body.ID_receiver, req.cookies.email, req.body.seen);
@@ -214,6 +215,24 @@ route.post('/getConversation',async (req,res)=>{
             res.send(result);
 
 });
+route.post('/getAutoChat',async (req,res)=>{
+    let chatBotKey = await AutoChatFINDall(req.cookies.email);
+    let AllAccount = await accountREAD(req.cookies.email);
+    res.send({chatBotKey:chatBotKey,AllAccount:AllAccount})
+
+});
+route.post('/addAutoChat',async (req,res)=>{
+    let AddAutoChat = await AutoChatINSERT(req.cookies.email,randomstring.generate(),req.body.keyList,req.body.message,req.body.select);
+    res.send(AddAutoChat)
+});
+route.post('/deleteAutoChat',async (req,res)=>{
+   let DeleteAutoChat = await AutoChatDELETE(req.cookies.email,req.body.KeySecure);
+   res.send(DeleteAutoChat);
+});
+route.post('/updateAutoChat',async (req,res)=>{
+    let UpdateAutoChat = await AutoChatINSERT(req.cookies.email,req.body.KeySecure,req.body.keyList,req.body.message,req.body.select);
+    res.send(UpdateAutoChat);
+})
 route.post('/removeChat',async (req,res)=>{
 
         await chatDELETE(req.body.id,req.cookies.email);
@@ -247,10 +266,18 @@ route.get('/account',async (req,res)=>{
     res.sendFile(path.join(__dirname + '/../page/addPass.html'));
 
 });
-route.get('/addAcc',async (req,res)=>{
+route.get('/autoChat',async (req,res)=>{
 
-    res.sendFile(path.join(__dirname + '/../page/addAcc.html'));
+    res.sendFile(path.join(__dirname + '/../page/autoChat.html'));
 
+});
+route.post('/infoUser',async (req,res)=>{
+   let info = await accountFIND_manager(req.cookies.email);
+   res.send(info)
+});
+route.post('/updateUser',async (req,res)=>{
+   let updateU = await accountUPDATE_manager(req.cookies.email,req.body.data);
+   res.send(updateU)
 });
 route.get('/changePassword',async (req,res)=>{
 

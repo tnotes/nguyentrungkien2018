@@ -1,5 +1,5 @@
 const login = require("facebook-chat-api");
-const {chatINSERT,accountFIND_manager,accountREADall,AlarmFIND,AlarmFIND_aid,accountCHECK_manager,accountCREATE_manager,chatUPDATE,chatDELETE,chatFIND,chatREAD,accountDELETE,accountINSERT,accountFIND,accountREAD,seenUPDATE,statusUPDATE} = require('./db.js');
+const {chatINSERT,accountFIND_manager,accountREADall,AutoChatFINDall,AlarmFIND,AlarmFIND_aid,AlarmUPDATE,accountCHECK_manager,accountCREATE_manager,chatUPDATE,chatDELETE,chatFIND,chatREAD,accountDELETE,accountINSERT,accountFIND,accountREAD,seenUPDATE,statusUPDATE} = require('./db.js');
 const express = require('express');
 let CronJob  = require('cron').CronJob;
 const fs = require('fs');
@@ -85,8 +85,12 @@ let process = async function(account){
       }
   }
 
-  let sendMessText = (data)=>{
+  let sendMessText = async (data)=>{
+      let info = await getInfo(data.ID_receiver);
+
+      data.message = data.message.replace('{{name}}',info.name);
       return new Promise(resolve=>{
+
           api.sendMessage(data.message, data.ID_receiver, async (err, message) => {
               let result = {};
               if (err === null) {
@@ -97,6 +101,7 @@ let process = async function(account){
                       message: data.message,
                       time: getTime()
                   });
+
                   result.error = null;
               } else{
                   if(err.error === 'Not logged in.'){
@@ -123,7 +128,67 @@ let process = async function(account){
 
           });
       })
-  }
+  };
+  let sendMessExcute = async function(data){
+      return new Promise(async (resolve,reject)=>{
+          if(account.ID_sender === data.ID_sender && account.userBoss === data.userBoss) {
+              let findUSER = await accountFIND(account.ID_sender, account.author, account.userBoss);
+              if (findUSER !== undefined) {
+
+                  if (data.type === 'text') {
+                      let result = await sendMessText(data);
+                      await seenUPDATE(account.ID_sender,data.ID_receiver,account.userBoss,true)
+                      resolve(result)
+                  } else if (data.type === 'attachments') {
+                      await seenUPDATE(account.ID_sender,data.ID_receiver,account.userBoss,true)
+
+                      api.sendMessage({
+                          attachment: fs.createReadStream('./public/' + data.url)
+                      }, data.ID_receiver, async (err, message) => {
+                          let result = {};
+                          if (err === null) {
+                              await chatUPDATE(data.ID_receiver, account.userBoss, {
+                                  user: 'me',
+                                  type: data.type,
+                                  message: JSON.stringify([{url: '/' + data.url}]),
+                                  time: getTime()
+                              });
+                              result.error = null;
+                          } else{
+                              if(err.error === 'Not logged in.'){
+                                  if (account.type === 'cookie') {
+                                      account.status = 'Cookie đã hết hạn.Vui lòng lấy lại Cookie';
+                                      await accountINSERT(account);
+                                      await statusUPDATE(data.ID_sender, account.userBoss, 'Cookie đã hết hạn.Vui lòng lấy lại Cookie')
+
+                                      result.error = 'Cookie đã hết hạn.Vui lòng lấy lại Cookie';
+                                  } else if (account.type === 'pass') {
+                                      account.status = 'Thông tin Tài khoản mật khẩu không chính xác hoặc đã bị checkpoint';
+                                      await accountINSERT(account);
+                                      await statusUPDATE(data.ID_sender, account.userBoss, 'Thông tin Tài khoản mật khẩu không chính xác hoặc đã bị checkpoint')
+
+                                      result.error = 'Thông tin Tài khoản mật khẩu không chính xác hoặc đã bị checkpoint';
+
+                                  }
+                              }
+
+
+
+                          }
+
+                          let dataChat = await chatFIND(data.ID_sender, data.ID_receiver, account.userBoss);
+
+                          result.data = dataChat;
+                          resolve(result)
+                      });
+
+
+                  }
+
+              }
+          }
+      })
+    };
   let sender = await accountFIND(account.ID_sender,account.author,account.userBoss);
 
 
@@ -132,66 +197,9 @@ let process = async function(account){
       io.on('connection',async socket=>{
 
           socket.on('sendMessage',async function(data,fn){
-
-            if(account.ID_sender === data.ID_sender && account.userBoss === data.userBoss) {
-                let findUSER = await accountFIND(account.ID_sender, account.author, account.userBoss);
-                if (findUSER !== undefined) {
-
-                    if (data.type === 'text') {
-                        let result = await sendMessText(data);
-                        await seenUPDATE(account.ID_sender,data.ID_receiver,account.userBoss,true)
-                        return fn(result)
-                    } else if (data.type === 'attachments') {
-                        await seenUPDATE(account.ID_sender,data.ID_receiver,account.userBoss,true)
-
-                        api.sendMessage({
-                            attachment: fs.createReadStream('./public/' + data.url)
-                        }, data.ID_receiver, async (err, message) => {
-                            let result = {};
-                            if (err === null) {
-                                await chatUPDATE(data.ID_receiver, account.userBoss, {
-                                    user: 'me',
-                                    type: data.type,
-                                    message: JSON.stringify([{url: '/' + data.url}]),
-                                    time: getTime()
-                                });
-                                result.error = null;
-                            } else{
-                                if(err.error === 'Not logged in.'){
-                                    if (account.type === 'cookie') {
-                                        account.status = 'Cookie đã hết hạn.Vui lòng lấy lại Cookie';
-                                        await accountINSERT(account);
-                                        await statusUPDATE(data.ID_sender, account.userBoss, 'Cookie đã hết hạn.Vui lòng lấy lại Cookie')
-
-                                        result.error = 'Cookie đã hết hạn.Vui lòng lấy lại Cookie';
-                                    } else if (account.type === 'pass') {
-                                        account.status = 'Thông tin Tài khoản mật khẩu không chính xác hoặc đã bị checkpoint';
-                                        await accountINSERT(account);
-                                        await statusUPDATE(data.ID_sender, account.userBoss, 'Thông tin Tài khoản mật khẩu không chính xác hoặc đã bị checkpoint')
-
-                                        result.error = 'Thông tin Tài khoản mật khẩu không chính xác hoặc đã bị checkpoint';
-
-                                    }
-                                }
-
-
-
-                            }
-
-                            let dataChat = await chatFIND(data.ID_sender, data.ID_receiver, account.userBoss);
-
-                            result.data = dataChat;
-                            return fn(result)
-                        });
-
-
-                    }
-
-                }
-            }
-
-
-        });
+            let sending = await sendMessExcute(data);
+            return fn(sending)
+          });
           socket.on('GetListFriend',async function(dataSend){
 
               if(dataSend.list.includes(account.ID_sender)){
@@ -237,9 +245,13 @@ let process = async function(account){
                           await waitTime(dataSend.time*1000)
                       }
                   }
+                  await AlarmUPDATE(account.userBoss,true,dataSend.aid)
+                  io.sockets.emit("perfect",{
+                      thongbao:'Đã gửi tin nhắn lúc : '+dataSend.hour+'h'+dataSend.minute+'p Ngày '+dataSend.date+'/'+dataSend.month
+                  });
 
 
-              }, null, true, 'Asia/Ho_Chi_Minh');
+                  }, null, true, 'Asia/Ho_Chi_Minh');
           })
 
       });
@@ -276,6 +288,8 @@ let process = async function(account){
             let mess = message.body;
             let ID_receiver = message.threadID;
             let messageCONTENT;
+
+
             if (message.attachments.length === 0) {
 
               messageCONTENT = {user: 'you', type: 'text', message: mess, time: getTime()}
@@ -313,9 +327,35 @@ let process = async function(account){
               await chatUPDATE(ID_receiver,account.userBoss, messageCONTENT);
               await seenUPDATE(account.ID_sender,ID_receiver,account.userBoss,false)
             }
-              let dataChat = await chatFIND(account.ID_sender,ID_receiver,account.userBoss);
 
-              io.sockets.emit('receiveMessage', {
+
+
+
+
+              let AllAutoChat = await AutoChatFINDall(account.userBoss);
+
+              for(let i = 0;i<AllAutoChat.length;i++){
+                  if(AllAutoChat[i]['_doc'].select.includes(account.ID_sender) === true){
+                      for(let m = 0;m<AllAutoChat[i]['_doc'].keyList.length;m++){
+                          if(mess.includes(AllAutoChat[i]['_doc']['keyList'][m]) === true){
+                              let data = {
+                                  userBoss:account.userBoss,
+                                  ID_receiver:ID_receiver,
+                                  type:'text',
+                                  message:AllAutoChat[i]['_doc']['message'],
+                                  ID_sender:account.ID_sender
+                              };
+                             await sendMessExcute(data);
+
+
+
+
+                          }
+                      }
+                  }
+              }
+              let dataChat = await chatFIND(account.ID_sender,ID_receiver,account.userBoss);
+              return io.sockets.emit('receiveMessage', {
                   message: dataChat,
                   ID_sender:account.ID_sender,
                   ID_receiver:ID_receiver,

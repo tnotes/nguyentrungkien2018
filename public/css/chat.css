@@ -98,6 +98,7 @@ body {
         height: 55px;
     }
 }
+
 #frame #sidepanel #profile .wrap .imgx {
     width: 50px;
     border-radius: 50%;
@@ -152,6 +153,22 @@ body {
 }
 #frame #sidepanel #profile .wrap #status-options {
     position: absolute;
+    opacity: 0;
+    visibility: hidden;
+    width: 150px;
+    margin: 70px 0 0 0;
+    border-radius: 6px;
+    z-index: 99;
+    line-height: initial;
+    background: #435f7a;
+    -moz-transition: 0.3s all ease;
+    -o-transition: 0.3s all ease;
+    -webkit-transition: 0.3s all ease;
+    transition: 0.3s all ease;
+}
+#sidepane6{
+    position: absolute;
+    height: 100px;
     opacity: 0;
     visibility: hidden;
     width: 150px;

@@ -19,16 +19,62 @@
     <link rel="stylesheet" href="/css/chat.css">
     <script src="http://localhost:9999/socket.io/socket.io.js"></script>
     <script src="/js/socketconnect.js"></script>
+    <style>
+        .shadow{
+            box-shadow: 1px 1px 15px #59799b
+        }
+        .optionSelect{
+            width: 150px;
+            height: 30px;
+            border: 1px solid white;
+            font-size:12px;
+            color:white;
+            float: left;
+            padding: 8px;
+            text-align: center;
+        }
+        .optionSelect:hover{
+             cursor: pointer;
+         }
+        ul.menuFunction>li{
+            padding-left: 70px;
+            padding-top: 16px;
+            height: 50px;
+            border-bottom: 1px solid #344658;
+            color:white
+        }
+        ul.menuFunction>li:hover{
+
+            box-shadow: 1px 1px 15px #59799b
+
+        }
+        a{
+            color:white;
+            text-decoration: none;
+        }
+        a:hover{
+            color:white;
+            text-decoration: none;
+
+        }
+        .cur{
+            margin-left:10px
+        }
+        .cur:hover{
+            color:red;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 <div id="frame">
     <span style="display: none" id="ID_receiver">{{container.conversation.ID_receiver}}</span>
     <span style="display: none" id="ID_sender">{{container.conversation.ID_sender}}</span>
     <div id="sidepanel">
-        <div id="profile">
+        <div id="profile" >
             <div class="wrap">
 
-                <center> <i style="font-size: 60px;text-align: center" class="fa fa-facebook-square"></i></center>
+                <center  > <i style="font-size: 60px;text-align: center;" class="fa fa-facebook-square"></i></center>
 
             </div>
         </div>
@@ -36,10 +82,10 @@
         <div id="contacts">
             <center v-show="load_listCHAT"><img class="imgx" src="img/load_listchat.svg" alt=""></center>
             <ul v-show="listCHAT">
-                <li @mouseover="authorDisplay(data)" @mouseout="authorHidden(data)" @click="activate(key),newTag(data)" :class="{ active : active_el === key }" class="contact bounceInRight animated" :key="key" v-for="(data,key) in container.list_chat">
+                <li @mouseover="authorDisplay(data)" :class="{shadow:data.sha}"  @mouseout="authorHidden(data)" @click="activate(key),newTag(data)" :class="{ active : active_el === key }" class="contact bounceInRight animated" :key="key" v-for="(data,key) in container.list_chat">
 
-                    <div class="wrap">
-                        <span class="contact-status online"></span>
+                    <div  class="wrap">
+
                         <img class="imgx" :src="data.image" alt="" />
                         <div class="meta">
                             <p class="name">{{data.name}}</p>
@@ -47,10 +93,10 @@
                             <small class="preview" v-if="data.lastChat.type !== 'text'"><i v-if="data.lastChat.user === 'you'" style="color:#ffdebb" class="fa fa-check">   </i>  <i v-if="data.lastChat.user === 'me'" style="color:#ffdebb" class="fa fa-location-arrow"></i>   Tin nhắn ảnh <i style="color:#b1acff" class="fa fa-image"></i></small>
 
                             <small class="preview" v-if="data.lastChat.type === 'text'" ><i v-if="data.lastChat.user === 'you'" style="color:#ffdebb" class="fa fa-check">   </i>  <i v-if="data.lastChat.user === 'me'" style="color:#ffdebb" class="fa fa-location-arrow"> </i><span style="font-size:11px">{{data.lastChat.message.slice(0,15)}} ...</span></small>
-                            <i v-if="data.ady" class="fa fa-user animated bounceInRight" style="color:#ff5854;float:right;margin-right: 10px;font-size:10px"> :<i style="color:white;margin-left: 3px;">{{data.facebook_name_sender}}</i></i>
+                            <i v-if="data.ady" class="fa fa-user animated bounceInRight" style="color:#ff5854;float:right;margin-right: 10px;font-size:10px">  <i style="color:white;margin-left: 3px;">{{data.facebook_name_sender}}</i></i>
                             <i v-if="data.status !== 'Đang hoạt động'" title="Tài khoản không gửi và nhận được tin nhắn" style="color:#ff6859;float:right" class="time fa fa-exclamation-triangle animated infinite flash"></i>
 
-                            <i  v-if="data.seen === false" style="color:#f5ffbb;float:right;margin-right: 10px" class="time fa fa-envelope"></i>
+                            <i  v-if="data.seen === false" style="color:white;float:right;margin-right: 10px" class="time fa fa-envelope"></i>
 
                         </div>
                     </div>
@@ -61,14 +107,14 @@
             </ul>
         </div>
         <div id="bottom-bar">
-            <a href="/api/addAcc"><button  id="addcontact"><i class="fa fa-user-plus fa-fw" style="color:#ff2321" aria-hidden="true"></i> <span >Quản lí và Cài Đặt</span></button></a>
-            <a href="/logout"><button id="settings"><i class="fa fa-power-off" style="color:#ff2321" aria-hidden="true"></i> <span>Logout</span></button></a>
+
 
         </div>
     </div>
-    <div class="content"  >
-        <div class="contact-profile">
-            <div  v-show ="option">
+    <div class="content " style="width:50%;left:0;float: left"  >
+        <div class="contact-profile"  v-show ="option" style="box-shadow: 4px 4px 18px #2c3e50;">
+            <div >
+
                 <img class="imgx" :src="container.conversation.image" alt="" />
                 <a :href="container.conversation.facebook" style="color:#2c3e50;">{{container.conversation.name}}</a>
                 <i v-if="container.conversation.status !== 'Đang hoạt động'" title="Tài khoản không gửi và nhận được tin nhắn" style="color:#ff6859;margin-left:20px" class="time fa fa-exclamation-triangle animated flash"></i>
@@ -78,13 +124,14 @@
                 <span v-if="container.conversation.status === 'Cookie đã hết hạn.Vui lòng lấy lại Cookie'" style="font-size:10px;color:red">Cookie đã hết hạn.Vui lòng <a
                         :href="container.conversation.facebook" style="color:#2c3e50">lấy lại</a> Cookie</span>
 
-                <div class="social-media" style="margin-right: 20px">
+                <div class="social-media" >
 
-                    <button class="btn btn-default btn-xs" style="margin-top:10px;" @click="deleteChat">Xóa lịch sử</button>
+                    <i  style="margin-top:20px;" @click="deleteChat" class="time fa fa-trash"></i>
 
 
                 </div>
             </div>
+
         </div>
         <div  id="scroll" class="messages ">
             <div v-show="welcome" class="center-screen animated bounceIn"><i style="font-size:200px" class="fa fa-facebook-square"></i><br><p>Chào mừng bạn đến với hệ thống quản lí tin nhắn Facebook Messenger</p></div>
@@ -94,7 +141,7 @@
                     <li v-if="content.user === 'you'" class="sent">
 
                         <p  v-if="content.type === 'text'">{{content.message}}</p>
-                        <img style="max-width: 200px;max-height: 200px;border-radius: 30px"  v-if="content.type === 'attachments'" :key="index" v-for="(image,index) in content.message" :src="image.url" alt="">
+                        <img style="max-width: 400px;max-height: 400px;border-radius: 30px"  v-if="content.type === 'attachments'" :key="index" v-for="(image,index) in content.message" :src="image.url" alt="">
 
                     </li>
                     <li v-if="content.user === 'me'" class="replies">
@@ -109,7 +156,7 @@
 
             </ul>
         </div>
-        <div class="message-input animated fadeIn" v-show="input" >
+        <div class="message-input animated fadeIn" v-show="input" style="box-shadow: 4px 4px 18px #2c3e50">
             <div class="wrap">
                 <textarea  v-if="container.conversation.status === 'Đang hoạt động'"  class="input"  v-model="message"  @keyup.13="send"  placeholder="Nhập văn bản" ></textarea>
 
@@ -124,7 +171,38 @@
             </div>
         </div>
     </div>
-</div>
+    <div  style="position: absolute;width:25%;background-color: #2c3e50;height:100%;float:right;right: 0">
+        <div class="wrap"><center>
+        <i class="fa fa-user-circle" style="color:white;font-size:50px;margin-top:30px"></i>
+            <br> <br>
+           <p style="color:white">{{fullname}} <a href="/api/changePassword"> <i style="font-size:11px;margin-left:5px" class="fa fa-pencil cur"  aria-hidden="true"></i></a></p>
+            <br>
+        </center>
+        </div>
+        <ul class="menuFunction">
+            <li><i class="fa fa-snowflake-o" style="color:#ff2321" aria-hidden="true"></i><a href="/api/addCookie"> Thêm tài khoản Cookie</a></li>
+            <li><i class="fa fa-id-card-o" style="color:#ff2321" aria-hidden="true"></i><a href="/api/account"> Thêm tài khoản USER/PASS</a></li>
+            <li><i class="fa fa-bolt" style="color:#ff2321" aria-hidden="true"></i><a href="/api/autoChat"> Trả lời tin nhắn tự động</a></li>
+            <li><i class="fa fa-clock-o" style="color:#ff2321" aria-hidden="true"></i><a href="/api/mutiplesms"> Hẹn giờ gửi tin nhắn</a></li>
+            <li><i class="fa fa-power-off" style="color:#ff2321" aria-hidden="true"></i><a href=""> Đăng xuất</a></li>
+
+
+        </ul>
+
+<!--
+       <div style="margin-left:20px" >
+            <div class="optionSelect">Hẹn giờ</div>
+            <div class="optionSelect">Tự động tin nhắn</div>
+
+        </div>
+-->
+    </div>
+
+
+
+
+
+    </div>
 </body>
 <script>
     function setCookie(cname,cvalue,exdays) {
@@ -162,13 +240,15 @@
         },
         data(){
             return {
+                user:{},
                 loading:false,
                 result:false,
                 message:'',
+                fullname:'',
                 name:'Facebook manager',
                 chatVisible:false,
                 introVisible:true,
-
+                sha:false,
                 active_el:-1,
                 check:false,
                 input:false,
@@ -178,7 +258,8 @@
                 option:false,
                 username:getCookie("email"),
                 password:getCookie("password"),
-                connect:true
+                connect:true,
+                info:true
 
             }
         },
@@ -187,11 +268,12 @@
 
 
             let chat = await axios.post('/api/getAllConversation');
-
+            this.fullname = chat.data.result.user.name
             if(chat.data.error === null){
                 this.load_listCHAT = false;
                 this.listCHAT = true;
-                return store.commit('executeConversation',chat.data.result)
+                this.user = chat.data.result.user;
+                return store.commit('executeConversation',chat.data.result.conversation)
             }else{
                 window.location.href = "/"
             }
@@ -209,16 +291,6 @@
                 $("#scroll").animate({ scrollTop:10000000000000}, 500);
                 if(data.userBoss === name){
                     let result = data.message;
-                    let arr = [];
-                    result.chat = result.chat.filter(e=>{
-                        if(arr.includes(e.message) === false){
-                            arr.push(e.message);
-                            return e
-                        }
-                    });
-
-
-
                    return store.commit('pushConversation',result)
                 }
 
@@ -357,10 +429,12 @@
 
             },
             authorDisplay:async function(data){
+                data.sha = true;
                data.ady = true;
                return data;
             },
             authorHidden:async function(data){
+                data.sha = false;
                 data.ady = false;
                 return data;
             }

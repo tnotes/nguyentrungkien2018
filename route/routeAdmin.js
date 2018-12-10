@@ -62,6 +62,7 @@ route.post('/update',async (req,res)=>{
         password:data.password,
         phone:data.phone,
         package:data.package,
+         FacebookCount:data.FacebookCount,
         startTime:data.startTime,
         limitTime:parseInt(moment(data.TimeEndYear+'-'+data.TimeEndMonth+'-'+data.TimeEndDay+' '+data.TimeStartHour).format( "x"))-60*60*15*1000
     };

@@ -21,6 +21,7 @@ const store = new Vuex.Store({
                     image:e.image,
                     lastChat:e.chat.slice(-1)[0],
                     status:e.status,
+                    sha:false,
                     ady:false
                 })
             })

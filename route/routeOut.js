@@ -64,6 +64,7 @@ route.post('/register',async (req,res)=>{
         req.body.startTime = parseInt(moment().tz('Asia/Ho_Chi_Minh').format( "x"));
         req.body.limitTime = parseInt(moment().tz('Asia/Ho_Chi_Minh').format( "x"))+259200000;
         req.body.package = 'Trial';
+        req.body.FacebookCount = 2;
         await accountCREATE_manager(req.body);
         return res.cookie("email",req.body.email).cookie("password",req.body.password).send({status:'Đăng kí thành công !'})
 

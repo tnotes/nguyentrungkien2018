@@ -151,12 +151,13 @@
                                                         <option value="F365">F365 </option>
 
                                                     </select>
-
-
+                                            <label class="col-md-3 col-sm-4 col-form-label" for="message">Số lượng :</label>
+                                                    <input v-model="editINFO.FacebookCount" class="form-control" style="width: 80px;background-color: #2c3e50;color:white;margin-left:10px" type="number" min="2">
 
                                                 </span>
                                             </div>
                                         </div>
+
                                         <div class="form-group row m-b-15">
                                             <label class="col-md-3 col-sm-4 col-form-label" for="message">Lịch sử thanh toán :</label>
                                             <div class="col-md-9 col-sm-8">
@@ -173,6 +174,7 @@
                         <div class="modal-footer">
                             <a href="javascript:;" class="btn btn-white" data-dismiss="modal">Hủy</a>
                             <a @click="accept" href="javascript:;" id="add-without-image" class="btn btn-default" style="background-color:#2c3e50;color:#ffdfb2 ">Xác Nhận</a>
+
                         </div>
                     </div>
                 </div>
@@ -279,7 +281,7 @@
                 selected:'',
                 categorySearch:'email',
                 spinDeleteFacebook:false,
-                spinDeleteConversations:false
+                spinDeleteConversations:false,
             }
         },
 

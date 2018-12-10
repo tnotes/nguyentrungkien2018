@@ -4,10 +4,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <style>
-        body{
-            background-color: #e6eaea;
-            overflow-y: hidden;
-        }
+
         .center-screen {
             display: flex;
             flex-direction: column;
@@ -17,7 +14,7 @@
             min-height: 100vh;
         }
         .cenP{
-            width:1000px;
+            width:2000px;
             height: 150px;
         }
         .cen{
@@ -27,6 +24,7 @@
             height:200px;
             background-color: #2c3e50;
             margin-left:50px;
+            margin-top:30px;
             border-radius: 20px;
         }
         .cen:hover{
@@ -42,29 +40,36 @@
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
-<body>
+<body style="background-color: #e6eaea;">
 <div class="center-screen">
-    <div class="cenP">
-    <div class="cen animated bounceInUp faster">
-        <i class="material-icons" style="font-size:100px;color:#e6eaea;margin-top:20px">mood</i>
+    <div class="container-fluid">
+        <div class="row">
+    <div >
+    <a  href="/api/account" class="cen animated bounceInRight col-md-3 col-sm-3 col-xs-9 faster">
+        <i class="material-icons "  style="font-size:100px;color:#e6eaea;margin-top:20px">mood</i>
         <br>
-        <a href="/api/account" style="color:#e6eaea;">Tài khoản & Mật khẩu</a>
-    </div>
-    <div class="cen animated bounceInUp fast">
+        <span style="color:#e6eaea;">Tài khoản & Mật khẩu</span>
+    </a>
+    <a href="/api/addCookie" class="cen animated col-md-3 col-sm-3 col-xs-9 bounceInRight fast">
         <i class="material-icons" style="font-size:100px;color:#e6eaea;margin-top:20px">account_balance_wallet</i>
         <br>
-        <a href="/api/addCookie" style="color:#e6eaea;">Cookie</a>
-    </div>
-        <div class="cen animated bounceInUp">
+        <span style="color:#e6eaea;">Cookie</span>
+    </a>
+        <a href="/api/mutiplesms" class="cen animated col-md-3 col-sm-3 col-xs-9 bounceInRight">
             <i class="material-icons" style="font-size:100px;color:#e6eaea;margin-top:20px">alarm</i>
             <br>
-            <a href="/api/mutiplesms" style="color:#e6eaea;">Hẹn giờ</a>
-        </div>
-        <div class="cen animated bounceInUp">
+            <span style="color:#e6eaea;">Hẹn giờ</span>
+        </a>
+        <a href="/api/changePassword" class="cen col-md-3 col-sm-3 col-xs-9 animated bounceInRight">
             <i class="material-icons" style="font-size:100px;color:#e6eaea;margin-top:20px">cached</i>
             <br>
-            <a href="/api/changePassword" style="color:#e6eaea;">Thay đổi mật khẩu</a>
+            <span style="color:#e6eaea;">Thay đổi mật khẩu</span>
+        </a>
+    </div>
         </div>
     </div>
 </div>

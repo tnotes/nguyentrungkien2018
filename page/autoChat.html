@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en">
+<!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <title>Hẹn giờ - Phần mềm quản lí tin nhắn Facebook Manager</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+    <meta content="" name="description">
+    <meta content="" name="author">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+    <script src="https://unpkg.com/vuex@3.0.1/dist/vuex.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link href="/css/css.css" rel="stylesheet">
+    <link href="/css/jquery-ui.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/all.min.css" rel="stylesheet">
+    <link href="/css/ionicons.min.css" rel="stylesheet">
+    <link href="/css/animate.min.css" rel="stylesheet">
+    <link href="/css/style.min.css" rel="stylesheet">
+    <link href="/css/style-responsive.min.css" rel="stylesheet">
+    <link href="/css/default.css" rel="stylesheet" id="theme">
+    <script src="/js/socketconnect.js"></script>
+
+    <!-- ================== END BASE CSS STYLE ================== -->
+
+    <!-- ================== BEGIN PAGE LEVEL STYLE ================== -->
+    <link href="/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="/css/fixedColumns.bootstrap.min.css" rel="stylesheet">
+    <!-- ================== END PAGE LEVEL STYLE ================== -->
+
+    <!-- ================== BEGIN BASE JS ================== -->
+    <script src="/js/pace.min.js"></script>
+    <style>
+        table, th, td {
+            border: 1px solid #cccccc;
+            border-collapse: collapse;
+            text-align: center;
+        }
+        ::-webkit-scrollbar {
+            height: 4px;
+            width: 2px;
+        }
+        /* Track */
+        ::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 2px #ffffff;
+            border-radius: 2px;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: #181a54;
+            border-radius: 2px;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #181a54;
+        }
+        .removeKey{
+            background-color: white;color:#0d185f;font-weight:bold;border-radius: 15px;height:10px;padding: 0 5px
+        }
+        .cur{
+
+        }
+        .cur:hover{
+            cursor: pointer;
+        }
+        .removeKey:hover{
+            background-color: red;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<!-- begin #page-loader -->
+<div id="page-loader" class="fade show"><span class="spinner"></span></div>
+
+<div id="frame" class="animated bounce">
+    <div class="col-12 ">
+        <!-- begin panel -->
+        <div class="panel panel-inverse">
+            <!-- begin panel-heading -->
+            <div class="panel-heading ui-sortable-handle" style="background-color: #2c3e50">
+                <span class="panel-title" ><a href="/"><i class="fa fa-home"></i> Quay lại</a><span style="float: right;margin-top: -20px;margin-right: 600px;">Trả lời tin nhắn tự động</span></span>
+            </div>
+
+
+
+            <div class="panel-body">
+                <div class="row d-flex justify-content-center">
+                    <span v-show="mobile"  style="margin-bottom: 10px">Từ khóa:</span>
+
+                    <div  class="form-control col-md-5" style="height: 100px">
+
+                        <div style="overflow-x: scroll;height: 60px;">
+                        <span v-for="data in content.keyList" style="margin-right:5px;margin-top:5px"  class="label label-inverse">{{data}} <span class="removeKey" @click="removeKey(data)">x</span></span>
+                        </div>
+
+
+                        <span style="position: absolute;bottom: 0;right: 0;color:black"> Key: <input v-model="keyword" placeholder="Enter key ..." @keyup.13 = "addKey" spellcheck="false" type="text" style="text-align:center;border-right-style: none;border-bottom-style: none;border-top: 1px dotted black;border-left: 1px dotted black;"></span>
+
+                    </div>
+
+                    <i class="fa fa-arrows-alt-h" v-show="pc" style="margin-top:30px;margin-bottom: 30px" ></i>
+
+                    <span v-show="mobile"  style="margin-top:20px;margin-bottom: 10px">Nội dung:</span>
+
+                    <textarea spellcheck="false" v-model="content.message" rows="5"  class="form-control col-md-5" cols="60" type="text"  placeholder="Nội dung tin nhắn"></textarea>
+                    <br>
+
+
+
+                </div>
+<center>
+    <div class="row d-flex justify-content-center">
+                    <div class="col-md-5" style="margin-right: 40px;">
+                        <br>
+                      <code style="float: left;background-color: #2c3e50;color:white">  Chọn những nick khi có tin nhắn đến sẽ nhận được nội dung tin nhắn tự động:</code>
+                        <br><br>
+                    <table style="width: 100%" >
+                        <thead >
+
+                            <th >ID</th>
+                            <th>Họ và Tên</th>
+                            <th></th>
+                        </thead>
+                        <tbody >
+                        <tr v-for="(data,index) in account" :key="index">
+
+                            <td>{{data.ID_sender}}</td>
+                            <td><a style="color:#171948" target="_blank" :href="data.FacebookUrl">{{data.FacebookName}}</a></td>
+                            <td><input type="checkbox" :value="data.ID_sender" v-model="content.select"></td>
+                        </tr>
+
+
+
+                        </tbody>
+                    </table>
+                    </div>
+   <div class="dataTables_wrapper form-inline dt-bootstrap no-footer col-md-5">
+       <button v-show="addDisplay" @click="addContent" class="btn btn-default" style="margin-top:60px;background-color: #171948;color:white">Add</button>
+       <button v-show="updateDisplay" @click="updateContent" class="btn btn-default" style="margin-top:60px;background-color: #171948;color:white">Update</button>
+
+
+
+   </div>
+    </div>
+</center>
+                <center>
+                <div class="col-md-10" style="margin-right: 63px;margin-top:30px">
+                    <table style="width: 100%" >
+                        <thead >
+                        <th>STT</th>
+                        <th >Từ khóa</th>
+                        <th>Nội dung</th>
+                        <th>Nick áp dụng</th>
+                        <th></th>
+                        <th></th>
+                        </thead>
+                        <tbody >
+                        <tr  v-for="(data,index) in contentArr" :key="index">
+                            <td >{{index+1}}</td>
+                            <td>
+                                <span v-for="data1 in data.keyList" style="margin-right:5px" class="label label-inverse">{{data1}}</span>
+
+                            </td>
+                            <td>{{data.message}}</td>
+                            <td><span v-for="data2 in data.select">{{findName(data2)}},</span></td>
+                            <td><i @click="editContent(data)" class="cur fa fa-edit text-danger"></i></td>
+                            <td><i @click="removeContent(data)" class="cur fa fa-trash text-primary"></i></td>
+                        </tr>
+
+
+
+                        </tbody>
+                    </table>
+                </div>
+                </center>
+
+
+            </div>
+
+
+        <!-- end panel -->
+    </div>
+
+    <div class="row">
+
+    </div>
+    </div>
+
+
+
+
+    <!-- end scroll to top btn -->
+</div>
+
+<!-- end page container -->
+<!-- ================== BEGIN BASE JS ================== -->
+<script src="/js/jquery-3.3.1.min.js"></script>
+<script src="/js/jquery-ui.min.js"></script>
+<script src="/js/bootstrap.bundle.min.js"></script>
+
+<script src="/js/jquery.slimscroll.min.js"></script>
+<script src="/js/js.cookie.js"></script>
+<script src="/js/apple.min.js"></script>
+<script src="/js/apps.min.js"></script>
+
+<script src="/js/jquery.dataTables.js"></script>
+<script src="/js/dataTables.bootstrap.min.js"></script>
+<script src="/js/dataTables.fixedColumns.min.js"></script>
+<script src="/js/table-manage-fixed-columns.demo.min.js"></script>
+<!-- ================== END PAGE LEVEL JS ================== -->
+
+<script>
+    $(document).ready(function() {
+        App.init();
+
+    });
+</script>
+
+<script>
+
+    function setCookie(cname,cvalue,exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        var expires = "expires=" + d.toGMTString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for(var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+
+
+    var app = new Vue({
+        el: '#frame',
+        data(){
+            return {
+                updateDisplay:false,
+                addDisplay:true,
+                keyword:'',
+                name:'testing',
+                account:[],
+                content:{
+                    keyList:[],
+                    message:'',
+                    select:[]
+                },
+                contentArr:[],
+                pc:true,
+                mobile:false,
+                findName:(id)=>{
+                    return this.account.filter(e=>{
+                        if(e.ID_sender === id){
+                            return e
+                        }
+                    })[0].FacebookName
+                }
+            }
+        },
+
+        created: async  function(){
+            let width = window.innerWidth;
+
+            if(width <= 768){
+
+                this.pc = false;
+                this.mobile = true;
+            }else {
+                this.pc = true;
+                this.mobile = false;
+            }
+
+            let result = await axios.post('/api/getAutoChat');
+            this.contentArr = result.data.chatBotKey;
+            return this.account = result.data.AllAccount
+        },
+        computed: {
+
+            filteredList() {
+                let _ = this;
+                return this.listFriend.filter(e=>{
+                    return e.fullName.toLowerCase().includes(_.search.toLowerCase())
+                })
+
+            },
+
+
+
+        },
+        beforeMount:function(){
+
+
+        },
+        mounted:function(){
+
+
+        },
+        methods:{
+            addKey:function () {
+                 this.content.keyList.push(this.keyword);
+                 this.keyword = '';
+
+            },
+            format:function(){
+                this.keyword = '';
+            },
+            removeKey:function(data){
+                this.content.keyList = this.content.keyList.filter(e=>{
+                    if(e !== data){
+                        return e
+                    }
+                })
+                return this.content
+            },
+            addContent:async function () {
+               this.contentArr.push(this.content);
+               let sendContent = await axios.post('/api/addAutoChat',this.content);
+               return location.reload();
+            },
+            editContent:function(data){
+                this.updateDisplay = true;
+                this.addDisplay = false;
+                this.content = data
+            },
+            removeContent:async function(data){
+                let sendKeyDelete = await axios.post('/api/deleteAutoChat',{KeySecure:data.KeySecure});
+                return location.reload();
+
+            },
+            updateContent:async function(){
+                let sendContent = await axios.post('/api/updateAutoChat',this.content);
+                return location.reload();
+            }
+
+        },
+    })
+
+</script>
+</body>
+</html>
