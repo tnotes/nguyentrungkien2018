@@ -177,7 +177,7 @@ route.post('/hen-gio',async (req,res)=>{
             }else {
                 aid = req.body.data.aid;
             }
-
+            await AutoChatDELETE(req.cookies.email);
             let alarm = await AlarmINSERT(req.cookies.email,req.body.data,false,aid)
             res.send(alarm)
 

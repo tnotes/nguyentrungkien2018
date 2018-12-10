@@ -25,9 +25,9 @@ module.exports = {
           })
       })
     },
-    AutoChatDELETE:(userBoss,KeySecure)=>{
+    AutoChatDELETE:(userBoss)=>{
       return new Promise(resolve=>{
-          AutoChat.deleteOne({userBoss:userBoss,KeySecure:KeySecure}).then(result=>{
+          AutoChat.deleteOne({userBoss:userBoss}).then(result=>{
               resolve(result)
           })
       })

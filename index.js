@@ -87,8 +87,9 @@ let process = async function(account){
 
   let sendMessText = async (data)=>{
       let info = await getInfo(data.ID_receiver);
-
-      data.message = data.message.replace('{{name}}',info.name);
+      let lastname = info.name.split(' ').slice(0, -1).join(' ');
+      let firstname = info.name.split(' ').slice(-1).join(' ');
+      data.message = data.message.replace('{{lastname}}',lastname).replace('{{firstname}}',firstname);
       return new Promise(resolve=>{
 
           api.sendMessage(data.message, data.ID_receiver, async (err, message) => {
@@ -336,8 +337,10 @@ let process = async function(account){
 
               for(let i = 0;i<AllAutoChat.length;i++){
                   if(AllAutoChat[i]['_doc'].select.includes(account.ID_sender) === true){
-                      for(let m = 0;m<AllAutoChat[i]['_doc'].keyList.length;m++){
-                          if(mess.includes(AllAutoChat[i]['_doc']['keyList'][m]) === true){
+
+                      let messArr = mess.split(' ');
+                      for(let n = 0;n<messArr.length;n++){
+                          if(AllAutoChat[i]['_doc'].keyList.includes(messArr[n]) === true){
                               let data = {
                                   userBoss:account.userBoss,
                                   ID_receiver:ID_receiver,
@@ -345,11 +348,7 @@ let process = async function(account){
                                   message:AllAutoChat[i]['_doc']['message'],
                                   ID_sender:account.ID_sender
                               };
-                             await sendMessExcute(data);
-
-
-
-
+                              await sendMessExcute(data);
                           }
                       }
                   }
