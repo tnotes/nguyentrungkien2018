@@ -338,17 +338,39 @@ let process = async function(account){
               for(let i = 0;i<AllAutoChat.length;i++){
                   if(AllAutoChat[i]['_doc'].select.includes(account.ID_sender) === true){
 
+
                       let messArr = mess.split(' ');
+                      let runLoop = true;
                       for(let n = 0;n<messArr.length;n++){
-                          if(AllAutoChat[i]['_doc'].keyList.includes(messArr[n]) === true){
-                              let data = {
-                                  userBoss:account.userBoss,
-                                  ID_receiver:ID_receiver,
-                                  type:'text',
-                                  message:AllAutoChat[i]['_doc']['message'],
-                                  ID_sender:account.ID_sender
-                              };
-                              await sendMessExcute(data);
+
+                          if(runLoop === true){
+
+                              for(let z = 0;z<AllAutoChat[i]['_doc'].keyList.length;z++){
+                                  if(AllAutoChat[i]['_doc'].keyList[z].trim().split(' ').length > 1 && mess.includes(AllAutoChat[i]['_doc'].keyList[z].trim()) === true){
+                                      let data = {
+                                          userBoss:account.userBoss,
+                                          ID_receiver:ID_receiver,
+                                          type:'text',
+                                          message:AllAutoChat[i]['_doc']['message'],
+                                          ID_sender:account.ID_sender
+                                      };
+                                      await sendMessExcute(data);
+                                      runLoop = false;
+                                      break;
+
+                                  }else if(AllAutoChat[i]['_doc'].keyList[z].trim().split(' ').length === 1 && messArr[n] === AllAutoChat[i]['_doc'].keyList[z].trim()){
+                                      let data = {
+                                          userBoss:account.userBoss,
+                                          ID_receiver:ID_receiver,
+                                          type:'text',
+                                          message:AllAutoChat[i]['_doc']['message'],
+                                          ID_sender:account.ID_sender
+                                      };
+                                      await sendMessExcute(data);
+                                      runLoop = false;
+                                      break;
+                                  }
+                              }
                           }
                       }
                   }

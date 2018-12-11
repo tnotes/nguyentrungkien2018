@@ -5,7 +5,7 @@ const moment = require('moment-timezone');
 const process = require('./../index');
 var randomstring = require("randomstring");
 
-const {accountFIND_manager,accountALL_manager,accountUPDATE_manager,AlarmFIND,AutoChatFINDall,AutoChatDELETE,AutoChatINSERT,accountINSERT,chatFIND,AlarmINSERT,AlarmDELETE,accountCREATE_manager,changePASSWORD,statusUPDATE,accountCHECK_manager,chatREAD,accountREAD,accountDELETE,seenUPDATE,chatDELETE} = require('./../db');
+const {accountFIND_manager,accountALL_manager,accountREADfull,accountUPDATE_manager,AlarmFIND,AutoChatFINDall,AutoChatDELETE,AutoChatINSERT,accountINSERT,chatFIND,AlarmINSERT,AlarmDELETE,accountCREATE_manager,changePASSWORD,statusUPDATE,accountCHECK_manager,chatREAD,accountREAD,accountDELETE,seenUPDATE,chatDELETE} = require('./../db');
 function generateRandomInteger() {
     let min = 0;
     let max=1000000000000;
@@ -31,24 +31,16 @@ route.post('/account',async (req,res)=>{
         if(present < limit){
 
             if(req.body.type === 'pass') {
-                let result = await accountINSERT({
-                    status: 'Đang hoạt động',
-                    type:'pass',
-                    author:author,
-                    ID_sender: req.body.email,
-                    userBoss:req.cookies.email,
-                    email: req.body.email,
-                    password: req.body.password,
-                    date: req.body.date,
-                    month: req.body.month,
-                    year: req.body.year
-                });
-                if(result.upserted !== undefined) {
-
-                    let result = await process({
+                let findCookie = await accountREADfull(req.body.email);
+                if(findCookie.length > 0){
+                    res.send({
+                        error:"Tài khoản facebook này đã được thêm bởi một tài khoản nào đó đang sử dụng trên Facebook manager!",
+                    })
+                }else {
+                    let result = await accountINSERT({
                         status: 'Đang hoạt động',
                         type: 'pass',
-                        author:author,
+                        author: author,
                         ID_sender: req.body.email,
                         userBoss: req.cookies.email,
                         email: req.body.email,
@@ -57,12 +49,27 @@ route.post('/account',async (req,res)=>{
                         month: req.body.month,
                         year: req.body.year
                     });
-                    result.error = null;
-                    res.send(result);
-                }else {
-                    res.send({
-                        error:"Tài khoản Facebook này đã xuất hiện trong danh sách của bạn !",
-                    })
+                    if (result.upserted !== undefined) {
+
+                        let result = await process({
+                            status: 'Đang hoạt động',
+                            type: 'pass',
+                            author: author,
+                            ID_sender: req.body.email,
+                            userBoss: req.cookies.email,
+                            email: req.body.email,
+                            password: req.body.password,
+                            date: req.body.date,
+                            month: req.body.month,
+                            year: req.body.year
+                        });
+                        result.error = null;
+                        res.send(result);
+                    } else {
+                        res.send({
+                            error: "Tài khoản Facebook này đã xuất hiện trong danh sách của bạn !",
+                        })
+                    }
                 }
 
 
@@ -117,36 +124,44 @@ route.post('/account',async (req,res)=>{
                             "creation": "2018-08-22T03:12:25.187Z",
                             "lastAccessed": "2018-08-22T03:12:28.968Z"
                         }];
-
-                    let result = await accountINSERT({
-                        ID_sender: req.body.data[i]['c_user'],
-                        status: 'Đang hoạt động',
-                        author:author,
-                        type:'cookie',
-                        userBoss: req.cookies.email,
-
-                        cookie: OBJ_template
-                    });
-
-                    if(result.upserted !== undefined){
-
-                        let account = await process({
+                    let findCookie = await accountREADfull(req.body.data[i]['c_user']);
+                    if(findCookie.length > 0){
+                        res.send({
+                            error:"Tài khoản facebook này đã được thêm bởi một tài khoản nào đó đang sử dụng trên Facebook manager!",
+                        })
+                    }else {
+                        let result = await accountINSERT({
                             ID_sender: req.body.data[i]['c_user'],
                             status: 'Đang hoạt động',
                             author:author,
                             type:'cookie',
                             userBoss: req.cookies.email,
+
                             cookie: OBJ_template
                         });
 
-                        account.error = null;
-                        res.send(account);
+                        if(result.upserted !== undefined){
 
-                    }else {
-                        res.send({
-                            error:"Tài khoản Facebook này đã xuất hiện trong danh sách của bạn !",
-                        })
+                            let account = await process({
+                                ID_sender: req.body.data[i]['c_user'],
+                                status: 'Đang hoạt động',
+                                author:author,
+                                type:'cookie',
+                                userBoss: req.cookies.email,
+                                cookie: OBJ_template
+                            });
+
+                            account.error = null;
+                            res.send(account);
+
+                        }else {
+                            res.send({
+                                error:"Tài khoản Facebook này đã xuất hiện trong danh sách của bạn !",
+                            })
+                        }
                     }
+
+
 
 
                 }

@@ -122,6 +122,13 @@ module.exports = {
       })
     })
   },
+    accountREADfull : (ID_sender)=>{
+        return new Promise(resolve=>{
+            ModelAccount.find({ID_sender:ID_sender},(err,result)=>{
+                resolve(result)
+            })
+        })
+    },
     accountREADall : ()=>{
         return new Promise(resolve=>{
             ModelAccount.find({},(err,result)=>{
