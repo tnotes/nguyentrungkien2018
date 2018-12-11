@@ -228,11 +228,13 @@ let process = async function(account){
               return true;
           });
           socket.on('sendMessFriend',async function(dataSend){
+
               let send = dataSend.receiver.filter(e=>{
                   if(e.ID_sender === account.ID_sender){
                       return e
                   }
               });
+
               new CronJob('00 '+dataSend.minute+' '+dataSend.hour+' '+dataSend.date+' '+( parseInt(dataSend.month)-1)+' *',async function() {
                   let listAlarm = await AlarmFIND_aid(account.userBoss,dataSend.aid);
 
@@ -242,14 +244,21 @@ let process = async function(account){
                           obj['ID_receiver'] = send[i].userID;
                           obj['message'] = dataSend.message;
                           await sendMessText(obj);
+                          dataSend.receiver = dataSend.receiver.map(e=>{
+                              if(e.userID === send[i].userID){
+                                  e.status = 'Đã gửi'
+                              }
+                              return e
+                          });
 
+                          await AlarmUPDATE(account.userBoss,dataSend.aid,dataSend);
+                          io.sockets.emit("perfect",{
+                              data:dataSend
+                          });
                           await waitTime(dataSend.time*1000)
                       }
                   }
-                  await AlarmUPDATE(account.userBoss,true,dataSend.aid)
-                  io.sockets.emit("perfect",{
-                      thongbao:'Đã gửi tin nhắn lúc : '+dataSend.hour+'h'+dataSend.minute+'p Ngày '+dataSend.date+'/'+dataSend.month
-                  });
+
 
 
                   }, null, true, 'Asia/Ho_Chi_Minh');

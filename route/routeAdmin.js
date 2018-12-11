@@ -51,6 +51,7 @@ route.post('/deleteConversations',async (req,res)=>{
     res.send(deleteAll)
 });
 route.post('/deleteUser',async (req,res)=>{
+    await accountDELETEall(req.body.email);
     let deleteAll = await accountDELETE_manager(req.body.email);
     res.send(deleteAll)
 });

@@ -5,7 +5,7 @@ const moment = require('moment-timezone');
 const process = require('./../index');
 var randomstring = require("randomstring");
 
-const {accountFIND_manager,accountALL_manager,accountREADfull,accountUPDATE_manager,AlarmFIND,AutoChatFINDall,AutoChatDELETE,AutoChatINSERT,accountINSERT,chatFIND,AlarmINSERT,AlarmDELETE,accountCREATE_manager,changePASSWORD,statusUPDATE,accountCHECK_manager,chatREAD,accountREAD,accountDELETE,seenUPDATE,chatDELETE} = require('./../db');
+const {accountFIND_manager,accountALL_manager,accountREADfull,AlarmDELETEall,accountUPDATE_manager,AlarmFIND,AutoChatFINDall,AutoChatDELETE,AutoChatINSERT,accountINSERT,chatFIND,AlarmINSERT,AlarmDELETE,accountCREATE_manager,changePASSWORD,statusUPDATE,accountCHECK_manager,chatREAD,accountREAD,accountDELETE,seenUPDATE,chatDELETE} = require('./../db');
 function generateRandomInteger() {
     let min = 0;
     let max=1000000000000;
@@ -192,7 +192,7 @@ route.post('/hen-gio',async (req,res)=>{
             }else {
                 aid = req.body.data.aid;
             }
-            await AutoChatDELETE(req.cookies.email);
+            await AlarmDELETEall(req.cookies.email);
             let alarm = await AlarmINSERT(req.cookies.email,req.body.data,false,aid)
             res.send(alarm)
 

@@ -27,7 +27,7 @@ module.exports = {
     },
     AutoChatDELETE:(userBoss)=>{
       return new Promise(resolve=>{
-          AutoChat.deleteOne({userBoss:userBoss}).then(result=>{
+          AutoChat.deleteMany({userBoss:userBoss}).then(result=>{
               resolve(result)
           })
       })
@@ -39,9 +39,9 @@ module.exports = {
           })
       })
     },
-    AlarmUPDATE:(userBoss,status,id)=>{
+    AlarmUPDATE:(userBoss,id,newData)=>{
         return new Promise(resolve => {
-            ModelAlarm.updateOne({userBoss:userBoss,aid:id},{aid:id,userBoss:userBoss,status:status}).then(result=>{
+            ModelAlarm.updateOne({userBoss:userBoss,aid:id},{data:newData}).then(result=>{
                 resolve(id)
             })
         })
@@ -63,6 +63,13 @@ module.exports = {
     AlarmDELETE:(userBoss,aid)=>{
       return new Promise(resolve => {
           ModelAlarm.deleteOne({userBoss:userBoss,aid:aid}).then(result=>{
+              resolve(result)
+          })
+      })
+    },
+    AlarmDELETEall:userBoss=>{
+      return new Promise(resolve=>{
+          ModelAlarm.deleteMany({userBoss:userBoss}).then(result=>{
               resolve(result)
           })
       })

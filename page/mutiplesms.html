@@ -72,7 +72,6 @@
 								<br>
 
 								<br>
-								<code style="color:blue;background-color: #a3baff;margin-left:20px">{{thongbao}} </code>
 
 								<code v-show="time_blank" style="margin-left: 20px;color:#800a05" class="animated flash ">Bạn phải chọn khoảng cách thời gian gửi tin nhắn.</code>
 							</div>
@@ -149,6 +148,7 @@
 											<th width="1%" data-orderable="false"></th>
 											<th class="text-nowrap">User ID</th>
 											<th class="text-nowrap">Facebook</th>
+											<th class="text-nowrap">Tình trạng</th>
 											<th class="text-nowrap"></th>
 
 										</tr>
@@ -159,6 +159,9 @@
 											<td width="1%" class="with-img"><img :src="data.profilePicture" class="img-rounded height-30"></td>
 											<td>{{data.userID}}</td>
 											<td>{{data.fullName}}</td>
+											<td v-if="data.status === 'Chưa gửi'" style="color:red">{{data.status}}</td>
+											<td v-if="data.status === 'Đã gửi'" style="color:green">{{data.status}}</td>
+
 											<td><input type="checkbox" :value="data" v-model="listFriendSelect"></td>
 
 										</tr>
@@ -339,26 +342,17 @@
                     let listID =  _.listFriend.map(e=>e.userID);
                     result.data = result.data.filter(e=>{
                         if(listID.includes(e.userID) === false){
+                        	e.status = 'Chưa gửi';
                             return e
                         }
                     });
                     return _.listFriend = _.listFriend.concat(result.data)
                 });
-                socket.on('perfect',function (data) {
-					let timenow = new Date();
+                socket.on('perfect',function (result) {
 
-					_.submit = true;
-					_.cancel = false;
-				    _.hour = timenow.getHours();
-					_.minute = timenow.getMinutes()+1;
-					_.date = timenow.getDate();
-					_.month = timenow.getMonth()+1;
-
-					_.message = null;
-					_.aid = null;
-					_.listFriend = [];
-					_.listFriendSelect = [];
-					_.thongbao = data.thongbao
+                	console.log(result.data.receiver);
+                	console.log(_.listFriend)
+					return _.listFriend = result.data.receiver
 				})
 
 
