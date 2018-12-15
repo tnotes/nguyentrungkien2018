@@ -321,7 +321,7 @@ let process = async function(account){
 
 
     if(api !== null){
-        await statusUPDATE(account.ID_sender,account.userBoss,'Đang hoạt động');
+        await statusUPDATE(account.ID_sender,account.userBoss,'active');
       io.on('connection',async socket=>{
 
           socket.on('sendMessage',async function(data,fn){
@@ -455,7 +455,7 @@ let process = async function(account){
                   name: info.name,
                   image: info.thumbSrc,
                   facebook: info.profileUrl,
-                  status: 'Đang hoạt động',
+                  status: 'active',
                   seen:false,
                   chat: [messageCONTENT]
 

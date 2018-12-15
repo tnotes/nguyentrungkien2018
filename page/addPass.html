@@ -153,7 +153,7 @@
                         <td><a :href="data.FacebookUrl">{{data.FacebookName}}</a></td>
 
                         <td class="text-center">{{data.date+'/'+data.month+'/'+data.year}}</td>
-                        <td v-if="data.status === 'Đang hoạt động'"><i class="fa fa-check-square" style="color:green"></i> <span style="color:green">{{data.status}}</span></td>
+                        <td v-if="data.status === 'active'"><i class="fa fa-check-square" style="color:green"></i> <span style="color:green">{{data.status}}</span></td>
                         <td v-if="data.status === 'Thông tin Tài khoản mật khẩu không chính xác hoặc đã bị checkpoint'"><i class="fa fa-check-square" style="color:#800a05"></i> <span class="animated infinite flash" style="color:#800d0b">{{data.status}}</span></td>
 
                         <td><center><i @click="remove(data.username)" class="fa fa-trash-alt trashremove" style="color:red"></i></center> </td>

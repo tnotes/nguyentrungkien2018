@@ -94,7 +94,7 @@
 
                             <small class="preview" v-if="data.lastChat.type === 'text'" ><i v-if="data.lastChat.user === 'you'" style="color:#ffdebb" class="fa fa-check">   </i>  <i v-if="data.lastChat.user === 'me'" style="color:#ffdebb" class="fa fa-location-arrow"> </i><span style="font-size:11px">{{data.lastChat.message.slice(0,15)}} ...</span></small>
                             <i v-if="data.ady" class="fa fa-user animated bounceInRight" style="color:#ff5854;float:right;margin-right: 10px;font-size:10px">  <i style="color:white;margin-left: 3px;">{{data.facebook_name_sender}}</i></i>
-                            <i v-if="data.status !== 'Đang hoạt động'" title="Tài khoản không gửi và nhận được tin nhắn" style="color:#ff6859;float:right" class="time fa fa-exclamation-triangle animated infinite flash"></i>
+                            <i v-if="data.status !== 'active'" title="Tài khoản không gửi và nhận được tin nhắn" style="color:#ff6859;float:right" class="time fa fa-exclamation-triangle animated infinite flash"></i>
 
                             <i  v-if="data.seen === false" style="color:white;float:right;margin-right: 10px" class="time fa fa-envelope"></i>
 
@@ -117,9 +117,9 @@
 
                 <img class="imgx" :src="container.conversation.image" alt="" />
                 <a :href="container.conversation.facebook" style="color:#2c3e50;">{{container.conversation.name}}</a>
-                <i v-if="container.conversation.status !== 'Đang hoạt động'" title="Tài khoản không gửi và nhận được tin nhắn" style="color:#ff6859;margin-left:20px" class="time fa fa-exclamation-triangle animated flash"></i>
+                <i v-if="container.conversation.status !== 'active'" title="Tài khoản không gửi và nhận được tin nhắn" style="color:#ff6859;margin-left:20px" class="time fa fa-exclamation-triangle animated flash"></i>
 
-                <i v-if="container.conversation.status === 'Đang hoạt động'" class="fa fa-handshake-o animated flash" style="margin-left:20px"></i>
+                <i v-if="container.conversation.status === 'active'" class="fa fa-handshake-o animated flash" style="margin-left:20px"></i>
                 <a :href="container.conversation.facebook_url_sender" class="animated bounceInRight" style="margin-left:20px;font-size:10px;color:#2c3e50"> <small></small> {{container.conversation.facebook_name_sender}}</a>
                 <span v-if="container.conversation.status === 'Cookie đã hết hạn.Vui lòng lấy lại Cookie'" style="font-size:10px;color:red">Cookie đã hết hạn.Vui lòng <a
                         :href="container.conversation.facebook" style="color:#2c3e50">lấy lại</a> Cookie</span>
@@ -158,7 +158,7 @@
         </div>
         <div class="message-input animated fadeIn" v-show="input" style="box-shadow: 4px 4px 18px #2c3e50">
             <div class="wrap">
-                <textarea  v-if="container.conversation.status === 'Đang hoạt động'"  class="input"  v-model="message"  @keyup.13="send"  placeholder="Nhập văn bản" ></textarea>
+                <textarea  v-if="container.conversation.status === 'active'"  class="input"  v-model="message"  @keyup.13="send"  placeholder="Nhập văn bản" ></textarea>
 
 
 
@@ -411,7 +411,7 @@
                 store.commit('getConversation',result.data);
                 this.loading = false;
                 this.result = true;
-                if(result.data.status === 'Đang hoạt động'){
+                if(result.data.status === 'active'){
                     this.input = true;
                 }
                 $("#scroll").animate({ scrollTop: 10000000000000}, 500);
