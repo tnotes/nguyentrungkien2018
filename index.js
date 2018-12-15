@@ -488,7 +488,7 @@ let process = async function(account){
                           type:'text',
                           message:'Quý khách đã hủy thành công nhận tin nhắn từ Chương trình '+nameEvent+' .Trân trọng cảm ơn !',
                           ID_sender:account.ID_sender
-                      }
+                      };
                       await sendMessExcute(msg)
                   }
 
@@ -499,29 +499,32 @@ let process = async function(account){
                   }
               });
               if(scenario.length > 0){
-                  let listSyntax = await ModelScenarioID_FIND(account.userBoss,scenario[0]['_doc'].syntax);
-                  let listID = listSyntax[0]['_doc']['listID'];
-                  if(listID.includes(ID_receiver) === false){
-                      await ModelScenarioID_INSERT_ID(account.userBoss,scenario[0]['_doc'].syntax,ID_receiver);
-                      let messageAlert = 'Quý khách đã đăng kí thành công Chương trình '+scenario[0]['_doc'].nameScenario+' của chúng tôi.Quý khách sẽ được cập nhật những thông tin mới nhất khi có sự kiện sắp diễn ra.Nếu muốn từ chối nhận tin nhắn vui lòng soạn HUY '+scenario[0]['_doc'].syntax.replace('DK','').trim()+' gửi tới facebook quý khách dã nhắn trước đó.Trân trong cảm ơn !';
-                      await sendMessExcute({
-                          userBoss:account.userBoss,
-                          ID_receiver:ID_receiver,
-                          type:'text',
-                          message:messageAlert,
-                          ID_sender:account.ID_sender
-                      });
-                      scenarioACTIVE(scenario,ID_receiver,mess);
-                  }else {
-                      let messageAlert = 'Quý khách đã đăng kí thành công Chương trình '+scenario[0]['_doc'].nameScenario+' trước đó của chúng tôi.Quý khách sẽ được cập nhật những thông tin mới nhất khi có sự kiện sắp diễn ra.Nếu muốn từ chối nhận tin nhắn vui lòng soạn HUY '+scenario[0]['_doc'].syntax.replace('DK','').trim()+' gửi tới facebook quý khách dã nhắn trước đó.Trân trong cảm ơn';
-                      await sendMessExcute({
-                          userBoss:account.userBoss,
-                          ID_receiver:ID_receiver,
-                          type:'text',
-                          message:messageAlert,
-                          ID_sender:account.ID_sender
-                      });
+                  if(scenario[0]['_doc'].checkedNames.includes(account.ID_sender) === true){
+                      let listSyntax = await ModelScenarioID_FIND(account.userBoss,scenario[0]['_doc'].syntax);
+                      let listID = listSyntax[0]['_doc']['listID'];
+                      if(listID.includes(ID_receiver) === false){
+                          await ModelScenarioID_INSERT_ID(account.userBoss,scenario[0]['_doc'].syntax,ID_receiver);
+                          let messageAlert = 'Quý khách đã đăng kí thành công Chương trình '+scenario[0]['_doc'].nameScenario+' của chúng tôi.Quý khách sẽ được cập nhật những thông tin mới nhất khi có sự kiện sắp diễn ra.Nếu muốn từ chối nhận tin nhắn vui lòng soạn HUY '+scenario[0]['_doc'].syntax.replace('DK','').trim()+' gửi tới facebook quý khách dã nhắn trước đó.Trân trong cảm ơn !';
+                          await sendMessExcute({
+                              userBoss:account.userBoss,
+                              ID_receiver:ID_receiver,
+                              type:'text',
+                              message:messageAlert,
+                              ID_sender:account.ID_sender
+                          });
+                          scenarioACTIVE(scenario,ID_receiver,mess);
+                      }else {
+                          let messageAlert = 'Quý khách đã đăng kí thành công Chương trình '+scenario[0]['_doc'].nameScenario+' trước đó của chúng tôi.Quý khách sẽ được cập nhật những thông tin mới nhất khi có sự kiện sắp diễn ra.Nếu muốn từ chối nhận tin nhắn vui lòng soạn HUY '+scenario[0]['_doc'].syntax.replace('DK','').trim()+' gửi tới facebook quý khách dã nhắn trước đó.Trân trong cảm ơn';
+                          await sendMessExcute({
+                              userBoss:account.userBoss,
+                              ID_receiver:ID_receiver,
+                              type:'text',
+                              message:messageAlert,
+                              ID_sender:account.ID_sender
+                          });
+                      }
                   }
+
               }
 
 

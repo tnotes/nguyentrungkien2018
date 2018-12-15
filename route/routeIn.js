@@ -61,7 +61,7 @@ route.post('/account',async (req,res)=>{
                     })
                 }else {
                     let result = await accountINSERT({
-                        status: 'Đang hoạt động',
+                        status: 'active',
                         type: 'pass',
                         author: author,
                         ID_sender: req.body.email,
@@ -75,7 +75,7 @@ route.post('/account',async (req,res)=>{
                     if (result.upserted !== undefined) {
 
                         let result = await process({
-                            status: 'Đang hoạt động',
+                            status: 'active',
                             type: 'pass',
                             author: author,
                             ID_sender: req.body.email,
@@ -155,7 +155,7 @@ route.post('/account',async (req,res)=>{
                     }else {
                         let result = await accountINSERT({
                             ID_sender: req.body.data[i]['c_user'],
-                            status: 'Đang hoạt động',
+                            status: 'active',
                             author:author,
                             type:'cookie',
                             userBoss: req.cookies.email,
@@ -167,7 +167,7 @@ route.post('/account',async (req,res)=>{
 
                             let account = await process({
                                 ID_sender: req.body.data[i]['c_user'],
-                                status: 'Đang hoạt động',
+                                status: 'active',
                                 author:author,
                                 type:'cookie',
                                 userBoss: req.cookies.email,

@@ -66,7 +66,7 @@ module.exports = {
     },
     ModelScenarioINSERT:(userBoss,data)=>{
       return new Promise(resolve=>{
-          ModelScenario.updateOne({userBoss:userBoss,syntax:data.syntax},{syntax:data.syntax,nameScenario:data.nameScenario,dataArr:data.dataArr},{upsert:true}).then(result=>{
+          ModelScenario.updateOne({userBoss:userBoss,syntax:data.syntax},{syntax:data.syntax,nameScenario:data.nameScenario,dataArr:data.dataArr,checkedNames:data.checkedNames},{upsert:true}).then(result=>{
               resolve(result)
           })
       })
