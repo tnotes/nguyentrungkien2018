@@ -88,24 +88,35 @@ let process = async function(account){
       }
   }
   function voca(e,vocative){
-      let vocativeArr = vocative[0]['_doc'].vocative;
-      let listVocative = vocativeArr.map(e=>e.userID);
-        if(listVocative.includes(e.userID) === true){
-            let vocativeName = vocativeArr.filter(em=>{
-                if(em.userID === e.userID){
-                    return em
-                }
-            })[0].vocative;
-            e.vocative = vocativeName
-        }else if(listVocative.includes(e.userID) === false){
-            e['ID_sender'] = account.ID_sender;
-            if(e.gender === 'female_singular'){
-                e.vocative = 'Chị';
-            }else if(e.gender === 'male_singular'){
-                e.vocative = 'Anh';
-            }
-        }
-        return e;
+      if(vocative.length > 0){
+          let vocativeArr = vocative[0]['_doc'].vocative;
+          let listVocative = vocativeArr.map(e=>e.userID);
+          if(listVocative.includes(e.userID) === true){
+              let vocativeName = vocativeArr.filter(em=>{
+                  if(em.userID === e.userID){
+                      return em
+                  }
+              })[0].vocative;
+              e.vocative = vocativeName
+          }else if(listVocative.includes(e.userID) === false){
+              e['ID_sender'] = account.ID_sender;
+              if(e.gender === 'female_singular'){
+                  e.vocative = 'Chị';
+              }else if(e.gender === 'male_singular'){
+                  e.vocative = 'Anh';
+              }
+          }
+
+      }else {
+          e['ID_sender'] = account.ID_sender;
+          if(e.gender === 'female_singular'){
+              e.vocative = 'Chị';
+          }else if(e.gender === 'male_singular'){
+              e.vocative = 'Anh';
+          }
+      }
+      return e;
+
     }
   let sendMessText = async (data)=>{
       let info = await getInfo(data.ID_receiver);
