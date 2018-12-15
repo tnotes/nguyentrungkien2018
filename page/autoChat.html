@@ -172,6 +172,7 @@
                             <td><span v-for="data2 in data.select">{{findName(data2)}},</span></td>
                             <td><i @click="editContent(data)" class="cur fa fa-edit text-danger"></i></td>
                             <td><i @click="removeContent(data)" class="cur fa fa-trash text-primary"></i></td>
+
                         </tr>
 
 
@@ -328,6 +329,7 @@
             },
             removeKey:function(data){
                 this.content.keyList = this.content.keyList.filter(e=>{
+
                     if(e !== data){
                         return e
                     }
@@ -358,6 +360,7 @@
                 this.content = data
             },
             removeContent:async function(data){
+
                 let sendKeyDelete = await axios.post('/api/deleteAutoChat',{KeySecure:data.KeySecure});
                 return location.reload();
 

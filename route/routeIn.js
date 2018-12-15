@@ -5,13 +5,36 @@ const moment = require('moment-timezone');
 const process = require('./../index');
 var randomstring = require("randomstring");
 
-const {accountFIND_manager,accountALL_manager,accountREADfull,AlarmDELETEall,accountUPDATE_manager,AlarmFIND,AutoChatFINDall,AutoChatDELETE,AutoChatINSERT,accountINSERT,chatFIND,AlarmINSERT,AlarmDELETE,accountCREATE_manager,changePASSWORD,statusUPDATE,accountCHECK_manager,chatREAD,accountREAD,accountDELETE,seenUPDATE,chatDELETE} = require('./../db');
+const {accountFIND_manager,accountALL_manager, ModelVocativeINSERT,ModelScenarioID_FIND,ModelScenarioID_DELETE,ModelScenarioID_INSERT,ModelScenarioDELETE,ModelScenarioALL,ModelScenarioINSERT,ModelScenarisCHECKsyntax,accountREADfull,AlarmDELETEall,accountUPDATE_manager,AlarmFIND,AutoChatFINDall,AutoChatDELETE,AutoChatINSERT,accountINSERT,chatFIND,AlarmINSERT,AlarmDELETE,accountCREATE_manager,changePASSWORD,statusUPDATE,accountCHECK_manager,chatREAD,accountREAD,accountDELETE,seenUPDATE,chatDELETE} = require('./../db');
 function generateRandomInteger() {
     let min = 0;
     let max=1000000000000;
     return Math.floor(min + Math.random()*(max+1 - min)).toString()
 }
-
+let getINDEX = async (email)=>{
+    let syntaxRandom = Math.floor(Math.random()*1000000);
+    let testSyntax = await ModelScenarisCHECKsyntax(email,'DK '+syntaxRandom);
+    if(testSyntax.length === 0){
+        return syntaxRandom
+    }else {
+        return await getINDEX(email)
+    }
+};
+function change_alias(alias) {
+    var str = alias;
+    str = str.toLowerCase();
+    str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a");
+    str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e");
+    str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i");
+    str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o");
+    str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u");
+    str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y");
+    str = str.replace(/đ/g,"d");
+    str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g," ");
+    str = str.replace(/ + /g," ");
+    str = str.trim();
+    return str;
+}
 
 route.post('/changePassword',async (req,res)=>{
 
@@ -204,6 +227,7 @@ route.post('/xoa-hen-gio',async (req,res)=>{
             res.send(alarmDELETE)
 
 });
+
 route.post('/getAllAccount',async (req,res)=>{
         let result = await accountREAD(req.cookies.email);
         res.send({error:null,data:result});
@@ -241,20 +265,48 @@ route.post('/addAutoChat',async (req,res)=>{
     res.send(AddAutoChat)
 });
 route.post('/deleteAutoChat',async (req,res)=>{
+
    let DeleteAutoChat = await AutoChatDELETE(req.cookies.email,req.body.KeySecure);
    res.send(DeleteAutoChat);
 });
 route.post('/updateAutoChat',async (req,res)=>{
     let UpdateAutoChat = await AutoChatINSERT(req.cookies.email,req.body.KeySecure,req.body.keyList,req.body.message,req.body.select);
     res.send(UpdateAutoChat);
-})
+});
 route.post('/removeChat',async (req,res)=>{
 
         await chatDELETE(req.body.id,req.cookies.email);
         res.send(true)
 
 });
+route.post('/getAllScenario',async (req,res)=>{
+    let alldata = await ModelScenarioALL(req.cookies.email);
+    res.send(alldata)
+});
+route.post('/setScenario',async (req,res)=>{
 
+   let scenarioINSERT = await ModelScenarioINSERT(req.cookies.email,req.body.data);
+   let ID_syntax = await ModelScenarioID_FIND(req.cookies.email,req.body.data.syntax);
+   if(ID_syntax.length === 0){
+       await ModelScenarioID_INSERT(req.cookies.email,req.body.data.syntax)
+   }
+   res.send(scenarioINSERT)
+});
+route.post('/vocative',async (req,res)=>{
+   let vocativeUp = await ModelVocativeINSERT(req.cookies.email,req.body.vocative);
+   res.send(vocativeUp)
+});
+
+route.post('/getSyntax',async (req,res)=>{
+
+    let syntax = await getINDEX(req.cookies.email);
+    res.send('DK '+syntax);
+});
+route.post('/removeScenario',async (req,res)=>{
+    let remove = await ModelScenarioDELETE(req.cookies.email,req.body.syntax);
+    await ModelScenarioID_DELETE(req.cookies.email,req.body.syntax)
+    res.send(remove)
+});
 route.post('/uploadIMAGE',async (req,res)=>{
 
         if (!req.files) return res.status(400).send('No files were uploaded.');
@@ -284,6 +336,10 @@ route.get('/account',async (req,res)=>{
 route.get('/autoChat',async (req,res)=>{
 
     res.sendFile(path.join(__dirname + '/../page/autoChat.html'));
+
+});
+route.get('/scenario',async (req,res)=>{
+    res.sendFile(path.join(__dirname + '/../page/scenario.html'));
 
 });
 route.post('/infoUser',async (req,res)=>{

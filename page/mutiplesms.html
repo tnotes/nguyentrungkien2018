@@ -128,9 +128,13 @@
 
 			<div class="panel panel-inverse col-md-8" >
 				<br>
+
 				<code style="margin-left:20px;background-color: #e4e7e8;color:blue">Xuất hiện {{listFriend.length}} bạn bè</code>
 				<button style="float: right;margin-right: 20px"  class="btn btn-sm btn-default" @click="selectAll">Chọn tất cả</button>
+
 				Tìm kiếm: <input v-model="search" type="text" style="float: right;width: 150px;margin-right: 20px;height:27px;" class="form-control">
+				<button style="float: right;margin-right: 20px" v-show="vocativeDefaultShow" class="btn btn-sm btn-default" @click="vocativeShow">Thay đổi xưng hô</button>
+				<button style="float: right;margin-right: 20px" v-show="vocativeChangeShow"  class="btn btn-sm btn-primary" @click="vocationSubmit">Lưu xưng hô</button>
 
 				<br><br>
 				<code v-show="receiver_blank" class="animated infinite flash" style="float: right;margin-right: 20px;color:red">Bạn phải chọn ít nhất 1 người dể gửi.</code>
@@ -148,6 +152,7 @@
 											<th width="1%" data-orderable="false"></th>
 											<th class="text-nowrap">User ID</th>
 											<th class="text-nowrap">Facebook</th>
+											<th class="text-nowrap">Xưng hô</th>
 											<th class="text-nowrap">Tình trạng</th>
 											<th class="text-nowrap"></th>
 
@@ -159,6 +164,7 @@
 											<td width="1%" class="with-img"><img :src="data.profilePicture" class="img-rounded height-30"></td>
 											<td>{{data.userID}}</td>
 											<td>{{data.fullName}}</td>
+											<td style="text-align: center"><input type="text" spellcheck="false" v-show="dataVocative" style="width: 100px;text-align: center" v-model="data.vocative"><span v-show="dataVocativeText">{{data.vocative}}</span></td>
 											<td v-if="data.status === 'Chưa gửi'" style="color:red">{{data.status}}</td>
 											<td v-if="data.status === 'Đã gửi'" style="color:green">{{data.status}}</td>
 
@@ -261,10 +267,15 @@
                     connect:true,
 					submit:true,
 					cancel:false,
+					dataVocative:false,
+					dataVocativeText:true,
 					search:'',
                     time_blank:false,
                     receiver_blank:false,
-					thongbao:''
+					thongbao:'',
+					vocativeDefaultShow:true,
+					vocativeChangeShow:false,
+
 
                 }
             },
@@ -437,6 +448,21 @@
                      this.cancel = false;
                      this.submit = true;
 
+				},
+				vocativeShow:async function(){
+                	this.vocativeDefaultShow = false;
+					this.vocativeChangeShow = true;
+					this.dataVocativeText = false;
+					this.dataVocative = true;
+				},
+				vocationSubmit:async function(){
+                	let vocaArrr = this.filteredList.filter(e=>{
+                		if(e.vocative !== 'Anh' && e.vocative !== 'Chị'){
+                			return e
+						}
+					});
+					let vocativeSave = await axios.post('/api/vocative',{vocative:vocaArrr});
+					console.log(vocativeSave.data)
 				}
 
 

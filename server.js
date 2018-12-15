@@ -11,8 +11,9 @@ const config = require('./config.js');
 const moment = require('moment-timezone');
 
 const {accountCHECK_manager} = require('./db');
-app.use(bodyParser.urlencoded({extended:false}));
-app.use(bodyParser.json());
+
+app.use(bodyParser.urlencoded({extended:false,limit: '500mb'}));
+app.use(bodyParser.json({limit: '500mb'}));
 app.use(fileUpload());
 app.use(cors());
 app.use(cookieParser());

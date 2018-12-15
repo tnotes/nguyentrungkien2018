@@ -8,8 +8,90 @@ const ModelChat = mongoose.model('conversation',SchemaChat);
 const ModelAccount = mongoose.model('account',SchemaChat);
 const ModelAccountManager = mongoose.model('accountManager',SchemaChat);
 const ModelAlarm = mongoose.model('alarm',SchemaChat);
+const ModelScenario = mongoose.model('scenario',SchemaChat);
+const ModelScenarioID = mongoose.model('scenarioID',SchemaChat);
+const ModelVocative = mongoose.model('vocative',SchemaChat);
 const AutoChat = mongoose.model('autoChat',SchemaChat);
+
 module.exports = {
+    ModelVocativeINSERT:(userBoss,vocative)=>{
+      return new Promise(resolve=>{
+          ModelVocative.updateMany({userBoss:userBoss},{userBoss:userBoss,vocative:vocative},{upsert:true},(err,result)=>{
+              resolve(result)
+          })
+      })
+    },
+    ModelVocativeFIND:userBoss=>{
+      return new Promise(resolve=>{
+          ModelVocative.find({userBoss:userBoss},(err,result)=>{
+              resolve(result)
+          })
+      })
+    },
+    ModelScenarioID_INSERT_ID:(userBoss,syntax,ID)=>{
+      return new Promise(resolve=>{
+          ModelScenarioID.updateMany({userBoss:userBoss,syntax:syntax},{$push:{listID:ID}},(err,result)=>{
+              resolve(result)
+          })
+      })
+    },
+    ModelScenarioID_REMOVE_ID:(userBoss,syntax,ID)=>{
+      return new Promise(resolve=>{
+          ModelScenarioID.updateMany({userBoss:userBoss,syntax:syntax},{$pull:{listID:ID}},(err,result)=>{
+              resolve(result)
+          })
+      })
+    },
+
+    ModelScenarioID_INSERT:(userBoss,syntax)=>{
+        return new Promise(resolve=>{
+            ModelScenarioID.updateOne({userBoss:userBoss,syntax:syntax},{userBoss:userBoss,syntax:syntax,listID:[]},{upsert:true}).then(result=>{
+                resolve(result)
+            })
+        })
+    },
+    ModelScenarioID_FIND:(userBoss,syntax)=>{
+      return new Promise(resolve=>{
+          ModelScenarioID.find({userBoss:userBoss,syntax:syntax},(err,result)=>{
+              resolve(result)
+          })
+      })
+    },
+    ModelScenarioID_DELETE:(userBoss,syntax)=>{
+      return new Promise(resolve=>{
+          ModelScenarioID.deleteMany({userBoss:userBoss,syntax:syntax},(err,result)=>{
+              resolve(result)
+          })
+      })
+    },
+    ModelScenarioINSERT:(userBoss,data)=>{
+      return new Promise(resolve=>{
+          ModelScenario.updateOne({userBoss:userBoss,syntax:data.syntax},{syntax:data.syntax,nameScenario:data.nameScenario,dataArr:data.dataArr},{upsert:true}).then(result=>{
+              resolve(result)
+          })
+      })
+    },
+    ModelScenarioDELETE:(userBoss,syntax)=>{
+      return new Promise(resolve=>{
+          ModelScenario.deleteMany({userBoss:userBoss,syntax:syntax},(err,result)=>{
+              resolve(result)
+          })
+      })
+    },
+    ModelScenarioALL:userBoss=>{
+        return new Promise(resolve=>{
+            ModelScenario.find({userBoss:userBoss},(err,result)=>{
+                resolve(result)
+            })
+        })
+    },
+    ModelScenarisCHECKsyntax:(userBoss,syntax)=>{
+        return new Promise(resolve=>{
+            ModelScenario.find({userBoss:userBoss,syntax:syntax},(err,result)=>{
+                resolve(result)
+            })
+        })
+    },
     AutoChatINSERT:(userBoss,KeySecure,keyList,message,select)=>{
       return new Promise(resolve=>{
           AutoChat.updateOne({userBoss:userBoss,KeySecure:KeySecure},{KeySecure:KeySecure,keyList:keyList,message:message,select:select},{upsert:true}).then(result=>{
@@ -25,9 +107,9 @@ module.exports = {
           })
       })
     },
-    AutoChatDELETE:(userBoss)=>{
+    AutoChatDELETE:(userBoss,KeySecure)=>{
       return new Promise(resolve=>{
-          AutoChat.deleteMany({userBoss:userBoss}).then(result=>{
+          AutoChat.deleteMany({userBoss:userBoss,KeySecure:KeySecure}).then(result=>{
               resolve(result)
           })
       })

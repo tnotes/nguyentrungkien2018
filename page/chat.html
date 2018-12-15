@@ -66,7 +66,7 @@
         }
     </style>
 </head>
-<body>
+<body style="overflow-x: hidden">
 <div id="frame">
     <span style="display: none" id="ID_receiver">{{container.conversation.ID_receiver}}</span>
     <span style="display: none" id="ID_sender">{{container.conversation.ID_sender}}</span>
@@ -180,11 +180,13 @@
         </center>
         </div>
         <ul class="menuFunction">
-            <li><i class="fa fa-snowflake-o" style="color:#ff2321" aria-hidden="true"></i><a href="/api/addCookie"> Thêm tài khoản Cookie</a></li>
-            <li><i class="fa fa-id-card-o" style="color:#ff2321" aria-hidden="true"></i><a href="/api/account"> Thêm tài khoản USER/PASS</a></li>
-            <li><i class="fa fa-bolt" style="color:#ff2321" aria-hidden="true"></i><a href="/api/autoChat"> Trả lời tin nhắn tự động</a></li>
-            <li><i class="fa fa-clock-o" style="color:#ff2321" aria-hidden="true"></i><a href="/api/mutiplesms"> Hẹn giờ gửi tin nhắn</a></li>
-            <li><i class="fa fa-power-off" style="color:#ff2321" aria-hidden="true"></i><a href="/logout"> Đăng xuất</a></li>
+            <li ><i class="fa  fa-snowflake-o" style="color:#ff2321" aria-hidden="true"></i><a class="bounceInRight animated" href="/api/addCookie"> Thêm tài khoản Cookie</a></li>
+            <li ><i class="fa fa-id-card-o" style="color:#ff2321" aria-hidden="true"></i><a class="bounceInRight animated" href="/api/account"> Thêm tài khoản USER/PASS</a></li>
+            <li ><i class="fa  fa-bolt" style="color:#ff2321" aria-hidden="true"></i><a class="bounceInRight animated" href="/api/autoChat"> Trả lời tin nhắn tự động</a></li>
+            <li ><i class="fa  fa-calendar-check-o" style="color:#ff2321" aria-hidden="true"></i><a class="bounceInRight animated" href="/api/scenario"> Nhắn tin theo kịch bản</a></li>
+
+            <li ><i class="fa  fa-clock-o" style="color:#ff2321" aria-hidden="true"></i><a class="bounceInRight animated" href="/api/mutiplesms"> Hẹn giờ gửi tin nhắn</a></li>
+            <li ><i class="fa fa-power-off" style="color:#ff2321" aria-hidden="true"></i><a class="bounceInRight animated" href="/logout"> Đăng xuất</a></li>
 
 
         </ul>
