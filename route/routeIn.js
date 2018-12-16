@@ -12,8 +12,8 @@ function generateRandomInteger() {
     return Math.floor(min + Math.random()*(max+1 - min)).toString()
 }
 let getINDEX = async (email)=>{
-    let syntaxRandom = Math.floor(Math.random()*1000000);
-    let testSyntax = await ModelScenarisCHECKsyntax(email,'DK '+syntaxRandom);
+    let syntaxRandom = Math.floor(Math.random()*1000000).toString();
+    let testSyntax = await ModelScenarisCHECKsyntax(email,syntaxRandom);
     if(testSyntax.length === 0){
         return syntaxRandom
     }else {
@@ -297,11 +297,7 @@ route.post('/vocative',async (req,res)=>{
    res.send(vocativeUp)
 });
 
-route.post('/getSyntax',async (req,res)=>{
 
-    let syntax = await getINDEX(req.cookies.email);
-    res.send('DK '+syntax);
-});
 route.post('/removeScenario',async (req,res)=>{
     let remove = await ModelScenarioDELETE(req.cookies.email,req.body.syntax);
     await ModelScenarioID_DELETE(req.cookies.email,req.body.syntax)
