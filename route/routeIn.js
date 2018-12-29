@@ -37,9 +37,13 @@ function change_alias(alias) {
 }
 
 route.post('/changePassword',async (req,res)=>{
+    if(req.body.password.length > 0){
+        let change = await changePASSWORD(req.cookies.email,req.cookies.password,req.body.password);
+        res.send({error:null,result:change})
+    }else {
+        res.send({error:'Bạn không được để trống mật khẩu',result:null})
+    }
 
-           let change = await changePASSWORD(req.cookies.email,req.cookies.password,req.body.password);
-           res.send(change)
 
 });
 
@@ -50,8 +54,13 @@ route.post('/account',async (req,res)=>{
         let accountCountNow = await accountREAD(req.cookies.email);
         let limit = parseInt(infoBoss[0]['_doc'].FacebookCount);
         let present = accountCountNow.length;
+        let listIDactive = accountCountNow.map(e=>{
 
-        if(present < limit){
+            return e['_doc']['ID_sender']
+        });
+
+
+
 
             if(req.body.type === 'pass') {
                 let findCookie = await accountREADfull(req.body.email);
@@ -60,21 +69,8 @@ route.post('/account',async (req,res)=>{
                         error:"Tài khoản facebook này đã được thêm bởi một tài khoản nào đó đang sử dụng trên Facebook manager!",
                     })
                 }else {
-                    let result = await accountINSERT({
-                        status: 'active',
-                        type: 'pass',
-                        author: author,
-                        ID_sender: req.body.email,
-                        userBoss: req.cookies.email,
-                        email: req.body.email,
-                        password: req.body.password,
-                        date: req.body.date,
-                        month: req.body.month,
-                        year: req.body.year
-                    });
-                    if (result.upserted !== undefined) {
-
-                        let result = await process({
+                    if(present < limit || listIDactive.includes(req.body.email) === true){
+                        let result = await accountINSERT({
                             status: 'active',
                             type: 'pass',
                             author: author,
@@ -86,18 +82,39 @@ route.post('/account',async (req,res)=>{
                             month: req.body.month,
                             year: req.body.year
                         });
-                        result.error = null;
-                        res.send(result);
-                    } else {
+                        if (result.upserted !== undefined) {
+
+                            let result = await process({
+                                status: 'active',
+                                type: 'pass',
+                                author: author,
+                                ID_sender: req.body.email,
+                                userBoss: req.cookies.email,
+                                email: req.body.email,
+                                password: req.body.password,
+                                date: req.body.date,
+                                month: req.body.month,
+                                year: req.body.year
+                            });
+                            result.error = null;
+                            res.send(result);
+                        } else {
+                            res.send({
+                                error: "Tài khoản Facebook này đã xuất hiện trong danh sách của bạn !",
+                            })
+                        }
+                    }else {
                         res.send({
-                            error: "Tài khoản Facebook này đã xuất hiện trong danh sách của bạn !",
+                            error:"Xin lỗi,quý khách đã đạt giới hạn tài khoản quản lí .Vui lòng liên hệ nhà cung cấp để được nâng cấp sử dụng dịch vụ . Trân trọng cảm ơn !",
                         })
                     }
+
                 }
 
 
 
             }else if(req.body.type === 'cookie'){
+
                 for(let i =0;i<req.body.data.length;i++) {
                     let OBJ_template = [
                         {
@@ -147,12 +164,7 @@ route.post('/account',async (req,res)=>{
                             "creation": "2018-08-22T03:12:25.187Z",
                             "lastAccessed": "2018-08-22T03:12:28.968Z"
                         }];
-                    let findCookie = await accountREADfull(req.body.data[i]['c_user']);
-                    if(findCookie.length > 0){
-                        res.send({
-                            error:"Tài khoản facebook này đã được thêm bởi một tài khoản nào đó đang sử dụng trên Facebook manager!",
-                        })
-                    }else {
+                    if(present < limit || listIDactive.includes(req.body.data[i]['c_user']) === true){
                         let result = await accountINSERT({
                             ID_sender: req.body.data[i]['c_user'],
                             status: 'active',
@@ -182,18 +194,19 @@ route.post('/account',async (req,res)=>{
                                 error:"Tài khoản Facebook này đã xuất hiện trong danh sách của bạn !",
                             })
                         }
+                    }else {
+                        res.send({
+                            error:"Xin lỗi,quý khách đã đạt giới hạn tài khoản quản lí .Vui lòng liên hệ nhà cung cấp để được nâng cấp sử dụng dịch vụ . Trân trọng cảm ơn !",
+                        })
                     }
+
 
 
 
 
                 }
             }
-        }else {
-            res.send({
-                error:"Hiện tại bạn chỉ thêm được tối đa "+limit+" tài khoản . Vui lòng nâng cấp để tiếp tục sử dụng !",
-            })
-        }
+
 
 
 });
@@ -205,6 +218,7 @@ route.post('/alarmData',async (req,res)=>{
             let alarmDATA = await AlarmFIND(req.cookies.email)
             res.send(alarmDATA)
 });
+
 route.post('/hen-gio',async (req,res)=>{
 
             let aid = null;
@@ -317,6 +331,11 @@ route.post('/uploadIMAGE',async (req,res)=>{
         }
 
 
+
+});
+route.get('/chat',async (req,res)=>{
+
+    res.sendFile(path.join(__dirname + '/../page/chat.html'));
 
 });
 route.get('/addCookie',async (req,res)=>{

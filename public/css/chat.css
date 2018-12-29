@@ -372,7 +372,7 @@ body {
     height: calc(100% - 334px);
 }
 #frame #sidepanel #contacts::-webkit-scrollbar {
-    width: 8px;
+    width: 1px;
     background: #2c3e50;
 }
 #frame #sidepanel #contacts::-webkit-scrollbar-thumb {

@@ -5,7 +5,7 @@
 <!--<![endif]-->
 <head>
 	<meta charset="utf-8">
-	<title>Hẹn giờ - Phần mềm quản lí tin nhắn Facebook Manager</title>
+	<title>Message Management</title>
 	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
 	<meta content="" name="description">
 	<meta content="" name="author">
@@ -14,461 +14,582 @@
 	<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="/js/socketconnect.js"></script>
+	<script src="/store/index.js"></script>
+	<!-- ================== BEGIN BASE CSS STYLE ================== -->
 	<link href="/css/css.css" rel="stylesheet">
 	<link href="/css/jquery-ui.min.css" rel="stylesheet">
 	<link href="/css/bootstrap.min.css" rel="stylesheet">
 	<link href="/css/all.min.css" rel="stylesheet">
-	<link href="/css/ionicons.min.css" rel="stylesheet">
 	<link href="/css/animate.min.css" rel="stylesheet">
 	<link href="/css/style.min.css" rel="stylesheet">
 	<link href="/css/style-responsive.min.css" rel="stylesheet">
 	<link href="/css/default.css" rel="stylesheet" id="theme">
-	<script src="/js/socketconnect.js"></script>
-
 	<!-- ================== END BASE CSS STYLE ================== -->
 
 	<!-- ================== BEGIN PAGE LEVEL STYLE ================== -->
-	<link href="/css/dataTables.bootstrap.min.css" rel="stylesheet">
-	<link href="/css/fixedColumns.bootstrap.min.css" rel="stylesheet">
+	<link href="/css/bootstrap-datepicker.css" rel="stylesheet">
+	<link href="/css/bootstrap-datepicker3.css" rel="stylesheet">
+	<link href="/css/ion.rangeSlider.css" rel="stylesheet">
+	<link href="/css/ion.rangeSlider.skinNice.css" rel="stylesheet">
+	<link href="/css/bootstrap-colorpicker.min.css" rel="stylesheet">
+	<link href="/css/bootstrap-timepicker.min.css" rel="stylesheet">
+	<link href="/css/password-indicator.css" rel="stylesheet">
+	<link href="/css/bootstrap-combobox.css" rel="stylesheet">
+	<link href="/css/bootstrap-select.min.css" rel="stylesheet">
+	<link href="/css/bootstrap-tagsinput.css" rel="stylesheet">
+	<link href="/css/jquery.tagit.css" rel="stylesheet">
+	<link href="/css/daterangepicker.css" rel="stylesheet">
+	<link href="/css/select2.min.css" rel="stylesheet">
+	<link href="/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+	<link href="/css/bootstrap-colorpalette.css" rel="stylesheet">
+	<link href="/css/jquery.simplecolorpicker.css" rel="stylesheet">
+	<link href="/css/jquery.simplecolorpicker-fontawesome.css" rel="stylesheet">
+	<link href="/css/jquery.simplecolorpicker-glyphicons.css" rel="stylesheet">
 	<!-- ================== END PAGE LEVEL STYLE ================== -->
 
 	<!-- ================== BEGIN BASE JS ================== -->
 	<script src="/js/pace.min.js"></script>
+	<!-- ================== END BASE JS ================== -->
+	<style>
+		.trashremove{
+
+		}
+		.trashremove:hover{
+			cursor: pointer;
+		}
+	</style>
+	<!-- ================== END BASE JS ================== -->
 </head>
 <body>
-	<!-- begin #page-loader -->
-	<div id="page-loader" class="fade show"><span class="spinner"></span></div>
+<!-- begin page-cover -->
+<div class="page-cover"></div>
+<!-- end page-cover -->
 
-	<div id="frame">
+<!-- begin #page-loader -->
+<div id="page-loader" class="fade show"><span class="spinner"></span></div>
+<!-- end #page-loader -->
 
-
-		<div class="col-12 ui-sortable">
-			<!-- begin panel -->
-			<div class="panel panel-inverse" data-sortable-id="form-stuff-11">
-				<!-- begin panel-heading -->
-				<div class="panel-heading ui-sortable-handle" style="background-color: #2c3e50">
-
-				<span class="panel-title" ><a href="/"><i class="fa fa-home"></i> Quay lại</a><span style="float: right;margin-top: -20px;margin-right: 600px;">Lập kế hoạch gửi tin nhắn</span></span>
-				</div>
-
-				<div class="panel-body">
-
-					<div class="form-inline">
-						<div class="form-group">
-							<textarea v-model="message" rows="5" class="form-control" cols="60" type="text"  placeholder="Nội dung tin nhắn"></textarea>
-
-						</div>
-						<div class="form-group " style="margin-left:30px;">
-							<span style="margin-left:10px">Giờ: </span><input v-model="hour" type="number" class="form-control" style="width: 70px;margin-left:5px" min="0" max="24" placeholder="">
-							<span style="margin-left:10px">Phút:</span> <input v-model="minute" type="number"  class="form-control" style="width: 70px;margin-left:5px" min="0" max="60" placeholder="">
-
-							<span style="margin-left:10px">Ngày: </span> <input v-model="date" type="number" class="form-control" style="width: 70px;margin-left:5px" min="1" max="31" placeholder="">
-							<span style="margin-left:10px">Tháng: </span> <input v-model="month" type="number" class="form-control" style="width: 70px;margin-left:5px" min="1" max="12" placeholder="">
-
-							<div class="col-md-12" >
-							 <input v-model="time" type="number" style="margin-top:10px;width: 250px;margin-left:20px;" type="text" placeholder="Khoảng cách thời gian mỗi lần gửi" class="form-control"> giây
-
-
-								<br>
-
-								<br>
-
-								<code v-show="time_blank" style="margin-left: 20px;color:#800a05" class="animated flash ">Bạn phải chọn khoảng cách thời gian gửi tin nhắn.</code>
-							</div>
-
-						</div>
-
-						<button v-show="submit" type="submit" @click="alarm" class="btn btn-sm btn-primary m-r-5">Bắt đầu</button>
-						<button v-show="cancel" type="submit" @click="cancelAlarm" class="btn btn-sm btn-danger m-r-5">Hủy</button>
-
-					</div>
-
-				</div>
-
-			</div>
-			<!-- end panel -->
+<!-- begin #page-container -->
+<div id="page-container" class="fade page-sidebar-fixed page-header-fixed page-content-full-height">
+	<!-- begin #header -->
+	<div id="header" class="header navbar-default show-bg">
+		<!-- begin navbar-header -->
+		<div class="navbar-header">
+			<a  class="navbar-brand"><span class="navbar-logo"></span> <b>Facebook</b> Manager</a>
+			<button type="button" class="navbar-toggle" data-click="sidebar-toggled">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
 		</div>
+		<!-- end navbar-header -->
 
-<div class="row">
-			<div class="panel panel-inverse col-md-4" style="border:1px solid #e4e7e8">
-				<br>
-				<code style="margin-left:20px">Xuất hiện {{listAcc.length}} tài khoản</code>
-				<button style="float: right" class="btn btn-sm btn-default" @click="GetListFriend">Tìm bạn bè <i class="fa fa-angle-double-right"></i></button>
-				<br><br>
-				<div class="panel-body">
-					<div id="data-table-fixed-columns_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
-					<table  class="table table-striped table-bordered">
-						<thead>
-							<tr>
-								<th width="1%"></th>
-								<th width="1%" data-orderable="false"></th>
-								<th class="text-nowrap">Tài khoản</th>
-								<th class="text-nowrap"></th>
-
-							</tr>
-						</thead>
-						<tbody>
-						<tr v-for="(data,index) in listAcc" :key="index" >
-
-
-							<td width="1%" class="f-s-600 text-inverse">{{index+1}}</td>
-							<td width="1%" class="with-img"><img :src="data.FacebookImage" class="img-rounded height-30"></td>
-							<td><a target="_blank" :href="data.FacebookUrl">{{data.FacebookName}}</a></td>
-							<td><input :value="data.ID_sender" v-model="listAccSelect" type="checkbox"></td>
-
-						</tr>
-
-						</tbody>
-					</table>
+		<!-- begin header-nav -->
+		<ul class="navbar-nav navbar-right">
+			<li v-show="container.component == 'listChat'">
+				<form class="navbar-form">
+					<div class="form-group">
+						<input type="text" class="form-control" placeholder="Tìm kiếm tin nhắn">
+						<button type="submit" class="btn btn-search"><i class="fa fa-search"></i></button>
 					</div>
-				</div>
+				</form>
+			</li>
+			<li class="dropdown">
+				<a href="javascript:;" data-toggle="dropdown" class="dropdown-toggle f-s-14">
+					<i class="fa fa-bell"></i>
+					<span v-show="notification" class="label"></span>
+				</a>
+				<ul class="dropdown-menu media-list dropdown-menu-right">
+					<li class="dropdown-header">THÔNG BÁO</li>
 
-				<!-- end panel-body -->
-			</div>
-
-			<div class="panel panel-inverse col-md-8" >
-				<br>
-
-				<code style="margin-left:20px;background-color: #e4e7e8;color:blue">Xuất hiện {{listFriend.length}} bạn bè</code>
-				<button style="float: right;margin-right: 20px"  class="btn btn-sm btn-default" @click="selectAll">Chọn tất cả</button>
-
-				Tìm kiếm: <input v-model="search" type="text" style="float: right;width: 150px;margin-right: 20px;height:27px;" class="form-control">
-				<button style="float: right;margin-right: 20px" v-show="vocativeDefaultShow" class="btn btn-sm btn-default" @click="vocativeShow">Thay đổi xưng hô</button>
-				<button style="float: right;margin-right: 20px" v-show="vocativeChangeShow"  class="btn btn-sm btn-primary" @click="vocationSubmit">Lưu xưng hô</button>
-
-				<br><br>
-				<code v-show="receiver_blank" class="animated infinite flash" style="float: right;margin-right: 20px;color:red">Bạn phải chọn ít nhất 1 người dể gửi.</code>
-				<div>
-
-							<!-- begin panel -->
-							<div class="panel panel-inverse">
-
-
-								<div class="panel-body">
-									<table  class="table table-striped table-bordered">
-										<thead>
-										<tr>
-											<th width="1%">STT</th>
-											<th width="1%" data-orderable="false"></th>
-											<th class="text-nowrap">User ID</th>
-											<th class="text-nowrap">Facebook</th>
-											<th class="text-nowrap">Xưng hô</th>
-											<th class="text-nowrap">Tình trạng</th>
-											<th class="text-nowrap"></th>
-
-										</tr>
-										</thead>
-										<tbody>
-										<tr v-for="(data,index) in filteredList" :key="index" class="odd gradeX">
-											<td width="1%" class="f-s-600 text-inverse">{{index+1}}</td>
-											<td width="1%" class="with-img"><img :src="data.profilePicture" class="img-rounded height-30"></td>
-											<td>{{data.userID}}</td>
-											<td>{{data.fullName}}</td>
-											<td style="text-align: center"><input type="text" spellcheck="false" v-show="dataVocative" style="width: 100px;text-align: center" v-model="data.vocative"><span v-show="dataVocativeText">{{data.vocative}}</span></td>
-											<td v-if="data.status === 'Chưa gửi'" style="color:red">{{data.status}}</td>
-											<td v-if="data.status === 'Đã gửi'" style="color:green">{{data.status}}</td>
-
-											<td><input type="checkbox" :value="data" v-model="listFriendSelect"></td>
-
-										</tr>
-
-
-										</tbody>
-									</table>
-								</div>
-								<!-- end panel-body -->
+					<li class="media">
+						<a href="javascript:;">
+							<div class="media-left">
+								<i class="fa fa-envelope media-object bg-silver-darker"></i>
+								<i class="fab fa-google text-warning media-object-icon f-s-14"></i>
 							</div>
+							<div class="media-body">
+								<h6 class="media-heading"> Hiện chưa có thông báo gì </h6>
+							</div>
+						</a>
+					</li>
 
-				</div>
+				</ul>
+			</li>
+			<li class="dropdown navbar-user">
+				<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
+					<img src="images/user-13.jpg" alt="">
+					<span class="d-none d-md-inline">{{dataChat.user.name}}</span> <b class="caret"></b>
+				</a>
 
-
-				<!-- end panel-body -->
-			</div>
-			<!-- end panel -->
-</div>
-
-		<!-- end scroll to top btn -->
-	</div>
-
-	<!-- end page container -->
-	<!-- ================== BEGIN BASE JS ================== -->
-	<script src="/js/jquery-3.3.1.min.js"></script>
-	<script src="/js/jquery-ui.min.js"></script>
-	<script src="/js/bootstrap.bundle.min.js"></script>
-
-	<script src="/js/jquery.slimscroll.min.js"></script>
-	<script src="/js/js.cookie.js"></script>
-	<script src="/js/apple.min.js"></script>
-	<script src="/js/apps.min.js"></script>
-
-	<script src="/js/jquery.dataTables.js"></script>
-	<script src="/js/dataTables.bootstrap.min.js"></script>
-	<script src="/js/dataTables.fixedColumns.min.js"></script>
-	<script src="/js/table-manage-fixed-columns.demo.min.js"></script>
-	<!-- ================== END PAGE LEVEL JS ================== -->
-
-	<script>
-        $(document).ready(function() {
-            App.init();
-
-        });
-	</script>
-
-	<script>
-
-        function setCookie(cname,cvalue,exdays) {
-            var d = new Date();
-            d.setTime(d.getTime() + (exdays*24*60*60*1000));
-            var expires = "expires=" + d.toGMTString();
-            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-        }
-
-
-        function getCookie(cname) {
-            var name = cname + "=";
-            var decodedCookie = decodeURIComponent(document.cookie);
-            var ca = decodedCookie.split(';');
-            for(var i = 0; i < ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0) == ' ') {
-                    c = c.substring(1);
-                }
-                if (c.indexOf(name) == 0) {
-                    return c.substring(name.length, c.length);
-                }
-            }
-            return "";
-        }
-
-
-
-        var app = new Vue({
-            el: '#frame',
-            head(){
-                return {
-                    title:store.state.title
-                }
-            },
-            data(){
-                return {
-                    listAcc:[],
-					listAccSelect:[],
-					listFriend:[],
-					listFriendSelect:[],
-                    message:'',
-					hour:'',
-					minute:'',
-					date:'',
-					aid:null,
-					month:'',
-					time:'',
-                    username:getCookie("email"),
-                    password:getCookie("password"),
-                    connect:true,
-					submit:true,
-					cancel:false,
-					dataVocative:false,
-					dataVocativeText:true,
-					search:'',
-                    time_blank:false,
-                    receiver_blank:false,
-					thongbao:'',
-					vocativeDefaultShow:true,
-					vocativeChangeShow:false,
-
-
-                }
-            },
-
-            created: async  function(){
-                let timenow = new Date();
-                this.hour = timenow.getHours();
-                this.minute = timenow.getMinutes()+1;
-                this.date = timenow.getDate();
-                this.month = timenow.getMonth()+1;
-
-                let chat = await axios.post('/api/getAllAccount');
-
-                if(chat.data.error === null){
-
-                    this.listAcc = chat.data.data;
-
-                }else{
-                    window.location.href = "/"
-                }
-                let alarmDATA = await axios.post('/api/alarmData');
-
-                if(alarmDATA.data.length > 0){
-
-
-
-
-                    if( alarmDATA.data[0].status === true){
-						this.submit = true;
-						this.cancel = false;
-						this.hour = timenow.getHours();
-						this.minute = timenow.getMinutes()+1;
-						this.date = timenow.getDate();
-						this.month = timenow.getMonth()+1;
-
-						this.message = null;
-						this.aid = null;
-						this.listFriend = [];
-						this.listFriendSelect = [];
-						this.thongbao = 'Đã gửi tin nhắn lúc : '+alarmDATA.data[0].data.hour+'h'+alarmDATA.data[0].data.minute+'p Ngày '+alarmDATA.data[0].data.date+'/'+alarmDATA.data[0].data.month
-
-					}else {
-						this.submit = false;
-						this.cancel = true;
-						this.hour = alarmDATA.data[0].data.hour;
-						this.minute = alarmDATA.data[0].data.minute;
-						this.date = alarmDATA.data[0].data.date;
-						this.month = alarmDATA.data[0].data.month;
-						this.time = alarmDATA.data[0].data.time;
-						this.message = alarmDATA.data[0].data.message;
-						this.aid = alarmDATA.data[0].aid;
-						this.listFriend = alarmDATA.data[0].data.receiver;
-						this.listFriendSelect = alarmDATA.data[0].data.receiver;
-					}
-
-                }
-
-
-
-            },
-            computed: {
-
-                filteredList() {
-                    let _ = this;
-                    return this.listFriend.filter(e=>{
-                        return e.fullName.toLowerCase().includes(_.search.toLowerCase())
-					})
-
-                }
-            },
-            beforeMount:function(){
-                let _ = this;
-                socket.on('callback_listFriend',function(result){
-
-                    let listID =  _.listFriend.map(e=>e.userID);
-                    result.data = result.data.filter(e=>{
-                        if(listID.includes(e.userID) === false){
-                        	e.status = 'Chưa gửi';
-                            return e
-                        }
-                    });
-                    return _.listFriend = _.listFriend.concat(result.data)
-                });
-                socket.on('perfect',function (result) {
-
-                	console.log(result.data.receiver);
-                	console.log(_.listFriend)
-					return _.listFriend = result.data.receiver
-				})
-
-
-            },
-            mounted:function(){
-
-                let name = this.username;
-                let _ = this;
-
-                $("form").change(function(evt){
-                    evt.preventDefault();
-                    var formData = new FormData($(this)[0]);
-                    $.ajax({
-                        url: '/api/uploadIMAGE',
-                        type: 'POST',
-                        data: formData,
-                        async: false,
-                        cache: false,
-                        contentType: false,
-                        enctype: 'multipart/form-data',
-                        processData: false,
-                        success: function (response) {
-
-                            socket.emit('sendMessage',{
-                                userBoss:name,
-                                ID_receiver:store.state.conversation.ID_receiver,
-                                type:'attachments',
-                                url:response,
-                                ID_sender:store.state.conversation.ID_sender
-                            },function(callback){
-
-                                return store.commit('pushConversation',callback.data)
-
-                            });
-                        }
-                    });
-                    return false;
-                });
-            },
-            methods:{
-                GetListFriend:function(){
-                    this.receiver_blank = false;
-                    let _ = this;
-                    socket.emit('GetListFriend',{
-                        list: _.listAccSelect
-					})
-				},
-				sendMessFriend:async function(){
-
-				},
-				selectAll:async function(){
-                    if(this.listFriendSelect.length >0){
-                        return this.listFriendSelect = [];
-
-                    }else{
-                        return this.listFriendSelect = this.listFriend
-
-                    }
-				},
-				alarm:async function(){
-                	this.thongbao = '';
-                    if(this.time === ''){
-                        this.time_blank = true;
-                        return false;
-					}
-					if (this.listFriendSelect.length === 0){
-					    this.receiver_blank = true;
-					    return false;
-					}
-
-
-                        let setAlarm = await axios.post('/api/hen-gio',{data:{aid:this.aid,hour:this.hour,minute:this.minute,date:this.date,month:this.month,time:this.time,message:this.message,receiver:this.listFriendSelect}});
-                        this.aid =setAlarm.data;
-						socket.emit('sendMessFriend',{aid:setAlarm.data,hour:this.hour,minute:this.minute,date:this.date,month:this.month,time:this.time,message:this.message,receiver:this.listFriendSelect})
-                        this.cancel = true;
-                        this.submit = false;
-
-				},
-				cancelAlarm:async function(){
-
-                     await axios.post('/api/xoa-hen-gio',{aid:this.aid});
-                     this.cancel = false;
-                     this.submit = true;
-
-				},
-				vocativeShow:async function(){
-                	this.vocativeDefaultShow = false;
-					this.vocativeChangeShow = true;
-					this.dataVocativeText = false;
-					this.dataVocative = true;
-				},
-				vocationSubmit:async function(){
-                	let vocaArrr = this.filteredList.filter(e=>{
-                		if(e.vocative !== 'Anh' && e.vocative !== 'Chị'){
-                			return e
+				<div class="dropdown-menu dropdown-menu-right">
+					<a @click="container.component = 'changepassword'" href="javascript:;" class="dropdown-item">Chỉnh sửa thông tin</a>
+					<a @click="container.component = 'chat'" href="javascript:;" class="dropdown-item"><span class="badge badge-danger pull-right">{{container.list_chat.filter(e=>{
+						if(e.seen === false){
+						return e
 						}
-					});
-					let vocativeSave = await axios.post('/api/vocative',{vocative:vocaArrr});
-					console.log(vocativeSave.data)
+						}).length}}</span> Trò chuyện</a>
+
+					<div class="dropdown-divider"></div>
+					<a href="/logout" class="dropdown-item">Đăng xuất</a>
+				</div>
+			</li>
+		</ul>
+		<!-- end header navigation right -->
+	</div>
+	<!-- end #header -->
+
+	<!-- begin #sidebar -->
+	<div id="sidebar" class="sidebar">
+		<!-- begin sidebar scrollbar -->
+		<div data-scrollbar="true" data-height="100%">
+			<!-- begin sidebar user -->
+			<ul class="nav">
+				<li class="nav-profile">
+					<a href="javascript:;" data-toggle="nav-profile">
+						<div class="info">
+							<b class="caret pull-right"></b>
+							{{dataChat.user.name}}
+							<small>Trial</small>
+						</div>
+					</a>
+				</li>
+				<li>
+					<ul class="nav nav-profile">
+						<li @click="container.component = 'changepassword'"><a href="javascript:;"><i class="fa fa-cog"></i> Cài Đặt</a></li>
+						<li>
+						</li>
+						<!--
+                        <li><a href="javascript:;"><i class="fa fa-pencil-alt"></i> Phản Hồi</a></li>
+                        <li><a href="javascript:;"><i class="fa fa-question-circle"></i> Trợ Giúp</a></li>
+                        -->
+					</ul>
+				</li>
+			</ul>
+			<!-- end sidebar user -->
+			<!-- begin sidebar nav -->
+			<ul class="nav">
+				<li class="nav-header">Danh mục</li>
+				<li class="has-sub cur" :class="{ active : active_el == 1 }" @click="activate(1)">
+					<a href="javascript:;">
+						<b class="caret"></b>
+						<i class="fa fa-th-large"></i>
+						<span>Quản lí tài khoản</span>
+					</a>
+					<ul class="sub-menu">
+						<li class="cur" @click="container.component = 'addcookie'"><a href="javascript:;" >Thêm bằng Cookie</a></li>
+						<li class="cur" @click="container.component = 'addpassword'"><a href="javascript:;">Thêm bằng User/Pass</a></li>
+					</ul>
+				</li>
+				<li class="has-sub cur" :class="{ active : active_el == 2 }" @click="activate(2)">
+					<a href="javascript:;">
+                        <span class="badge pull-right">{{container.list_chat.filter(e=>{
+						if(e.seen === false){
+						return e
+						}
+						}).length}}</span>
+						<i class="fa fa-hdd"></i>
+						<span>Trò Chuyện</span>
+					</a>
+					<ul class="sub-menu">
+						<li class="active" @click="container.component = 'listchat'"><a href="javascript:;">Inbox</a></li>
+
+					</ul>
+				</li>
+				<li class="has-sub cur" :class="{ active : active_el == 3 }" @click="container.component = 'autochat',activate(3)">
+					<a href="javascript:;" >
+						<i class="fab fa-simplybuilt"></i>
+						<span >Trả lời tự động <span class="label label-theme m-l-5">NEW</span></span>
+					</a>
+				</li>
+				<li class="has-sub cur" :class="{ active : active_el == 4 }" @click="container.component = 'scenario',activate(4)">
+					<a href="javascript:;">
+
+						<i class="fa fa-gem"></i>
+						<span >Kịch bản <span class="label label-theme m-l-5">NEW</span></span>
+					</a>
+
+				</li>
+				<li class="has-sub cur" :class="{ active : active_el == 5 }" @click="container.component = 'mutiplesms',activate(5)" >
+					<a href="javascript:;">
+
+						<i class="fa fa-list-ol"></i>
+						<span>Hẹn Giờ <span class="label label-theme m-l-5">NEW</span></span>
+					</a>
+
+				</li>
+
+
+				<li><a href="javascript:;" class="sidebar-minify-btn" data-click="sidebar-minify"><i class="fa fa-angle-double-left"></i></a></li>
+				<!-- end sidebar minify button -->
+			</ul>
+			<!-- end sidebar nav -->
+		</div>
+		<!-- end sidebar scrollbar -->
+	</div>
+	<div class="sidebar-bg"></div>
+	<!-- end #sidebar -->
+
+	<!-- begin #content -->
+
+
+	<keep-alive>
+		<component :is="container.component"></component>
+	</keep-alive>
+
+	<a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top fade" data-click="scroll-top"><i class="fa fa-angle-up"></i></a>
+	<!-- end scroll to top btn -->
+</div>
+<!-- end page container -->
+<script src="/component/component.js"></script>
+<script>
+
+
+	var app = new Vue({
+		el: '#page-container',
+		data(){
+			return {
+				user:{},
+				loading:false,
+				result:false,
+				message:'',
+				fullname:'',
+				name:'Facebook manager',
+				chatVisible:false,
+				introVisible:true,
+				sha:false,
+
+				check:false,
+				input:false,
+				welcome:true,
+				listCHAT:false,
+				load_listCHAT:true,
+				option:false,
+				connect:true,
+				info:true,
+				cookie:'',
+				errorCookie:'',
+				confirmRemoveCookie:false,
+				errorCookieIcon:false,
+				tmpRemove:{},
+				listCookieShow:true,
+				waitingCookie:false,
+				saveFont:true,
+				active_el:0,
+				dataChat:{conversation:[],user:{name:''}},
+				notification:false,
+
+
+			}
+		},
+
+		created: async  function(){
+
+
+			let chat = await axios.post('/api/getAllConversation');
+			if(chat.data.error === null){
+				this.load_listCHAT = false;
+				this.listCHAT = true;
+				this.user = chat.data.result.user;
+				this.dataChat =  chat.data.result;
+				return store.commit('executeConversation',chat.data.result.conversation)
+
+			}else{
+				window.location.href = "/"
+			}
+
+		},
+		computed: {
+			container () {
+				return store.state
+			},
+			listAccCookie(){
+				if(this.tmpRemove.ID_sender !== undefined){
+
+				}
+				return
+			}
+		},
+		beforeMount:function(){
+			let name = this.username;
+			socket.on('receiveMessage',function(data){
+
+				$("#scroll").animate({ scrollTop:10000000000000}, 500);
+				if(data.userBoss === name){
+					let result = data.message;
+					return store.commit('pushConversation',result)
 				}
 
+			});
+			socket.on('error',function (data) {
 
-            },
-        })
+				let ID_sender = data['ID_sender'];
 
-	</script>
+				return store.commit('statusUPDATEpro',ID_sender)
+			})
+
+
+		},
+		mounted:function(){
+			let name = this.username;
+			let _ = this;
+
+			$("form").change(function(evt){
+				evt.preventDefault();
+				var formData = new FormData($(this)[0]);
+				$.ajax({
+					url: '/api/uploadIMAGE',
+					type: 'POST',
+					data: formData,
+					async: false,
+					cache: false,
+					contentType: false,
+					enctype: 'multipart/form-data',
+					processData: false,
+					success: function (response) {
+
+						socket.emit('sendMessage',{
+							userBoss:name,
+							ID_receiver:store.state.conversation.ID_receiver,
+							type:'attachments',
+							url:response,
+							ID_sender:store.state.conversation.ID_sender
+						},function(callback){
+							store.commit('pushConversation',callback.data)
+							return store.state.list_chat = store.state.list_chat.map(e=>{
+
+								if(e['ID_receiver'] === store.state.conversation['ID_receiver']){
+									e.seen = true;
+								}
+								return e;
+
+							});
+
+
+						});
+					}
+				});
+				return false;
+			});
+		},
+		methods:{
+			send:function(){
+
+				let _ = store;
+				let mess = this.message;
+
+
+				socket.emit('sendMessage',{
+					userBoss:this.username,
+					ID_receiver:_.state.conversation.ID_receiver,
+					type:'text',
+					message:mess,
+					ID_sender:_.state.conversation.ID_sender
+
+				},function(callback){
+
+					if(callback.error !== null){
+						alert(error)
+						_.connect = false;
+						return _.commit('statusUPDATE','Cookie expired')
+
+					}
+
+					$("#scroll").animate({ scrollTop: 10000000000000}, 500);
+
+
+					_.commit('pushConversation',callback.data)
+
+
+
+					return _.state.list_chat = _.state.list_chat.map(e=>{
+
+						if(e['ID_receiver'] === store.state.conversation['ID_receiver']){
+							e.seen = true;
+						}
+						return e;
+
+					});
+
+				});
+
+				$("#scroll").animate({ scrollTop:10000000000000}, 500);
+				this.message = '';
+			},
+
+			newTag:async function(obj){
+				this.welcome = false;
+				this.result = false;
+				this.loading = true;
+				this.introVisible = false;
+				this.chatVisible = true;
+				this.option = true;
+
+				let result = await axios.post('/api/getConversation',{ID_receiver:obj.ID_receiver,ID_sender:obj.ID_sender,seen:true});
+
+				store.commit('getConversation',result.data);
+				this.loading = false;
+				this.result = true;
+				if(result.data.status === 'active'){
+					this.input = true;
+				}
+				$("#scroll").animate({ scrollTop: 10000000000000}, 500);
+
+
+
+			},
+			activate:function(el){
+				this.active_el = el;
+			},
+			deleteChat:async function(){
+				await axios.post('/api/removeChat',{id:store.state.conversation._id});
+				store.commit('dropConversation',store.state.conversation);
+				this.welcome = true;
+				this.result = false;
+				this.option = false;
+
+			},
+			authorDisplay:async function(data){
+				data.sha = true;
+				data.ady = true;
+				return data;
+			},
+			authorHidden:async function(data){
+				data.sha = false;
+				data.ady = false;
+				return data;
+			},
+			cookiePopup:async function(){
+				$('.fullscreen.modal')
+						.modal('show')
+				;
+				let allAccount = await axios.post('/api/getAllAccount');
+				let result = allAccount.data.data.filter(e=>{
+					if(e.type === 'cookie'){
+						return e
+					}
+				});
+				return store.state.account = result
+			},
+			addfacebookaccount:async function(){
+				this.saveFont = false;
+				this.waitingCookie = true;
+				let _ = this;
+
+				let result = this.cookie.split('\n').map(e=>{
+					let objResult = {};
+					this.cookie.split(';').filter(e=>{
+						if(e.trim().length >0){
+							return e
+						}
+					}).map(e=>{
+						objResult[e.split('=')[0].trim()] = e.split('=')[1].trim()
+					});
+					return objResult
+				});
+
+				this.cookie = '';
+				alert('send');
+				let send = await axios.post('/api/account',{type:'cookie',data:result});
+				alert('done')
+				if(send.data.error === null){
+					alert('hello world')
+					this.container.account.push(send.data)
+				}else {
+					alert('bye bye ')
+					this.errorCookieIcon = true;
+
+					this.errorCookie = send.data.error;
+					setTimeout(function () {
+						_.errorCookieIcon = false;
+						_.errorCookie = '';
+					},24000)
+				}
+				this.saveFont = true;
+				this.waitingCookie = false;
+
+
+
+			},
+			removeCookie:async function(data){
+				this.tmpRemove = data;
+				this.listCookieShow = false;
+
+				this.confirmRemoveCookie = true;
+			},
+			confirmRemoveCookieAction:async function(){
+				let id = this.tmpRemove.ID_sender;
+				let del = await axios.post('/api/deleteAccount',{ID_sender:id});
+				store.state.account = store.state.account.filter(e=>{
+					if(e.ID_sender !== id){
+						return e
+					}
+				});
+				this.listCookieShow = true;
+				this.confirmRemoveCookie = false;
+
+			},
+			cancelRemoveCookieAction:async function(){
+				this.tmpRemove = {};
+				this.confirmRemoveCookie = false;
+				this.listCookieShow = true;
+
+
+
+			}
+
+
+
+
+
+		},
+	})
+
+</script>
+<!-- end page container -->
+<!-- ================== BEGIN BASE JS ================== -->
+<script src="/js/jquery-3.3.1.min.js"></script>
+<script src="/js/jquery-migrate-1.1.0.min.js"></script>
+<script src="/js/jquery-ui.min.js"></script>
+<script src="/js/bootstrap.bundle.min.js"></script>
+
+<script src="/js/jquery.slimscroll.min.js"></script>
+<script src="/js/js.cookie.js"></script>
+<script src="/js/transparent.min.js"></script>
+<script src="/js/apps.min.js"></script>
+<!-- ================== END BASE JS ================== -->
+
+<!-- ================== BEGIN PAGE LEVEL JS ================== -->
+<script src="/js/bootstrap-datepicker.js"></script>
+<script src="/js/ion.rangeSlider.min.js"></script>
+<script src="/js/bootstrap-colorpicker.min.js"></script>
+<script src="/js/masked-input.min.js"></script>
+<script src="/js/bootstrap-timepicker.min.js"></script>
+<script src="/js/password-indicator.js"></script>
+<script src="/js/bootstrap-combobox.js"></script>
+<script src="/js/bootstrap-select.min.js"></script>
+<script src="/js/bootstrap-tagsinput.min.js"></script>
+<script src="/js/bootstrap-tagsinput-typeahead.js"></script>
+<script src="/js/tag-it.min.js"></script>
+<script src="/js/moment.js"></script>
+<script src="/js/daterangepicker.js"></script>
+<script src="/js/select2.min.js"></script>
+<script src="/js/bootstrap-datetimepicker.min.js"></script>
+<script src="/js/bootstrap-show-password.js"></script>
+<script src="/js/bootstrap-colorpalette.js"></script>
+<script src="/js/jquery.simplecolorpicker.js"></script>
+<script src="/js/clipboard.min.js"></script>
+<script src="/js/form-plugins.demo.min.js"></script>
+<!-- ================== END PAGE LEVEL JS ================== -->
+
+<script>
+	$(document).ready(function() {
+		App.init();
+		FormPlugins.init();
+	});
+</script>
+
+
 </body>
 </html>

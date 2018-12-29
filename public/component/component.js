@@ -1,0 +1,2443 @@
+function setCookie(cname,cvalue,exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires=" + d.toGMTString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+function uniq(a) {
+    return Array.from(new Set(a));
+}
+function convertTime12to24(time12h) {
+    const [time, modifier] = time12h.split(' ');
+
+    let [hours, minutes] = time.split(':');
+
+    if (hours === '12') {
+        hours = '00';
+    }
+
+    if (modifier === 'PM') {
+        hours = parseInt(hours, 10) + 12;
+    }
+
+    return hours + ':' + minutes;
+}
+
+Vue.component('mutiplesms', {
+    template:'<div class="content content-full-width inbox animated fadeIn" id="content">\n' +
+        '        <div class="col-md-12">\n' +
+        '            <div class="panel panel-inverse " >\n' +
+        '                <!-- begin panel-heading -->\n' +
+        '                <div class="panel-heading ui-sortable-handle" style="background-color: #2c3e50">\n' +
+        '                    <div class="panel-heading-btn">\n' +
+        '                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>\n' +
+        '                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>\n' +
+        '                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>\n' +
+        '                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>\n' +
+        '                    </div>\n' +
+        '                    <h4  class="panel-title">Hẹn giờ gửi tin nhắn</h4>\n' +
+        '                </div>\n' +
+        '                <!-- end panel-heading -->\n' +
+        '                <!-- begin panel-body -->\n' +
+        '                <div class="panel-body" data-sortable-id="form-plugins-1">\n' +
+        '                    <div class="form-horizontal" data-parsley-validate="true" name="demo-form" novalidate="">\n' +
+        '\n' +
+        '                        <div class="form-group row m-b-15">\n' +
+        '                            <label class="col-md-4 col-sm-4 col-form-label" >Đặt giờ * :</label>\n' +
+        '                            <div class="col-md-3">\n' +
+        '                                <div class="input-group date" id="datetimepicker1">\n' +
+        '                                    <input  type="text" v-model="calendar" id="calendar" class="form-control">\n' +
+        '                                    <div class="input-group-addon">\n' +
+        '                                        <i class="fa fa-calendar"></i>\n' +
+        '                                    </div>\n' +
+        '                                </div>\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '                        <div class="form-group row m-b-15">\n' +
+        '                            <label class="col-md-4 col-sm-4 col-form-label">Nội dung tin nhắn :</label>\n' +
+        '                            <div class="col-md-8 col-sm-8">\n' +
+        '                                <textarea class="form-control" spellcheck="false" rows="4" v-model="message" ></textarea>\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '\n' +
+        '\n' +
+        '                        <div class="form-group row m-b-15">\n' +
+        '                            <label class="col-md-4 col-sm-4 col-form-label">Khoảng cách mỗi tin nhắn :</label>\n' +
+        '                            <div class="col-md-1 col-sm-1">\n' +
+        '                                <input v-model="time" class="form-control" type="number"   data-parsley-type="url" placeholder="... ">\n' +
+        '                            </div>\n' +
+        '                            <div class="col-md-1 col-sm-1" style="margin-top: 15px">\n' +
+        '                                <span >(s).</span>\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '\n' +
+        '\n' +
+        '                        <div class="form-group row m-b-0">\n' +
+        '                            <label class="col-md-4 col-sm-4 col-form-label">&nbsp;</label>\n' +
+        '                            <div class="col-md-8 col-sm-8">\n' +
+        '\n' +
+        '                                <button v-show="submit" type="submit" @click="alarm" class="btn btn-sm btn-outline-primary m-r-5">Start</button>\n' +
+        '                                <button v-show="cancel" type="submit" @click="cancelAlarm" class="btn btn-sm btn-danger m-r-5">Stop</button>\n' +
+        '                                <code v-show="receiver_blank" class="animated flash" style="color:#ffbaa9;background: none;margin-top:20px">Bạn phải chọn ít nhất 1 người dể gửi.</code>\n' +
+        '                                <code v-show="message_blank" class="animated flash" style="color:#ffbaa9;background: none;margin-top:20px">Bạn không được để trống nội dung tin nhắn.</code>\n' +
+        '                                <code v-show="calendar_blank" class="animated flash" style="color:#ffbaa9;background: none;margin-top:20px">Bạn phải thiết lập thời gian hẹn giờ.</code>\n' +
+        '\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '                    </div>\n' +
+        '                </div>\n' +
+        '\n' +
+        '\n' +
+        '                <!-- end hljs-wrapper -->\n' +
+        '            </div>\n' +
+        '        </div>\n' +
+        '        <div class="col-md-12">\n' +
+        '            <div class="row">\n' +
+        '                <div class="col-md-4">\n' +
+        '                    <div class="panel panel-inverse" >\n' +
+        '                        <br>\n' +
+        '                        <span style="margin-left:20px">Xuất hiện {{listAcc.length}} tài khoản</span>\n' +
+        '                        <button style="float: right;margin-right: 15px;margin-top: 25px" class="btn btn-sm btn-default" @click="GetListFriend">Tìm bạn bè <i class="fa fa-angle-double-right"></i></button>\n' +
+        '                        <br><br> <br>\n' +
+        '                        <div class="panel-body">\n' +
+        '                            <div id="data-table-fixed-columns_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">\n' +
+        '                                <div class="table-responsive">\n' +
+        '                                    <table  class="table table-striped table-bordered">\n' +
+        '                                        <thead>\n' +
+        '                                        <tr>\n' +
+        '                                            <th width="1%"></th>\n' +
+        '                                            <th width="1%" data-orderable="false"></th>\n' +
+        '                                            <th class="text-nowrap">Tài khoản</th>\n' +
+        '                                            <th class="text-nowrap"></th>\n' +
+        '\n' +
+        '                                        </tr>\n' +
+        '                                        </thead>\n' +
+        '                                        <tbody>\n' +
+        '                                        <tr v-for="(data,index) in listAcc" :key="index" >\n' +
+        '\n' +
+        '\n' +
+        '                                            <td width="1%" class="f-s-600 ">{{index+1}}</td>\n' +
+        '                                            <td width="1%" class="with-img"><img :src="data.FacebookImage" class="img-rounded height-30"></td>\n' +
+        '                                            <td><a target="_blank" :href="data.FacebookUrl">{{data.FacebookName}}</a></td>\n' +
+        '                                            <td><input :value="data.ID_sender" v-model="listAccSelect" type="checkbox"></td>\n' +
+        '\n' +
+        '                                        </tr>\n' +
+        '\n' +
+        '                                        </tbody>\n' +
+        '                                    </table>\n' +
+        '                                </div>\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '\n' +
+        '                        <!-- end panel-body -->\n' +
+        '                    </div>\n' +
+        '                </div>\n' +
+        '                <div class="col-md-8">\n' +
+        '                    <div class="panel panel-inverse" >\n' +
+        '                        <br>\n' +
+        '                        <div class="col-md-12 col-sm-12">\n' +
+        '                            <div class="row">\n' +
+        '                                <div class="col-md-6 col-sm-6">\n' +
+        '                                    <button  v-show="vocativeDefaultShow" style="margin-top:25px;float: left;" class="btn btn-sm btn-default col-md-6" @click="vocativeShow">Thay đổi xưng hô</button>\n' +
+        '\n' +
+        '                                    <button  v-show="vocativeChangeShow"  class="btn btn-sm btn-primary col-md-6" style="float: left" @click="vocationSubmit">Lưu xưng hô</button>\n' +
+        '                                    <br> <br> <br> <br>\n' +
+        '                                    <code style="color:white;border:1px solid #7d6461;background: none;float:left;">Xuất hiện {{listFriend.length}} bạn bè</code>\n' +
+        '\n' +
+        '                                </div>\n' +
+        '                                <div class="col-md-6 col-sm-6">\n' +
+        '\n' +
+        '                                    <div class="row" style="float: right"><span class="col-md-12" style="margin-top: 5px">Tìm kiếm: <input v-model="search"  type="text" class="form-control col-md-12"></span></div>\n' +
+        '\n' +
+        '\n' +
+        '                                    <button class="btn btn-sm btn-default col-md-6 col-sm-3" style="margin-top:10px;float: right" @click="selectAll">Chọn tất cả</button>\n' +
+        '\n' +
+        '\n' +
+        '                                </div>\n' +
+        '\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '                        <div>\n' +
+        '\n' +
+        '                            <!-- begin panel -->\n' +
+        '                            <div class="panel panel-inverse" style="margin-top: 10px">\n' +
+        '\n' +
+        '\n' +
+        '                                <div class="panel-body">\n' +
+        '                                    <div class="table-responsive">\n' +
+        '                                        <table  class="table table-striped table-bordered">\n' +
+        '                                            <thead>\n' +
+        '                                            <tr>\n' +
+        '                                                <th width="1%">STT</th>\n' +
+        '                                                <th width="1%" data-orderable="false"></th>\n' +
+        '                                                <th class="text-nowrap">User ID</th>\n' +
+        '                                                <th class="text-nowrap">Facebook</th>\n' +
+        '                                                <th class="text-nowrap">Xưng hô</th>\n' +
+        '                                                <th class="text-nowrap">Tình trạng</th>\n' +
+        '                                                <th class="text-nowrap"></th>\n' +
+        '\n' +
+        '                                            </tr>\n' +
+        '                                            </thead>\n' +
+        '                                            <tbody>\n' +
+        '                                            <tr v-for="(data,index) in filteredList" :key="index" class="odd gradeX">\n' +
+        '                                                <td width="1%" class="f-s-600" style="color: white">{{index+1}}</td>\n' +
+        '                                                <td width="1%" class="with-img"><img :src="data.profilePicture" class="img-rounded height-30"></td>\n' +
+        '                                                <td>{{data.userID}}</td>\n' +
+        '                                                <td>{{data.fullName}}</td>\n' +
+        '                                                <td style="text-align: center"><input type="text" spellcheck="false" v-show="dataVocative" style="width: 100px;text-align: center" v-model="data.vocative"><span v-show="dataVocativeText">{{data.vocative}}</span></td>\n' +
+        '                                                <td v-if="data.status === \'Chưa gửi\'" style="color:red">{{data.status}}</td>\n' +
+        '                                                <td v-if="data.status === \'Đã gửi\'" style="color:green">{{data.status}}</td>\n' +
+        '\n' +
+        '                                                <td><input type="checkbox" :value="data" v-model="listFriendSelect"></td>\n' +
+        '\n' +
+        '                                            </tr>\n' +
+        '\n' +
+        '\n' +
+        '                                            </tbody>\n' +
+        '                                        </table>\n' +
+        '                                    </div>\n' +
+        '                                </div>\n' +
+        '                                <!-- end panel-body -->\n' +
+        '                            </div>\n' +
+        '\n' +
+        '                        </div>\n' +
+        '\n' +
+        '\n' +
+        '                        <!-- end panel-body -->\n' +
+        '                    </div>\n' +
+        '                </div>\n' +
+        '                <!-- end panel -->\n' +
+        '            </div>\n' +
+        '        </div>\n' +
+        '    </div>',
+    data(){
+        return {
+            listAcc:[],
+            listAccSelect:[],
+            listFriend:[],
+            listFriendSelect:[],
+            message:'',
+            hour:'',
+            minute:'',
+            date:'',
+            aid:null,
+            month:'',
+            year:'',
+            time:1,
+            username:getCookie("email"),
+            password:getCookie("password"),
+            connect:true,
+            submit:true,
+            cancel:false,
+            dataVocative:false,
+            dataVocativeText:true,
+            search:'',
+            time_blank:false,
+            receiver_blank:false,
+            message_blank:false,
+            calendar_blank:false,
+            thongbao:'',
+            vocativeDefaultShow:true,
+            vocativeChangeShow:false,
+            fullname:'',
+            calendar:null,
+            dataChat:{}
+
+
+        }
+    },
+
+    created: async  function(){
+        let chata = await axios.post('/api/getAllConversation');
+
+        this.dataChat =  chata.data.result
+
+        let timenow = new Date();
+        this.hour = timenow.getHours();
+        this.minute = timenow.getMinutes()+1;
+        this.date = timenow.getDate();
+        this.month = timenow.getMonth()+1;
+        this.year = timenow.getFullYear();
+        this.calendar = this.month+'/'+this.date+'/'+this.year+' 07:00 AM';
+
+
+        let chat = await axios.post('/api/getAllAccount');
+
+        if(chat.data.error === null){
+
+            this.listAcc = chat.data.data;
+            let _ = this;
+            _.listAccSelect = this.listAcc.map(e=>{
+                return e.ID_sender
+            });
+            socket.emit('GetListFriend',{
+                list: _.listAccSelect
+            })
+
+        }else{
+            window.location.href = "/"
+        }
+        let alarmDATA = await axios.post('/api/alarmData');
+
+        if(alarmDATA.data.length > 0){
+
+
+
+
+            if( alarmDATA.data[0].status === true){
+                this.submit = true;
+                this.cancel = false;
+                this.hour = timenow.getHours();
+                this.minute = timenow.getMinutes()+1;
+                this.date = timenow.getDate();
+                this.month = timenow.getMonth()+1;
+
+                this.message = null;
+                this.aid = null;
+                this.listFriend = [];
+                this.listFriendSelect = [];
+                this.thongbao = 'Đã gửi tin nhắn lúc : '+alarmDATA.data[0].data.hour+'h'+alarmDATA.data[0].data.minute+'p Ngày '+alarmDATA.data[0].data.date+'/'+alarmDATA.data[0].data.month
+
+            }else {
+                this.submit = false;
+                this.cancel = true;
+                this.hour = alarmDATA.data[0].data.hour;
+                this.minute = alarmDATA.data[0].data.minute;
+                this.date = alarmDATA.data[0].data.date;
+                this.month = alarmDATA.data[0].data.month;
+                this.time = alarmDATA.data[0].data.time;
+                this.message = alarmDATA.data[0].data.message;
+                this.aid = alarmDATA.data[0].aid;
+                this.listFriend = alarmDATA.data[0].data.receiver;
+                this.listFriendSelect = alarmDATA.data[0].data.receiver;
+            }
+
+        }
+
+
+
+    },
+    computed: {
+
+        filteredList() {
+            let _ = this;
+            return this.listFriend.filter(e=>{
+                return e.fullName.toLowerCase().includes(_.search.toLowerCase())
+            })
+
+        },
+
+
+    },
+    beforeMount:function(){
+        let _ = this;
+        socket.on('callback_listFriend',function(result){
+
+            let listID =  _.listFriend.map(e=>e.userID);
+            result.data = result.data.filter(e=>{
+                if(listID.includes(e.userID) === false){
+                    e.status = 'Chưa gửi';
+                    return e
+                }
+            });
+            return _.listFriend = _.listFriend.concat(result.data)
+        });
+        socket.on('perfect',function (result) {
+
+            console.log(result.data.receiver);
+            console.log(_.listFriend)
+            return _.listFriend = result.data.receiver
+        })
+
+
+    },
+    mounted:function(){
+
+        let name = this.username;
+        let _ = this;
+
+        $("form").change(function(evt){
+            evt.preventDefault();
+            var formData = new FormData($(this)[0]);
+            $.ajax({
+                url: '/api/uploadIMAGE',
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                enctype: 'multipart/form-data',
+                processData: false,
+                success: function (response) {
+
+                    socket.emit('sendMessage',{
+                        userBoss:name,
+                        ID_receiver:store.state.conversation.ID_receiver,
+                        type:'attachments',
+                        url:response,
+                        ID_sender:store.state.conversation.ID_sender
+                    },function(callback){
+
+                        return store.commit('pushConversation',callback.data)
+
+                    });
+                }
+            });
+            return false;
+        });
+    },
+    methods:{
+        GetListFriend:function(){
+            this.receiver_blank = false;
+            let _ = this;
+
+            socket.emit('GetListFriend',{
+                list: _.listAccSelect
+            })
+
+        },
+        sendMessFriend:async function(){
+
+        },
+        selectAll:async function(){
+            if(this.listFriendSelect.length >0){
+                return this.listFriendSelect = [];
+
+            }else{
+                return this.listFriendSelect = this.listFriend
+
+            }
+        },
+        alarm:async function(){
+            let calendar = $("input#calendar").val();
+
+            let month = calendar.split(' ')[0].split('/')[0];
+            let date = calendar.split(' ')[0].split('/')[1];
+            let HourAndMinute = calendar.split(' ')[1]+' '+calendar.split(' ')[2];
+            let hour = convertTime12to24(HourAndMinute).split(':')[0];
+            let minute = convertTime12to24(HourAndMinute).split(':')[1];
+            this.thongbao = '';
+            if(this.time === ''){
+                this.time_blank = true;
+                return false;
+            }
+            if($('input#calendar').val().trim() === ''){
+                return this.calendar_blank = true;
+            }
+            if(this.message === ''){
+                return this.message_blank = true;
+            }
+            if (this.listFriendSelect.length === 0){
+                this.receiver_blank = true;
+                return false;
+            }
+
+
+            let setAlarm = await axios.post('/api/hen-gio',{data:{aid:this.aid,hour:hour,minute:minute,date:date,month:month,time:this.time,message:this.message,receiver:this.listFriendSelect}});
+            this.aid =setAlarm.data;
+            socket.emit('sendMessFriend',{aid:setAlarm.data,hour:this.hour,minute:this.minute,date:this.date,month:this.month,time:this.time,message:this.message,receiver:this.listFriendSelect})
+            this.cancel = true;
+            this.submit = false;
+
+        },
+        cancelAlarm:async function(){
+
+            await axios.post('/api/xoa-hen-gio',{aid:this.aid});
+            this.cancel = false;
+            this.submit = true;
+
+        },
+        vocativeShow:async function(){
+            this.vocativeDefaultShow = false;
+            this.vocativeChangeShow = true;
+            this.dataVocativeText = false;
+            this.dataVocative = true;
+        },
+        vocationSubmit:async function(){
+            let vocaArrr = this.filteredList.filter(e=>{
+                if(e.vocative !== 'Anh' && e.vocative !== 'Chị'){
+                    return e
+                }
+            });
+            let vocativeSave = await axios.post('/api/vocative',{vocative:vocaArrr});
+            return location.reload()
+        }
+
+
+    },
+});
+Vue.component('addcookie', {
+    template:' <div class="content content-full-width inbox animated fadeIn" id="content">\n' +
+        '        <div class="row">\n' +
+        '\n' +
+        '            <div class="col-lg-12 ui-sortable ">\n' +
+        '                <div class="panel panel-inverse">\n' +
+        '                    <!-- begin panel-heading -->\n' +
+        '                    <div class="panel-heading ui-sortable-handle" style="background-color: #2c3e50">\n' +
+        '                        <div class="panel-heading-btn">\n' +
+        '                            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>\n' +
+        '                            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>\n' +
+        '                            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>\n' +
+        '                            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>\n' +
+        '                        </div>\n' +
+        '                        <h4  class="panel-title animated flash">Thêm tài khoản Cookie</h4>\n' +
+        '                    </div>\n' +
+        '                    <!-- end panel-heading -->\n' +
+        '                    <!-- begin panel-body -->\n' +
+        '\n' +
+        '                    <div class="panel-body panel-form">\n' +
+        '                        <div class="form-horizontal form-bordered">\n' +
+        '                            <div class="form-group row">\n' +
+        '                                <label class="col-md-4 col-form-label">Cookie</label>\n' +
+        '                                <div class="col-md-8">\n' +
+        '                                    <div class="input-group date" >\n' +
+        '                                        <textarea spellcheck="false" v-model="cookie" class="form-control" rows="3"></textarea>\n' +
+        '\n' +
+        '                                    </div>\n' +
+        '                                </div>\n' +
+        '                            </div>\n' +
+        '\n' +
+        '                            <div class="form-group row">\n' +
+        '                                <label class="col-md-4 col-form-label"></label>\n' +
+        '                                <div class="col-md-8">\n' +
+        '                                    <button v-show="buttonAdd" class="btn btn-primary" @click="addfacebookaccount"><i class="fa fa-paper-plane"></i> Thêm</button>\n' +
+        '                                    <span v-show="loadingAdd"><img src="/img/load.svg" alt=""> Đang xử lí <span class="animated flash infinite delay-1s"> . . .  </span></span>\n' +
+        '                                    <button style="margin-left: 10px" class="btn btn-danger">Hủy</button>\n' +
+        '                                    <code v-show="errorShow">{{error}}</code>\n' +
+        '                                </div>\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '                    </div>\n' +
+        '                    <!-- end panel-body -->\n' +
+        '                </div>\n' +
+        '            </div>\n' +
+        '        </div>\n' +
+        '        <div class="panel panel-inverse">\n' +
+        '            <div class="panel-body">\n' +
+        '                <div class="table-responsive">\n' +
+        '                <table class="table table-striped table-bordered">\n' +
+        '                    <thead>\n' +
+        '                    <tr>\n' +
+        '                        <th width="1%">STT</th>\n' +
+        '                        <th class="text-nowrap"></th>\n' +
+        '\n' +
+        '                        <th class="text-nowrap">ID</th>\n' +
+        '                        <th class="text-nowrap">Facebook</th>\n' +
+        '\n' +
+        '                        <th class="text-nowrap">Tình trạng</th>\n' +
+        '                        <th class="text-nowrap"></th>\n' +
+        '                    </tr>\n' +
+        '                    </thead>\n' +
+        '                    <tbody>\n' +
+        '                    <tr class="odd gradeX" v-for="(data,index) in container.account" :key="index">\n' +
+        '                        <td style="color:white" width="1%" class="f-s-600 ">{{index+1}}</td>\n' +
+        '                        <td><img :src="data.FacebookImage" alt=""></td>\n' +
+        '                        <td>{{data.ID_sender}}</td>\n' +
+        '                        <td><a target="_blank" :href="data.FacebookUrl">{{data.FacebookName}}</a></td>\n' +
+        '                        <td v-if="data.status === \'active\'"><i class="fa fa-check-square" style="color:#93ff68"></i> <span style="color:#00ff00">{{data.status}}</span></td>\n' +
+        '                        <td v-if="data.status === \'Cookie đã hết hạn.Vui lòng lấy lại Cookie\' || data.status === \'Thông tin Tài khoản mật khẩu không chính xác hoặc đã bị checkpoint\'"><i class="fa fa-check-square" style="color:red"></i> <span class="animated infinite flash" style="color:red">{{data.status}}</span></td>\n' +
+        '\n' +
+        '\n' +
+        '                        <td><center><i class="fa fa-trash-alt trashremove" style="color:red" @click="removeCookie(data.ID_sender)"></i></center> </td>\n' +
+        '                    </tr>\n' +
+        '\n' +
+        '\n' +
+        '                    </tbody>\n' +
+        '                </table>\n' +
+        '                </div>\n' +
+        '            </div>\n' +
+        '            <!-- end panel-body -->\n' +
+        '        </div>\n' +
+        '        <!-- end panel -->\n' +
+        '    </div>',
+    data(){
+        return {
+
+            store:[],
+            cookie:'',
+            buttonAdd:true,
+            loadingAdd:false,
+            error:'',
+            errorShow:false
+
+
+
+        }
+    },
+
+    created:async function(){
+
+
+        let allAccount = await axios.post('/api/getAllAccount');
+        let result = allAccount.data.data.filter(e=>{
+            if(e.type === 'cookie'){
+                return e
+            }
+        });
+        return store.state.account = result
+
+
+
+
+    },
+    computed: {
+        container () {
+            return store.state
+        }
+    },
+    methods:{
+
+        addfacebookaccount:async function(){
+            this.buttonAdd = false;
+            this.loadingAdd = true;
+            let _ = this;
+
+            let result = this.cookie.split('\n').map(e=>{
+                let objResult = {};
+                this.cookie.split(';').filter(e=>{
+                    if(e.trim().length >0){
+                        return e
+                    }
+                }).map(e=>{
+                    objResult[e.split('=')[0].trim()] = e.split('=')[1].trim()
+                });
+                return objResult
+            });
+
+            this.cookie = '';
+
+            let send = await axios.post('/api/account',{type:'cookie',data:result})
+
+            if(send.data.error === null){
+
+                this.container.account.push(send.data)
+            }else {
+                this.errorShow = true;
+                this.error = send.data.error;
+                setTimeout(function () {
+                    _.error = '';
+                },15000)
+            }
+            this.buttonAdd = true;
+            this.loadingAdd = false;
+
+
+        },
+        removeCookie:async function(id){
+
+
+            let del = await axios.post('/api/deleteAccount',{ID_sender:id});
+            store.state.account = store.state.account.filter(e=>{
+                if(e.ID_sender !== id){
+                    return e
+                }
+            })
+
+
+        }
+
+
+    },
+
+});
+Vue.component('addpassword', {
+    template:' <div class="content content-full-width inbox animated fadeIn" id="content">\n' +
+        '        <div class="row">\n' +
+        '\n' +
+        '            <div class="col-lg-12 ui-sortable ">\n' +
+        '                <div class="panel panel-inverse">\n' +
+        '                    <!-- begin panel-heading -->\n' +
+        '                    <div class="panel-heading ui-sortable-handle" style="background-color: #2c3e50">\n' +
+        '                        <div class="panel-heading-btn">\n' +
+        '                            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>\n' +
+        '                            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>\n' +
+        '                            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>\n' +
+        '                            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>\n' +
+        '                        </div>\n' +
+        '                        <h4  class="panel-title animated flash">Thêm tài khoản Facebook</h4>\n' +
+        '                    </div>\n' +
+        '                    <!-- end panel-heading -->\n' +
+        '                    <!-- begin panel-body -->\n' +
+        '\n' +
+        '                    <div class="panel-body panel-form">\n' +
+        '                        <div class="form-horizontal form-bordered">\n' +
+        '                            <div class="form-group row">\n' +
+        '                                <label class="col-md-4 col-form-label">Tài khoản</label>\n' +
+        '                                <div class="col-md-8">\n' +
+        '                                    <div class="input-group date" >\n' +
+        '                                        <input type="text" v-model="username" placeholder="Email hoặc Số điện thoại tài khoản facebook" class="form-control">\n' +
+        '                                        <div class="input-group-addon">\n' +
+        '                                            <i class="fa fa-user"></i>\n' +
+        '                                        </div>\n' +
+        '                                    </div>\n' +
+        '                                </div>\n' +
+        '                            </div>\n' +
+        '                            <div class="form-group row">\n' +
+        '                                <label class="col-md-4 col-form-label">Mật khẩu</label>\n' +
+        '\n' +
+        '                                <div class="col-md-8">\n' +
+        '                                    <div class="input-group date" >\n' +
+        '                                        <input type="text" v-model="password" placeholder="Mật khẩu tài khoản" class="form-control">\n' +
+        '                                        <span class="input-group-addon">\n' +
+        '\t\t\t\t\t\t\t\t\t\t\t<i class="fa fa-key"></i>\n' +
+        '\t\t\t\t\t\t\t\t\t\t\t</span>\n' +
+        '                                    </div>\n' +
+        '                                </div>\n' +
+        '                            </div>\n' +
+        '                            <div class="form-group row">\n' +
+        '                                <label class="col-md-4 col-form-label">Ngày/Tháng/Năm sinh</label>\n' +
+        '                                <div class="col-md-8">\n' +
+        '                                    <div class="row row-space-10">\n' +
+        '                                        <div class="col-xs-6">\n' +
+        '                                            <input type="number" v-model="date" min="1" max="31" class="form-control"  placeholder="Ngày">\n' +
+        '\n' +
+        '                                        </div>\n' +
+        '                                        <div class="col-xs-6">\n' +
+        '                                            <input type="number" v-model="month" min="01" max="12" class="form-control"  placeholder="Tháng">\n' +
+        '                                        </div>\n' +
+        '                                        <div class="col-xs-6">\n' +
+        '                                            <input type="number" v-model="year" min="01" max="9999" class="form-control"  placeholder="Năm ">\n' +
+        '                                        </div>\n' +
+        '                                    </div>\n' +
+        '                                </div>\n' +
+        '                            </div>\n' +
+        '                            <div class="form-group row">\n' +
+        '                                <label class="col-md-4 col-form-label"></label>\n' +
+        '                                <div class="col-md-8">\n' +
+        '\n' +
+        '                                    <button v-show="buttonAdd" class="btn btn-primary" @click="addfacebookaccount"><i class="fa fa-paper-plane"></i> Thêm</button>\n' +
+        '                                    <span v-show="loadingAdd"><img src="/img/load.svg" alt=""> Đang xử lí <span class="animated flash infinite delay-1s"> . . .  </span></span>\n' +
+        '                                    <button class="btn btn-danger">Hủy</button>\n' +
+        '\n' +
+        '                                </div>\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '                    </div>\n' +
+        '                    <!-- end panel-body -->\n' +
+        '                </div>\n' +
+        '            </div>\n' +
+        '        </div>\n' +
+        '        <div class="panel panel-inverse">\n' +
+        '            <div class="panel-body">\n' +
+        '                <div class="table-responsive">\n' +
+        '                <table class="table table-striped table-bordered">\n' +
+        '                    <thead>\n' +
+        '                    <tr>\n' +
+        '                        <th width="1%">STT</th>\n' +
+        '                        <th class="text-nowrap"></th>\n' +
+        '                        <th class="text-nowrap">Tài khoản</th>\n' +
+        '                        <th class="text-nowrap">Mật Khẩu</th>\n' +
+        '                        <th class="text-nowrap">Facebook</th>\n' +
+        '\n' +
+        '                        <th class="text-nowrap text-center">Ngày/Tháng/Năm sinh</th>\n' +
+        '                        <th class="text-nowrap">Tình trạng</th>\n' +
+        '                        <th class="text-nowrap"></th>\n' +
+        '                    </tr>\n' +
+        '                    </thead>\n' +
+        '                    <tbody>\n' +
+        '                    <tr class="odd gradeX" v-for="(data,index) in store" :key="index">\n' +
+        '                        <td width="1%" class="f-s-600 text-inverse">{{index+1}}</td>\n' +
+        '                        <td><img :src="data.FacebookImage" alt=""></td>\n' +
+        '                        <td>{{data.username}}</td>\n' +
+        '                        <td>{{data.password}}</td>\n' +
+        '                        <td><a :href="data.FacebookUrl">{{data.FacebookName}}</a></td>\n' +
+        '\n' +
+        '                        <td class="text-center">{{data.date+\'/\'+data.month+\'/\'+data.year}}</td>\n' +
+        '                        <td v-if="data.status === \'active\'"><i class="fa fa-check-square" style="color:green"></i> <span style="color:green">{{data.status}}</span></td>\n' +
+        '                        <td v-if="data.status === \'Thông tin Tài khoản mật khẩu không chính xác hoặc đã bị checkpoint\'"><i class="fa fa-check-square" style="color:#800a05"></i> <span class="animated infinite flash" style="color:#800d0b">{{data.status}}</span></td>\n' +
+        '\n' +
+        '                        <td><center><i @click="remove(data.username)" class="fa fa-trash-alt trashremove" style="color:red"></i></center> </td>\n' +
+        '                    </tr>\n' +
+        '\n' +
+        '\n' +
+        '                    </tbody>\n' +
+        '                </table>\n' +
+        '                </div>\n' +
+        '            </div>\n' +
+        '            <!-- end panel-body -->\n' +
+        '        </div>\n' +
+        '        <!-- end panel -->\n' +
+        '    </div>',
+    data(){
+        return {
+            username:'',
+            password:'',
+            date:'',
+            month:'',
+            year:'',
+
+            store:[],
+            buttonAdd:true,
+            loadingAdd:false
+
+
+
+        }
+    },
+
+    created:async function(){
+
+
+        let allAccount = await axios.post('/api/getAllAccount');
+
+        let result = allAccount.data.data.filter(e=>{
+            if(e.type === 'pass'){
+                return e
+            }
+        });
+
+        this.store = result;
+
+
+
+    },
+    methods:{
+
+        addfacebookaccount:async function(){
+            this.buttonAdd = false;
+            this.loadingAdd = true;
+            let send = await axios.post('/api/account',{type:'pass',username:this.username,password:this.password,date:this.date,month:this.month,year:this.year});
+            if(send.data.error === null){
+                this.store.push(send.data)
+            }else {
+                alert(send.data.error)
+            }
+            this.username = '';
+            this.password = '';
+            this.date = '';
+            this.month = '';
+            this.year  = '';
+            this.buttonAdd = true;
+            this.loadingAdd = false;
+        },
+        remove:async function(username){
+
+
+            let send = await axios.post('/api/deleteAccount',{ID_sender:username});
+
+            this.store = this.store.filter(e=>{
+                if(e.ID_sender !== username){
+                    return e
+                }
+            })
+
+
+        }
+
+
+    },
+});
+Vue.component('autochat', {
+    template:' <div class="content content-full-width inbox  animated fadeIn" id="content">\n' +
+        '        <div class="panel panel-inverse">\n' +
+        '            <!-- begin panel-heading -->\n' +
+        '            <div class="panel-heading ui-sortable-handle" style="background-color: #2c3e50">\n' +
+        '                <div class="panel-heading-btn">\n' +
+        '                    <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>\n' +
+        '                    <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>\n' +
+        '                    <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>\n' +
+        '                    <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>\n' +
+        '                </div>\n' +
+        '                <h4  class="panel-title">Trả lời tin nhắn tự động</h4>\n' +
+        '            </div>\n' +
+        '            <div class="panel-body">\n' +
+        '                <div class="form-horizontal" data-parsley-validate="true" name="demo-form" novalidate="">\n' +
+        '                    <div class="form-group row m-b-15">\n' +
+        '                        <label class="col-md-4 col-sm-4 col-form-label">Danh sách từ khóa * :</label>\n' +
+        '                        <div class="col-md-6 col-sm-6">\n' +
+        '                            <div class="form-control" data-parsley-required="true"\n' +
+        '                                 style="overflow-x: scroll;overflow-y: hidden;padding-right: 20px"\n' +
+        '                                 type="text">\n' +
+        '\n' +
+        '                                <span class="label label-inverse" style="margin-right:5px;margin-top:5px"\n' +
+        '                                      v-for="data in content.keyList">{{data}} <span @click="removeKey(data)"\n' +
+        '                                                                                     class="removeKey">x</span></span>\n' +
+        '\n' +
+        '\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '                        <div class="col-md-2 col-sm-2">\n' +
+        '                            <input @keyup.13="addKey" autocomplete="off" class="form-control"\n' +
+        '                                   data-parsley-required="true"\n' +
+        '                                   name="fullname" placeholder="Từ khóa" spellcheck="false" type="text"\n' +
+        '                                   v-model="keyword">\n' +
+        '                        </div>\n' +
+        '                    </div>\n' +
+        '\n' +
+        '                    <div class="form-group row m-b-15">\n' +
+        '                        <label class="col-md-4 col-sm-4 col-form-label" for="message">Nội dung :</label>\n' +
+        '                        <div class="col-md-8 col-sm-8">\n' +
+        '                            <textarea  v-model="content.message" class="form-control" data-parsley-range="[20,200]" id="message" name="message"\n' +
+        '                                      placeholder="Nội dung"\n' +
+        '                                      rows="4" spellcheck="false"></textarea>\n' +
+        '                        </div>\n' +
+        '                    </div>\n' +
+        '                    <div class="form-group row m-b-15">\n' +
+        '                        <label class="col-md-4 col-sm-4 col-form-label" for="message">Tài khoản :</label>\n' +
+        '                        <div class="col-md-8 col-sm-8">\n' +
+        '                            <div class="form-check">\n' +
+        '\n' +
+        '\n' +
+        '\n' +
+        '                                <span :key="index" v-for="(data,index) in account" style="margin-right: 30px">\n' +
+        '\n' +
+        '                                     <input  v-model="content.select" :value="data.ID_sender" class="form-check-input" data-parsley-mincheck="2"\n' +
+        '                                            data-parsley-multiple="mincheck"\n' +
+        '                                            id="mincheck" required="" spellcheck="false" type="checkbox"\n' +
+        '                                            value="foo">\n' +
+        '                                <label class="form-check-label">{{data.FacebookName}}</label>\n' +
+        '\n' +
+        '\n' +
+        '                                </span>\n' +
+        '\n' +
+        '                            </div>\n' +
+        '\n' +
+        '\n' +
+        '                        </div>\n' +
+        '                    </div>\n' +
+        '                    <div class="form-group row m-b-15">\n' +
+        '                        <label class="col-md-4 col-sm-4 col-form-label" for="message"></label>\n' +
+        '                        <div class="col-md-2 col-sm-2">\n' +
+        '                        <div class="form-check">\n' +
+        '\n' +
+        '                            <button v-show="addDisplay" @click="addContent" class="btn btn-outline-danger" style="margin-left: -20px">Add</button>\n' +
+        '                            <button v-show="updateDisplay" @click="updateContent" class="btn btn-outline-primary"  style="margin-left: -20px">Update</button>\n' +
+        '\n' +
+        '\n' +
+        '\n' +
+        '\n' +
+        '                        </div>\n' +
+        '                        </div>\n' +
+        '                        <div v-show="errorShow" class="col-md-6 col-sm-6">\n' +
+        '                            <div class="form-check">\n' +
+        '                                <br>\n' +
+        '                                <code style="background: none;color:white;border:1px solid red;margin-left: -20px;" class="animated flash" v-show="errorShow">{{error}}</code>\n' +
+        '\n' +
+        '\n' +
+        '\n' +
+        '\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '                    </div>\n' +
+        '\n' +
+        '                </div>\n' +
+        '            </div>\n' +
+        '            <div class="panel-body">\n' +
+        '                <div class="dataTables_wrapper form-inline dt-bootstrap no-footer" id="data-table-default_wrapper">\n' +
+        '\n' +
+        '                    <div class="row">\n' +
+        '                        <div class="col-sm-6">\n' +
+        '                        </div>\n' +
+        '                        <div class="col-sm-6">\n' +
+        '                        </div>\n' +
+        '                    </div>\n' +
+        '                    <div class="row">\n' +
+        '                        <div class="col-sm-12">\n' +
+        '                            <div class="table-responsive">\n' +
+        '                                <table class="table table-striped table-bordered">\n' +
+        '                                    <thead>\n' +
+        '                                    <tr>\n' +
+        '                                        <th width="1%">STT</th>\n' +
+        '                                        <th class="text-nowrap"></th>\n' +
+        '                                        <th class="text-nowrap">ID</th>\n' +
+        '                                        <th class="text-nowrap">Facebook</th>\n' +
+        '                                        <th class="text-nowrap">Tình trạng</th>\n' +
+        '                                        <th class="text-nowrap"></th>\n' +
+        '                                    </tr>\n' +
+        '                                    </thead>\n' +
+        '                                    <tbody>\n' +
+        '                                    <tr  v-for="(data,index) in contentArr" :key="index">\n' +
+        '                                        <td >{{index+1}}</td>\n' +
+        '                                        <td>\n' +
+        '                                            <span v-for="data1 in data.keyList" style="margin-right:5px" class="label label-inverse">{{data1}}</span>\n' +
+        '\n' +
+        '                                        </td>\n' +
+        '                                        <td>{{data.message}}</td>\n' +
+        '                                        <td><span v-for="data2 in data.select">{{findName(data2)}},</span></td>\n' +
+        '                                        <td><i @click="editContent(data)" class="cur fa fa-edit text-danger"></i></td>\n' +
+        '                                        <td><i @click="removeContent(data)" class="cur fa fa-trash text-primary"></i></td>\n' +
+        '\n' +
+        '                                    </tr>\n' +
+        '                                    </tbody>\n' +
+        '                                </table>\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '                    </div>\n' +
+        '                    <div class="row">\n' +
+        '                        <div class="col-sm-7">\n' +
+        '                            <div class="dataTables_paginate paging_simple_numbers" id="data-table-default_paginate" v-show="pagination">\n' +
+        '                                <ul class="pagination">\n' +
+        '                                    <li class="paginate_button previous disabled" id="data-table-default_previous"><a\n' +
+        '                                            aria-controls="data-table-default" data-dt-idx="0" href="#" tabindex="0">Previous</a>\n' +
+        '                                    </li>\n' +
+        '                                    <li class="paginate_button active"><a aria-controls="data-table-default"\n' +
+        '                                                                          data-dt-idx="1"\n' +
+        '                                                                          href="#" tabindex="0">1</a></li>\n' +
+        '                                    <li class="paginate_button "><a aria-controls="data-table-default" data-dt-idx="2"\n' +
+        '                                                                    href="#" tabindex="0">2</a></li>\n' +
+        '                                    <li class="paginate_button "><a aria-controls="data-table-default" data-dt-idx="3"\n' +
+        '                                                                    href="#" tabindex="0">3</a></li>\n' +
+        '                                    <li class="paginate_button "><a aria-controls="data-table-default" data-dt-idx="4"\n' +
+        '                                                                    href="#" tabindex="0">4</a></li>\n' +
+        '                                    <li class="paginate_button "><a aria-controls="data-table-default" data-dt-idx="5"\n' +
+        '                                                                    href="#" tabindex="0">5</a></li>\n' +
+        '                                    <li class="paginate_button "><a aria-controls="data-table-default" data-dt-idx="6"\n' +
+        '                                                                    href="#" tabindex="0">6</a></li>\n' +
+        '                                    <li class="paginate_button next" id="data-table-default_next"><a\n' +
+        '                                            aria-controls="data-table-default"\n' +
+        '                                            data-dt-idx="7"\n' +
+        '                                            href="#"\n' +
+        '                                            tabindex="0">Next</a>\n' +
+        '                                    </li>\n' +
+        '                                </ul>\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '                    </div>\n' +
+        '                </div>\n' +
+        '            </div>\n' +
+        '\n' +
+        '\n' +
+        '            <!-- end panel -->\n' +
+        '        </div>\n' +
+        '        <!-- end panel -->\n' +
+        '    </div>',
+    data(){
+        return {
+            updateDisplay:false,
+            addDisplay:true,
+            keyword:'',
+            name:'testing',
+            account:[],
+            error:'test',
+            content:{
+                keyList:[],
+                message:'',
+                select:[]
+            },
+            contentArr:[],
+            pc:true,
+            mobile:false,
+            errorShow:false,
+            findName:(id)=>{
+                return this.account.filter(e=>{
+                    if(e.ID_sender === id){
+                        return e
+                    }
+                })[0].FacebookName
+            },
+            fullname: '',
+            pagination:false
+        }
+    },
+
+    created: async  function(){
+
+        let width = window.innerWidth;
+
+        if(width <= 768){
+
+            this.pc = false;
+            this.mobile = true;
+        }else {
+            this.pc = true;
+            this.mobile = false;
+        }
+
+        let result = await axios.post('/api/getAutoChat');
+        this.contentArr = result.data.chatBotKey;
+        return this.account = result.data.AllAccount
+    },
+    computed: {
+
+        filteredList() {
+            let _ = this;
+            return this.listFriend.filter(e=>{
+                return e.fullName.toLowerCase().includes(_.search.toLowerCase())
+            })
+
+        },
+
+
+
+    },
+    beforeMount:function(){
+
+
+    },
+    mounted:function(){
+
+
+    },
+    methods:{
+        addKey:function () {
+            this.content.keyList.push(this.keyword);
+            this.keyword = '';
+
+        },
+        format:function(){
+            this.keyword = '';
+        },
+        removeKey:function(data){
+            this.content.keyList = this.content.keyList.filter(e=>{
+
+                if(e !== data){
+                    return e
+                }
+            })
+            return this.content
+        },
+        addContent:async function () {
+            this.errorShow = false;
+            if(this.content.keyList.length === 0){
+                this.errorShow = true;
+                return this.error = 'Bạn không được để trống list từ khóa'
+            }
+            if(this.content.select.length === 0){
+                this.errorShow = true;
+                return this.error = 'Bạn phải chọn ít nhất 1 tài khoản để áp dụng chế độ này'
+            }
+            if(this.content.message === ''){
+                this.errorShow = true;
+                return this.error = 'Bạn phải chọn nội dung trả lời tự động'
+            }
+            this.contentArr.push(this.content);
+            let sendContent = await axios.post('/api/addAutoChat', this.content);
+            return location.reload();
+        },
+        editContent:function(data){
+            this.updateDisplay = true;
+            this.addDisplay = false;
+            this.content = data
+        },
+        removeContent:async function(data){
+
+            let sendKeyDelete = await axios.post('/api/deleteAutoChat',{KeySecure:data.KeySecure});
+            return location.reload();
+
+        },
+        updateContent:async function(){
+            let sendContent = await axios.post('/api/updateAutoChat',this.content);
+            return location.reload();
+        }
+
+    },
+});
+Vue.component('scenario', {
+    template:'  <div class="content content-full-width inbox  animated fadeIn " id="content">\n' +
+        '\n' +
+        '            <div class="panel panel-inverse" >\n' +
+        '                <div class="panel-heading ui-sortable-handle" style="background-color: #2c3e50">\n' +
+        '                    <div class="panel-heading-btn">\n' +
+        '                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>\n' +
+        '                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>\n' +
+        '                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>\n' +
+        '                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>\n' +
+        '                    </div>\n' +
+        '                    <h4  class="panel-title">Kịch bản tin nhắn</h4>\n' +
+        '                </div>\n' +
+        '                <div class="panel-body">\n' +
+        '                    <div class="form-horizontal" >\n' +
+        '                        <div class="form-group row m-b-15">\n' +
+        '                            <label class="col-md-4 col-sm-4 col-form-label" >Chương trình * :</label>\n' +
+        '                            <div class="col-md-8 col-sm-8">\n' +
+        '                                <div class="row">\n' +
+        '                                    <div  v-for="(data,index) in AllData" :key="index" @click="scenarioSection(data)" class="col-md-2 cur">\n' +
+        '                                        <div class="alert alert-secondary fade show m-b-10" style="background-color: #2c3e50;border:1px solid #8dc2ff ">\n' +
+        '                                            {{data.nameScenario}}\n' +
+        '                                        </div>\n' +
+        '\n' +
+        '                                    </div>\n' +
+        '                                    <div @click="addScenario" class="col-md-2 cur" >\n' +
+        '                                        <div class="alert alert-dark fade show m-b-10" style="background-color: #2c3e50;">\n' +
+        '                                            <center style="color:white"><i class="fa fa-plus-square"></i></center>\n' +
+        '                                        </div>\n' +
+        '                                    </div>\n' +
+        '                                </div>\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '                        <div class="form-group row m-b-15">\n' +
+        '                            <label class="col-md-4 col-sm-4 col-form-label">Cú pháp * :</label>\n' +
+        '                            <div class="col-md-8 col-sm-8">\n' +
+        '                                <input v-model="main.syntax" spellcheck="false" autocomplete="off" class="form-control" type="text"  name="email" data-parsley-type="email" placeholder="Cú pháp ... " data-parsley-required="true">\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '                        <div class="form-group row m-b-15">\n' +
+        '                            <label class="col-md-4 col-sm-4 col-form-label">Tên kịch bản :</label>\n' +
+        '                            <div class="col-md-8 col-sm-8">\n' +
+        '                                <input v-model="main.nameScenario" spellcheck="false" autocomplete="off" class="form-control" type="text"  name="email" data-parsley-type="email" placeholder="Tên kịch bản ... " data-parsley-required="true">\n' +
+        '\n' +
+        '\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '                        <div class="form-group row m-b-15">\n' +
+        '                            <label class="col-md-4 col-sm-4 col-form-label">Áp dụng :</label>\n' +
+        '                            <div class="col-md-8 col-sm-8">\n' +
+        '                                <span  v-for="data in allAccount">\n' +
+        '\n' +
+        '  <input style="margin-top:15px" type="checkbox" :id="data.FacebookName" :value="data.ID_sender" v-model="main.checkedNames">\n' +
+
+        '  <label style=";margin-left:7px" :for="data.FacebookName">{{data.FacebookName}}</label>\n' +
+        '                        </span>\n' +
+        '\n' +
+        '\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '                        <div class="form-group row m-b-15">\n' +
+        '                            <label class="col-md-4 col-sm-4 col-form-label">Nội dung :</label>\n' +
+        '                            <div class="col-md-8 col-sm-8">\n' +
+        '                                <div  class="table-responsive">\n' +
+        '                                    <table class="table table-striped table-condensed">\n' +
+        '                                        <thead>\n' +
+        '                                        <tr>\n' +
+        '                                            <th>Thời gian</th>\n' +
+        '                                            <th>Nội dung</th>\n' +
+        '                                            <th>Hình ảnh</th>\n' +
+        '                                            <th></th>\n' +
+        '                                        </tr>\n' +
+        '                                        </thead>\n' +
+        '                                        <tbody>\n' +
+        '\n' +
+        '                                        <tr v-for="element in main.dataArr">\n' +
+        '                                            <td>\n' +
+        '                                                <input type="number" v-model="element.time" style="width: 40px;text-align: center" min="1" max="999">\n' +
+        '                                                <select v-model="element.timeName">\n' +
+        '                                                    <option disabled value="Phút">Phút</option>\n' +
+        '                                                    <option v-for="name in timeNameArr" :value="name">{{name}}</option>\n' +
+        '                                                </select>\n' +
+        '\n' +
+        '\n' +
+        '                                            </td>\n' +
+        '                                            <td><input type="text" v-model="element.text" spellcheck="false" class="form-control"></td>\n' +
+        '                                            <td @click="markIndex(element)"> <label :for="\'upload-photo-\'+ind"><i style="margin-top:10px" v-if="element.base64img === null" class="cur fas fa-camera-retro fa-lg"></i><img\n' +
+        '                                                    v-if="element.base64img !== null" width="30px" height="30px" :src="element.base64img"  alt=""></label></td>\n' +
+        '\n' +
+        '                                            <input style="display: none" @change="uploadFile"  type="file"  name="photo" :id="\'upload-photo-\'+ind" />\n' +
+        '                                            <td @click="removeSceComponent(element)"><i style="margin-top:10px" class="fa fa-trash text-danger cur"></i></td>\n' +
+        '                                        </tr>\n' +
+        '                                        <tr v-if="dataShow">\n' +
+        '                                            <td>\n' +
+        '                                                <input type="number" v-model="data.time" style="width: 40px;text-align: center" min="1" max="999">\n' +
+        '                                                <select v-model="data.timeName">\n' +
+        '                                                    <option disabled value="Phút">Phút</option>\n' +
+        '                                                    <option v-for="name in timeNameArr" :value="name">{{name}}</option>\n' +
+        '                                                </select>\n' +
+        '\n' +
+        '\n' +
+        '                                            </td>\n' +
+        '                                            <td><input type="text" v-model="data.text" spellcheck="false" class="form-control"></td>\n' +
+        '                                            <td @click="markIndex(null)"> <label :for="\'upload-photo-\'+ind"><i style="margin-top:10px" v-if="data.base64img === null" class="cur fas fa-camera-retro fa-lg"></i><img\n' +
+        '                                                    v-if="data.base64img !== null" width="30px" height="30px" :src="data.base64img"  alt=""></label></td>\n' +
+        '\n' +
+        '                                            <input style="display: none" @change="uploadFile"  type="file"  name="photo" :id="\'upload-photo-\'+ind" />\n' +
+        '                                            <td></td>\n' +
+        '                                        </tr>\n' +
+        '                                        <tr><td><button class="btn btn-default" @click="addSce">Thêm</button></td></tr>\n' +
+        '\n' +
+        '\n' +
+        '                                        </tbody>\n' +
+        '                                    </table>\n' +
+        '                                </div>\n' +
+        '\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '\n' +
+        '                        <div class="form-group row m-b-15">\n' +
+        '                            <label class="col-md-4 col-sm-4 col-form-label" ></label>\n' +
+        '                            <div class="col-md-8 col-sm-8">\n' +
+        '                                <button @click="scenario" style="margin-left: 10px" class="btn btn-outline-primary">Xác nhận</button>\n' +
+        '                                <button @click="removeScenatio" style="margin-left: 10px;margin-right: 20px" class="btn btn-outline-danger">Xóa</button>\n' +
+        '                                <span v-show="errorShow">{{error}}</span>\n' +
+
+        '\n' +
+        '\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '\n' +
+        '\n' +
+        '\n' +
+        '                    </div>\n' +
+        '                </div>\n' +
+        '            </div>\n' +
+        '\n' +
+        '\n' +
+        '    </div>',
+    data(){
+        return {
+            time:'1',
+            timeName:'Phút',
+            timeNameArr:['Ngày','Giờ','Phút'],
+            ind:0,
+            mark:null,
+            error:null,
+            errorShow:false,
+            AllData:[],
+
+            allAccount:[],
+            main:{
+                syntax:null,
+                nameScenario:null,
+                dataArr:[],
+                checkedNames:[]
+
+            },
+            data:{
+                time:'1',
+                timeName:'Phút',
+                text:null,
+                base64img:null
+            },
+            dataShow:false,
+            fullname:''
+
+        }
+    },
+
+    created: async  function(){
+
+        let allAcc = await axios.post('/api/getAllAccount');
+        this.allAccount = allAcc.data.data;
+
+        let alldata = await axios.post('/api/getAllScenario');
+
+        return this.AllData = alldata.data;
+    },
+
+    methods:{
+        uploadFile:async function (event) {
+            this.errorShow = false;
+            let _ = this;
+            let input = event.target;
+            if (input.files && input.files[0]) {
+                let reader = new FileReader();
+                reader.onload = (e) => {
+                    if(_.mark === null){
+                        _.data.base64img = e.target.result;
+                    }else {
+                        _.main.dataArr = _.main.dataArr.filter(em=>{
+                            if(em.text === this.mark.text && em.base64img === this.mark.base64img && em.time === this.mark.time && em.timeName === this.mark.timeName){
+                                em.base64img = e.target.result;
+                            }
+                            return em
+                        })
+                    }
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        },
+        markIndex:async function(element){
+            return this.mark = element;
+        },
+        addSce:async function(){
+            this.errorShow = false;
+
+            let sce = this.data;
+            if((sce.text === null || sce.text.trim() === '') && (sce.base64img === null || sce.base64img.trim() === '') && this.dataShow === true){
+
+                this.error = 'Kịch bản trước phải có ít nhất nội dung văn bản hoặc hình ảnh !!!';
+                return this.errorShow = true;
+            }else {
+
+                this.main.dataArr.push(sce);
+                this.data = {
+                    time:'1',
+                    timeName:'Phút',
+                    text:null,
+                    base64img:null
+                }
+            }
+            return this.main.dataArr;
+        },
+        scenario:async function(){
+            this.errorShow = false;
+            if(this.main.nameScenario === null){
+                this.error = 'Tên kịch bản không được bỏ trống';
+                return this.errorShow = true;
+            }
+            if((this.data.text !== null && this.data.text.trim() !== '') || (this.data.base64img !== null && this.data.base64img.trim() !== '')){
+                this.main.dataArr.push(this.data)
+            }
+            if(this.main.dataArr.length === 0){
+                this.error = 'Bạn phải thêm ít nhất 1 nội dung kịch bản !!!';
+                return this.errorShow = true;
+            }
+            if(this.main.syntax === null || this.main.syntax === ''){
+                this.dataShow = false;
+                this.error = 'Bạn không được để trống cú pháp !!!';
+                return this.errorShow = true;
+            }
+            if(this.main.checkedNames.length === 0){
+
+                this.dataShow = false;
+                this.error = 'Bạn phải chọn ít nhất 1 nick áp dụng !!!';
+                return this.errorShow = true;
+            }
+
+
+
+            this.main.dataArr =  this.main.dataArr.filter(e=>{
+                if((e.text !== null && e.text.trim() !== '') || (e.base64img !== null && e.base64img.trim() !== '')){
+                    return e
+                }
+            });
+            this.data = {
+                time:'1',
+                timeName:'Phút',
+                text:null,
+                base64img:null
+            };
+            if(this.main.syntax === null || this.main.syntax.trim() === ''){
+                this.error = 'Bạn không được bỏ trống cú pháp tin nhắn !!!';
+                return this.errorShow = true;
+            }
+
+            let send = await axios.post('/api/setScenario',{data:this.main});
+            let _ = this;
+            this.AllData = this.AllData.filter(e=>{
+                if(e.syntax !== _.main.syntax){
+                    return e
+                }
+            });
+            this.AllData.push(this.main);
+            this.main = {
+                syntax:null,
+                nameScenario:null,
+                dataArr:[],
+                checkedNames:[]
+            }
+
+            return true;
+
+        },
+        removeSceComponent:async function(element){
+            this.errorShow = false;
+            let arr = this.main.dataArr;
+            let textCom = element.text;
+            let time = element.time;
+            let timeName = element.timeName;
+            let base64imgCom = element.base64img;
+            return this.main.dataArr = arr.filter(e=>{
+                if(e.text !== textCom && e.base64img !== base64imgCom){
+                    return e
+                }
+            });
+
+        },
+        addScenario:async function(req,res){
+            return this.main = {
+                syntax:null,
+                nameScenario:null,
+                dataArr:[],
+                checkedNames:[]
+
+            };
+
+        },
+        removeScenatio:async function(){
+
+            let remove = await axios.post('/api/removeScenario',{syntax:this.main.syntax});
+
+            this.AllData = this.AllData.filter(e=>{
+                if(e.syntax !== this.main.syntax){
+                    return e
+                }
+            });
+
+            return this.main = {
+                syntax:null,
+                nameScenario:null,
+                dataArr:[],
+                checkedNames:[]
+
+            };
+
+
+
+        },
+        scenarioSection:async function(data){
+            this.dataShow = false;
+
+            return this.main = data
+        }
+    },
+});
+Vue.component('changepassword', {
+    template:'<div id="content" class="content content-full-width inbox">\n' +
+        '        <!-- begin vertical-box -->\n' +
+        '        <div class="row">\n' +
+        '            <!-- begin col-6 -->\n' +
+        '            <div class="col-lg-12 ui-sortable">\n' +
+        '                <!-- begin panel -->\n' +
+        '                <div class="panel panel-inverse" data-sortable-id="form-validation-1">\n' +
+        '                    <!-- begin panel-heading -->\n' +
+        '                    <div style="background-color: #2c3e50" class="panel-heading ui-sortable-handle">\n' +
+        '                        <div class="panel-heading-btn">\n' +
+        '                            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>\n' +
+        '                            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>\n' +
+        '                            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>\n' +
+        '                            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>\n' +
+        '                        </div>\n' +
+        '                        <h4 class="panel-title">Chỉnh sửa thông tin</h4>\n' +
+        '                    </div>\n' +
+        '                    <!-- end panel-heading -->\n' +
+        '                    <!-- begin panel-body -->\n' +
+        '                    <div class="panel-body">\n' +
+        '                        <div class="form-horizontal" >\n' +
+        '                            <div class="form-group row m-b-15">\n' +
+        '                                <label class="col-md-4 col-sm-4 col-form-label" for="fullname">Họ và Tên * :</label>\n' +
+        '                                <div class="col-md-8 col-sm-8">\n' +
+        '                                    <input spellcheck="false" class="form-control" v-model="info.name" type="text" id="fullname" name="fullname" placeholder="Required" data-parsley-required="true">\n' +
+        '                                </div>\n' +
+        '                            </div>\n' +
+        '                            <div class="form-group row m-b-15">\n' +
+        '                                <label class="col-md-4 col-sm-4 col-form-label" >Số điện thoại * :</label>\n' +
+        '                                <div class="col-md-8 col-sm-8">\n' +
+        '                                    <input spellcheck="false" class="form-control" type="text" v-model="info.phone" name="email" data-parsley-type="email" placeholder="Email" data-parsley-required="true">\n' +
+        '                                </div>\n' +
+        '                            </div>\n' +
+        '                            <div class="form-group row m-b-15">\n' +
+        '                                <label class="col-md-4 col-sm-4 col-form-label" >Gói cước :</label>\n' +
+        '                                <div class="col-md-8 col-sm-8">\n' +
+        '                                    {{dataChat.user.package}}\n' +
+        '                                </div>\n' +
+        '                            </div>\n' +
+        '\n' +
+        '                            <div class="form-group row m-b-0">\n' +
+        '                                <label class="col-md-4 col-sm-4 col-form-label">&nbsp;</label>\n' +
+        '                                <div class="col-md-2 col-sm-2">\n' +
+        '                                        <button @click="changeInfo" type="submit" class="btn btn-outline-primary">Thay đổi thông tin</button>\n' +
+        '                                </div>\n' +
+        '                                <div class="col-md-6 col-sm-6" v-if="alertError.length === 0">\n' +
+        '                                    <p v-if="alert.length>0" style="margin-top:10px;color:#0de800" class="animated flash">{{alert}}</p>\n' +
+        '                                </div>\n' +
+        '                                <div class="col-md-6 col-sm-6" v-if="alertError.length > 0">\n' +
+        '                                    <p v-if="alertError.length>0" style="margin-top:10px;color:#e8585b" class="animated flash">{{alertError}}</p>\n' +
+        '                                </div>\n' +
+        '                        </div>\n' +
+        '                    </div>\n' +
+        '\n' +
+        '                    <!-- end hljs-wrapper -->\n' +
+        '                </div>\n' +
+        '                    <div class="panel panel-inverse" >\n' +
+        '                        <!-- begin panel-heading -->\n' +
+        '                        <div style="background-color: #2c3e50" class="panel-heading ui-sortable-handle">\n' +
+        '                            <div class="panel-heading-btn">\n' +
+        '                                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>\n' +
+        '                                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>\n' +
+        '                                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>\n' +
+        '                                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>\n' +
+        '                            </div>\n' +
+        '                            <h4 class="panel-title">Thay đổi mật khẩu</h4>\n' +
+        '                        </div>\n' +
+        '                        <!-- end panel-heading -->\n' +
+        '                        <!-- begin panel-body -->\n' +
+        '                        <div class="panel-body">\n' +
+        '                            <div class="form-horizontal" >\n' +
+        '                                <div class="form-group row m-b-15">\n' +
+        '                                    <label class="col-md-4 col-sm-4 col-form-label" for="fullname">Mật khẩu mới * :</label>\n' +
+        '                                    <div class="col-md-8 col-sm-8">\n' +
+        '                                        <input spellcheck="false" class="form-control" v-model="password" type="text" name="fullname" placeholder="Password" data-parsley-required="true">\n' +
+        '                                    </div>\n' +
+        '                                </div>\n' +
+        '                                <div class="form-group row m-b-15">\n' +
+        '                                    <label class="col-md-4 col-sm-4 col-form-label" >Nhập lại mật khẩu * :</label>\n' +
+        '                                    <div class="col-md-8 col-sm-8">\n' +
+        '                                        <input spellcheck="false" v-model="repassword" class="form-control" type="text" v-model="info.phone" name="email" data-parsley-type="email" placeholder="Re-Password" data-parsley-required="true">\n' +
+        '                                    </div>\n' +
+        '                                </div>\n' +
+        '\n' +
+        '\n' +
+        '                                <div class="form-group row m-b-0">\n' +
+        '                                    <label class="col-md-4 col-sm-4 col-form-label">&nbsp;</label>\n' +
+        '                                    <div class="col-md-2 col-sm-2">\n' +
+        '                                        <button @click="send" type="submit" class="btn btn-outline-primary">Change Password</button>\n' +
+        '                                    </div>\n' +
+        '                                    <div class="col-md-6 col-sm-6" v-if="alert2Error.length === 0">\n' +
+        '                                        <p v-if="alert2.length>0" style="margin-top:10px;color:#0de800" class="animated flash">{{alert2}}</p>\n' +
+        '                                    </div>\n' +
+        '\n' +
+        '                                    <div class="col-md-6 col-sm-6" v-if="alert2Error.length > 0">\n' +
+        '                                        <p v-if="alert2Error.length>0" style="margin-top:10px;color:#e84757" class="animated flash">{{alert2Error}}</p>\n' +
+        '                                    </div>\n' +
+        '                                </div>\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '\n' +
+        '                        <!-- end hljs-wrapper -->\n' +
+        '                    </div>\n' +
+        '                <!-- end panel -->\n' +
+        '            </div>\n' +
+        '\n' +
+        '        </div>\n' +
+        '\n' +
+        '    </div>\n' +
+        '    <a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top fade" data-click="scroll-top"><i class="fa fa-angle-up"></i></a>\n' +
+        '    <!-- end scroll to top btn -->\n' +
+        '</div>',
+    data(){
+        return {
+            password:'',
+            repassword:'',
+            notMatch:false,
+            changeSuccess:false,
+            changePassword:false,
+            info:{
+                name:null
+            },
+            status:null,
+            infoShow:true,
+            dataChat:{
+                user:{
+                    name:null
+                },
+                conversation:[]
+            },
+            alert:'',
+            alertError:'',
+            alert2:'',
+            alert2Error:''
+        }
+    },
+    created:async function(){
+        let chata = await axios.post('/api/getAllConversation');
+
+        this.dataChat =  chata.data.result;
+        let info = await axios.post('/api/infoUser');
+        var d = new Date();
+        d.setTime(info.data[0].limitTime);
+        let month = d.getMonth()+1;
+        let day = d.getDate();
+        this.status = 'Hạn sử dụng đến ngày '+day+' tháng '+month+'.';
+        this.info = info.data[0]
+    },
+    methods:{
+        send:async function(){
+
+            if(this.password === this.repassword){
+                let change = await axios.post('/api/changePassword',{password:this.password});
+
+                if(change.data.error === null){
+                    let _ = this;
+                    _.alert2 = 'Đã thay đổi mật khẩu';
+                    setTimeout(function () {
+                        _.alert2 = '';
+                    },5000)
+                }else {
+                    let _ = this;
+                    _.alert2Error = change.data.error;
+                    setTimeout(function () {
+                        _.alert2Error = '';
+                    },5000)
+                }
+
+
+            }else {
+                let _ = this;
+                _.alert2Error = 'Mật khẩu không khớp nhau !';
+                setTimeout(function () {
+                    _.alert2Error = '';
+                },5000)
+            }
+        },
+        changePasswordShow:async function(){
+            this.infoShow = false;
+            this.changePassword = true;
+        },
+        cancelC:async function(){
+            this.infoShow = true;
+            this.changePassword = false;
+        },
+        changeInfo:async function(){
+            let change = await axios.post('/api/updateUser',{data:this.info});
+            let _ = this;
+            _.alert = 'Đã thay đổi';
+            setTimeout(function () {
+                _.alert = '';
+            },5000)
+        }
+    }
+});
+Vue.component('rightchat', {
+    template:'<div class="vertical-box-column width-200 bg-black-transparent-2 hidden-xs">\n' +
+        '                <!-- begin vertical-box -->\n' +
+        '                <div class="vertical-box">\n' +
+        '\n' +
+        '                    <!-- end wrapper -->\n' +
+        '                    <!-- begin vertical-box-row -->\n' +
+        '                    <div class="vertical-box-row">\n' +
+        '                        <!-- begin vertical-box-cell -->\n' +
+        '                        <div class="vertical-box-cell">\n' +
+        '                            <!-- begin vertical-box-inner-cell -->\n' +
+        '                            <div class="vertical-box-inner-cell">\n' +
+        '                                <!-- begin scrollbar -->\n' +
+        '                                <div data-scrollbar="true" data-height="100%">\n' +
+        '                                    <!-- begin wrapper -->\n' +
+        '                                    <div class="wrapper p-0">\n' +
+        '                                        <div class="nav-title"><b>FOLDERS</b></div>\n' +
+        '\n' +
+        '                                        <ul class="nav nav-inbox">\n' +
+        '                                            <li class="active"><a href="email_inbox.html"><i class="fa fa-inbox fa-fw m-r-5"></i> Inbox <span class="badge pull-right">{{container.list_chat.filter(e=>{\n' +
+        '                                                if(e.seen === false){\n' +
+        '                                                return e\n' +
+        '                                                }\n' +
+        '                                                }).length\n' +
+        '                                                }}</span></a></li>\n' +
+        '\n' +
+        '                                        </ul>\n' +
+        '\n' +
+        '                                        <div class="nav-title row"><b>LỌC</b> <select style="width: 150px;height: 25px;padding-top:2px;margin-top:-5px;margin-left:10px;background: none;border:1px solid #676767" class="form-control form-control-sm"  v-model="container.filterSelect">\n' +
+        '                                            <option value="all">Tất cả</option>\n' +
+        '                                            <option v-for="(element,index) in listAccountFacebook" :key="index" :value="element" style="background: none">{{element}}</option>\n' +
+        '\n' +
+        '                                        </select></div>\n' +
+        '\n' +
+        '                                        <ul class="nav nav-inbox">\n' +
+        '                                            <li v-for="data in container.listInbox" @click="newTag(data)"><a href="javascript:;"><i class="fa fa-fw f-s-10 m-r-5 fa-circle text-white"></i> {{data.name}} <i v-if="data.seen === false" class="time fa fa-envelope" style="color: white; float:right"></i></a></li>\n' +
+        '\n' +
+        '                                        </ul>\n' +
+        '                                    </div>\n' +
+        '                                    <!-- end wrapper -->\n' +
+        '                                </div>\n' +
+        '                                <!-- end scrollbar -->\n' +
+        '                            </div>\n' +
+        '                            <!-- end vertical-box-inner-cell -->\n' +
+        '                        </div>\n' +
+        '                        <!-- end vertical-box-cell -->\n' +
+        '                    </div>\n' +
+        '                    <!-- end vertical-box-row -->\n' +
+        '                </div>\n' +
+        '                <!-- end vertical-box -->\n' +
+        '            </div>',
+    data(){
+        return {
+
+            nicknameSelect:"all",
+          //  listAccountFacebook:[],
+
+
+
+
+
+        }
+    },
+    computed:{
+        container(){
+            return store.state;
+        },
+        listAccountFacebook(){
+            return uniq(store.state.list_chat.map(e=>e.facebook_name_sender))
+
+        },
+
+    },
+    created:async function(){
+      return store.state.listInbox =   store.state.list_chat
+    },
+
+    methods:{
+
+        newTag:async function(obj){
+            let result = await axios.post('/api/getConversation',{ID_receiver:obj.ID_receiver,ID_sender:obj.ID_sender,seen:true});
+            store.commit('changeComponent','chat');
+
+            store.commit('getConversation',result.data);
+            $("#scroll").animate({ scrollTop:1000000000}, 500);
+
+
+
+        }
+
+
+
+
+
+    },
+});
+Vue.component('listchat', {
+
+    template:' <div id="content" class="content content-full-width inbox">\n' +
+        '        <!-- begin vertical-box -->\n' +
+        '        <div class="vertical-box with-grid">\n' +
+        '\n' +
+        '            <div class="vertical-box-column bg-black-transparent-2">\n' +
+        '                <!-- begin vertical-box -->\n' +
+        '                <div class="vertical-box">\n' +
+        '                    <!-- begin wrapper -->\n' +
+        '                    <div class="wrapper bg-black-transparent-2">\n' +
+        '\n' +
+        '                        <div class="btn-toolbar">\n' +
+        '                            <div class="btn-group m-r-5">\n' +
+        '                                <a href="javascript:;" class="p-t-5 pull-left m-r-3 m-t-2" data-click="email-select-all">\n' +
+        '                                    <i class="far fa-square fa-fw text-muted f-s-16 l-minus-2"></i>\n' +
+        '                                </a>\n' +
+        '                            </div>\n' +
+        '                            <div class="btn-group dropdown m-r-5">\n' +
+        '                                <button class="btn btn-default btn-sm" data-toggle="dropdown">\n' +
+        '                                    Tất Cả <span class="caret m-l-3"></span>\n' +
+        '                                </button>\n' +
+        '                                <ul class="dropdown-menu text-left text-sm">\n' +
+        '                                    <li class="active"><a href="javascript:;"><i class="fa fa-circle f-s-10 fa-fw m-r-5"></i> Tất Cả</a></li>\n' +
+        '                                    <li><a href="javascript:;"><i class="fa fa-circle f-s-10 fa-fw m-r-5"></i> Chưa đọc</a></li>\n' +
+        '                                    <li><a href="javascript:;"><i class="fa fa-circle f-s-10 fa-fw m-r-5"></i> Đã đọc</a></li>\n' +
+        '                                </ul>\n' +
+        '                            </div>\n' +
+        '                            <div class="btn-group m-r-5">\n' +
+        '                                <a href="." class="btn btn-sm btn-default"><i class="fa fa-redo f-s-14 t-plus-1"></i></a>\n' +
+        '                            </div>\n' +
+        '\n' +
+        '                            <div class="btn-group">\n' +
+        '                                <button v-show="deleteShow" @click="deleteChat" class="btn btn-sm btn-default show" ><i class="fa t-plus-1 fa-times f-s-14 m-r-3"></i> <span class="hidden-xs">Delete</span></button>\n' +
+        '\n' +
+        '                            </div>\n' +
+        '                            <div class="btn-group ml-auto">\n' +
+        '                                <button class="btn btn-default btn-sm">\n' +
+        '                                    <i class="fa fa-chevron-left f-s-14 t-plus-1"></i>\n' +
+        '                                </button>\n' +
+        '                                <button class="btn btn-default btn-sm">\n' +
+        '                                    <i class="fa fa-chevron-right f-s-14 t-plus-1"></i>\n' +
+        '                                </button>\n' +
+        '                            </div>\n' +
+        '\n' +
+        '                        </div>\n' +
+        '\n' +
+        '                    </div>\n' +
+        '                    <!-- end wrapper -->\n' +
+        '                    <!-- begin vertical-box-row -->\n' +
+        '                    <div class="vertical-box-row">\n' +
+        '\n' +
+        '                        <div class="vertical-box-cell">\n' +
+        '                            <!-- begin vertical-box-inner-cell -->\n' +
+        '                            <div class="vertical-box-inner-cell">\n' +
+        '                                <!-- begin scrollbar -->\n' +
+        '                                <div data-scrollbar="true" data-height="100%">\n' +
+        '                                    <!-- begin list-email -->\n' +
+        '                                    <ul  class="list-group list-group-lg no-radius list-email">\n' +
+        '                                        <li class="p-15 text-center" v-show="emptyInbox"><div class="p-20"><i class="fa fa-trash fa-5x text-silver"></i></div> Hộp thư trống</li>\n' +
+        '                                        <li   v-if="data.seen === false" @mouseover="authorDisplay(data)"  @mouseout="authorHidden(data)"    v-for="(data,key) in container.list_chat" class="cur list-group-item unread">\n' +
+        '\n' +
+        '                                            <div class="email-checkbox">\n' +
+        '                                                <label>\n' +
+        '\n' +
+        '\n' +
+        '                                                    <input type="checkbox" style="color:white" :value="data._id" v-model="trashArray">\n' +
+        '                                                </label>\n' +
+        '                                            </div>\n' +
+        '                                            <a href="javascript:;" class="email-user bg-gradient-blue">\n' +
+        '                                                <img  class="text-white" :src="data.image" alt="" />\n' +
+        '                                            </a>\n' +
+        '                                            <div  @click="activate(key),newTag(data)" class="email-info">\n' +
+        '                                                <span >\n' +
+        '                                                    <span class="email-time"><i  v-if="data.seen === false" style="color:white;float:right;margin-right: 10px" class="time fa fa-envelope"></i></span>\n' +
+        '                                                    <span class="email-sender">{{data.name}}</span>\n' +
+        '                                                    <span class="email-title" v-if="data.lastChat.type === \'text\'">{{data.lastChat.message}}</span>\n' +
+        '                                                    <span class="email-title"  v-if="data.lastChat.type !== \'text\'" style="font-style: italic">Tin nhắn ảnh</span>\n' +
+        '                                                    <span class="email-desc animated bounceInRight" v-if="data.ady">\n' +
+        '\n' +
+        '                                                  by {{data.facebook_name_sender}}</span>\n' +
+        '                                                </span>\n' +
+        '                                            </div>\n' +
+        '                                        </li>\n' +
+        '                                        <li v-if="data.seen === true" @mouseover="authorDisplay(data)"  @mouseout="authorHidden(data)"     v-for="(data,key) in container.list_chat" class="cur list-group-item ">\n' +
+        '\n' +
+        '                                            <div class="email-checkbox">\n' +
+        '                                                <label>\n' +
+        '                                                    <i class="far fa-square"></i>\n' +
+        '\n' +
+        '                                                    <input type="checkbox"  data-checked="email-checkbox" :value="data._id" v-model="trashArray">\n' +
+        '                                                </label>\n' +
+        '                                            </div>\n' +
+        '                                            <a href="javascript:;" class="email-user bg-gradient-blue">\n' +
+        '\n' +
+        '                                                <img  class="text-white" :src="data.image" alt="" />\n' +
+        '                                            </a>\n' +
+        '                                            <div @click="activate(key),newTag(data)" class="email-info">\n' +
+        '                                                <span >\n' +
+        '                                                    <span class="email-time"><i  v-if="data.seen === false" style="color:white;float:right;margin-right: 10px" class="time fa fa-envelope"></i></span>\n' +
+        '                                                    <span class="email-sender">{{data.name}}</span>\n' +
+        '                                                    <span class="email-title" v-if="data.lastChat.type === \'text\'">{{data.lastChat.message}}</span>\n' +
+        '                                                    <span class="email-title"  v-if="data.lastChat.type !== \'text\'" style="font-style: italic">Tin nhắn ảnh</span>\n' +
+        '                                                    <span class="email-desc animated bounceInRight" v-if="data.ady">\n' +
+        '\n' +
+        '                                                  by {{data.facebook_name_sender}}</span>\n' +
+        '                                                </span>\n' +
+        '                                            </div>\n' +
+        '                                        </li>\n' +
+
+        '                                    </ul>\n' +
+        '\n' +
+        '                                </div>\n' +
+        '                                <!-- end scrollbar -->\n' +
+        '                            </div>\n' +
+        '                            <!-- end vertical-box-inner-cell -->\n' +
+        '                        </div>\n' +
+        '                        <!-- end vertical-box-cell -->\n' +
+        '                    </div>\n' +
+        '                    <!-- end vertical-box-row -->\n' +
+        '                    <!-- begin wrapper -->\n' +
+        '                    <div class="wrapper bg-black-transparent-2 clearfix">\n' +
+        '                        <div class="btn-group pull-right">\n' +
+        '                            <button class="btn btn-default btn-sm">\n' +
+        '                                <i class="fa fa-chevron-left f-s-14 t-plus-1"></i>\n' +
+        '                            </button>\n' +
+        '                            <button class="btn btn-default btn-sm">\n' +
+        '                                <i class="fa fa-chevron-right f-s-14 t-plus-1"></i>\n' +
+        '                            </button>\n' +
+        '                        </div>\n' +
+        '                        <div class="m-t-5 f-w-600">{{container.list_chat.length}} messages</div>\n' +
+        '                    </div>\n' +
+        '                    <!-- end wrapper -->\n' +
+        '                </div>\n' +
+        '                <!-- end vertical-box -->\n' +
+        '            </div>\n' +
+        '            <!-- begin vertical-box-column -->\n' +
+        '            <rightchat></rightchat>\n' +
+        '            <!-- end vertical-box-column -->\n' +
+        '            <!-- begin vertical-box-column -->\n' +
+        '            <!-- end vertical-box-column -->\n' +
+        '        </div>\n' +
+        '        <!-- end vertical-box -->\n' +
+        '    </div>',
+    data(){
+        return {
+            user:{},
+            loading:false,
+            result:false,
+            message:'',
+
+            name:'Facebook manager',
+            chatVisible:false,
+            introVisible:true,
+            sha:false,
+            active_el:-1,
+            check:false,
+            input:false,
+            welcome:true,
+            listCHAT:false,
+            load_listCHAT:true,
+            option:false,
+            username:getCookie("email"),
+            password:getCookie("password"),
+            trashArray:[],
+            connect:true,
+            info:true,
+            cookie:'',
+            errorCookie:'',
+            confirmRemoveCookie:false,
+            errorCookieIcon:false,
+            tmpRemove:{},
+            listCookieShow:true,
+            waitingCookie:false,
+            saveFont:true,
+
+
+
+
+
+        }
+    },
+    created:async function(){
+
+    },
+
+
+
+
+    computed: {
+        container () {
+            return store.state
+        },
+
+        deleteShow: function () {
+            if(this.trashArray.length > 0){
+                return true
+            }
+        },
+        emptyInbox:function(){
+
+            if(this.container.list_chat.length === 0){
+                return true
+            }
+        }
+    },
+
+
+    methods:{
+
+        activate:function(el){
+            this.active_el = el;
+        },
+        newTag:async function(obj){
+            let result = await axios.post('/api/getConversation',{ID_receiver:obj.ID_receiver,ID_sender:obj.ID_sender,seen:true});
+            store.commit('changeComponent','chat');
+
+            store.commit('getConversation',result.data);
+            $("#scroll").animate({ scrollTop:10000000000000}, 500);
+
+
+
+        },
+        deleteChat:async function(){
+            let listID = this.trashArray;
+            for(let i = 0;i<listID.length;i++){
+                await axios.post('/api/removeChat',{id:listID[i]});
+                store.commit('dropConversation',listID[i]);
+
+            }
+
+            this.welcome = true;
+            this.result = false;
+            this.option = false;
+
+
+        },
+        authorDisplay:async function(data){
+            data.sha = true;
+            data.ady = true;
+            return data;
+        },
+        authorHidden:async function(data){
+            data.sha = false;
+            data.ady = false;
+            return data;
+        },
+
+
+
+
+
+
+    },
+});
+Vue.component('chat', {
+    template:' <div id="content" class="content content-full-width inbox">\n' +
+        '        <!-- begin vertical-box -->\n' +
+        '        <div class="vertical-box with-grid">\n' +
+        '            <!-- begin vertical-box-column -->\n' +
+        '\n' +
+        '            <!-- end vertical-box-column -->\n' +
+        '            <!-- begin vertical-box-column -->\n' +
+        '            <div class="vertical-box-column bg-black-transparent-2">\n' +
+        '                <!-- begin vertical-box -->\n' +
+        '                <div class="vertical-box">\n' +
+        '                    <!-- begin wrapper -->\n' +
+        '                    <div class="wrapper bg-black-transparent-2-lighter clearfix">\n' +
+        '                        <div class="pull-left">\n' +
+        '\n' +
+        '                                <div class="media media-sm clearfix">\n' +
+        '                                    <a href="javascript:;" class="pull-left">\n' +
+        '                                        <img class=" rounded-corner" alt="" style="width: 40px"  :src="container.conversation.image">\n' +
+        '                                    </a>\n' +
+        '                                    <div class="media-body">\n' +
+        '                                        <div class="email-from f-s-14 f-w-600 m-b-3">\n' +
+        '                                            {{container.conversation.name}}\n' +
+        '                                        </div>\n' +
+        '                                        <div class="email-to">\n' +
+        '                                            To:  {{container.conversation.facebook_name_sender}}\n' +
+        '                                        </div>\n' +
+        '                                    </div>\n' +
+        '                                </div>\n' +
+        '\n' +
+        '                        </div>\n' +
+        '                        <div class="pull-right" style="margin-top:-30px">\n' +
+        '                            <div class="btn-group m-r-5">\n' +
+        '                                <a @click="container.component = `listchat`" href="javascript:;" class="btn btn-default btn-sm"><i class="fa fa-reply f-s-14 m-r-3 m-r-xs-0 t-plus-1"></i> <span class="hidden-xs">Quay lại</span></a>\n' +
+        '                            </div>\n' +
+        '                            <div class="btn-group m-r-5">\n' +
+        '                                <a @click="deleteConversaton(container.conversation[\'_id\'])" href="javascript:;" class="btn btn-default btn-sm"><i class="fa fa-trash f-s-14 m-r-3 m-r-xs-0 t-plus-1"></i> <span class="hidden-xs">Delete</span></a>\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '\n' +
+        '                    </div>\n' +
+        '                    <!-- end wrapper -->\n' +
+        '                    <!-- begin vertical-box-row -->\n' +
+        '                    <div class="vertical-box-row">\n' +
+        '                        <!-- begin vertical-box-cell -->\n' +
+        '                        <div class="vertical-box-cell">\n' +
+        '                            <!-- begin vertical-box-inner-cell -->\n' +
+        '                            <div class="vertical-box-inner-cell">\n' +
+        '                                <!-- data-scrollbar="true"  -->\n' +
+        '                                <div   id="scroll"  style="overflow-y: scroll;overflow-x: hidden;height: 100%" >\n' +
+        '                                    <!-- begin wrapper -->\n' +
+        '                                    <div class="wrapper">\n' +
+        '\n' +
+        '\n' +
+        '                                        <div >\n' +
+        '                                            <div :key="pid" v-for="(content,pid) in container.conversation.chat">\n' +
+        `
+                                                <div v-if="content.user === 'you'" >` +
+        '\n' +
+        '\n' +
+        '                                                    <p   v-if="content.type === \'text\'" style="background:none;color:white;margin-top: 30px" ><span style="border: 1px solid #858585;border-radius: 10px;padding: 10px 10px;height:auto">{{content.message}}</span></p>\n' +
+        '                                                    <img class="col-md-3" style="max-width: 200px;max-height: 200px;border-radius: 30px"  v-if="content.type === \'attachments\'" :key="index" v-for="(image,index) in content.message" :src="image.url" alt="">\n' +
+        '\n' +
+        '\n' +
+        '\n' +
+        '\n' +
+        '                                                </div>\n' +
+        `                                                <div v-if="content.user === 'me'"   style="background:none">` +
+        '                                                    <p class="col-md-6 offset-md-6 text-right" v-if="content.type === \'text\'" style="background:none;color:white;margin-top:30px"><span class="text-right" style="border: 1px solid white;margin-right: 0;padding: 10px 10px;border-radius: 10px">{{content.message}}</span></p>\n' +
+        '\n' +
+        '\n' +
+        '                                                   <p> <img class="col-md-6 offset-md-6" style="max-width: 400px;max-height: 400px;border-radius: 30px;float: right;margin-top:20px;margin-bottom: 30px"  v-if="content.type === \'attachments\'"  :key="index" v-for="(image,index) in content.message" :src="image.url" alt="image"></p>\n' +
+        '\n' +
+        '\n' +
+        '\n' +
+        '                                                </div>\n' +
+        '                                            </div>\n' +
+        '                                        </div>\n' +
+        '\n' +
+        '                                    </div>\n' +
+        '                                    <!-- end wrapper -->\n' +
+        '                                </div>\n' +
+        '                                <!-- end scrollbar -->\n' +
+        '                            </div>\n' +
+        '                            <!-- end vertical-box-inner-cell -->\n' +
+        '                        </div>\n' +
+        '                        <!-- end vertical-box-cell -->\n' +
+        '                    </div>\n' +
+        '\n' +
+        '                    <div class="row">\n' +
+        '                        <div class="input-field col s12">\n' +
+        '\n' +
+        '                            <textarea id="txta1" v-model="message" @keyup.13="send" placeholder="Nhập văn bản ..." style="resize:none;width:95%;outline:none;border:1px solid #707070;background: none;color: white" spellcheck="false" class="wrapper bg-black-transparent-2-lighter text-left clearfix "></textarea>\n' +
+        '                            <form for="txtal" style="float: right;margin-right: 10px;margin-top:20px">\n' +
+        '\n' +
+        '                                <label for="fusk" style="background:none">  <i style="font-size: 20px" class="fa fa-image" aria-hidden="true"></i></label>\n' +
+        '                                <input id="fusk" type="file" name="sampleFile" style="display: none;">\n' +
+        '                            </form>\n' +
+        '                        </div>\n' +
+        '                    </div>\n' +
+        '\n' +
+        '                    <!-- end wrapper -->\n' +
+        '                </div>\n' +
+        '                <!-- end vertical-box -->\n' +
+        '            </div>\n' +
+        '            <rightchat></rightchat>\n' +
+        '            <!-- end vertical-box-column -->\n' +
+        '        </div>\n' +
+        '        <!-- end vertical-box -->\n' +
+        '    </div>',
+    data(){
+        return {
+            user:{},
+            loading:false,
+            result:false,
+            message:'',
+            fullname:'',
+            name:'Facebook manager',
+            chatVisible:false,
+            introVisible:true,
+            sha:false,
+            active_el:-1,
+            check:false,
+            input:false,
+            welcome:true,
+            listCHAT:false,
+            load_listCHAT:true,
+            option:false,
+            username:getCookie("email"),
+            password:getCookie("password"),
+            trashArray:[],
+            connect:true,
+            info:true,
+            cookie:'',
+            errorCookie:'',
+            confirmRemoveCookie:false,
+            errorCookieIcon:false,
+            tmpRemove:{},
+            listCookieShow:true,
+            waitingCookie:false,
+            saveFont:true,
+            dataChat:{conversation:[],user:{name:''}},
+            nicknameSelect:null,
+            component:null
+
+
+
+
+        }
+    },
+
+
+
+    computed: {
+        container () {
+            return store.state
+        },
+
+
+        emptyInbox:function(){
+
+            if(this.container.list_chat.length === 0){
+                return true
+            }
+        }
+    },
+    beforeMount:function(){
+        let name = this.username;
+        socket.on('receiveMessage',function(data){
+
+            $("#scroll").animate({ scrollTop:10000000000000}, 500);
+            if(data.userBoss === name){
+                let result = data.message;
+                return store.commit('pushConversation',result)
+            }
+
+        });
+        socket.on('error',function (data) {
+
+            let ID_sender = data['ID_sender'];
+
+            return store.commit('statusUPDATEpro',ID_sender)
+        })
+
+
+    },
+    mounted:function(){
+        let name = this.username;
+        let _ = this;
+
+        $("form").change(function(evt){
+            evt.preventDefault();
+            var formData = new FormData($(this)[0]);
+            $.ajax({
+                url: '/api/uploadIMAGE',
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                enctype: 'multipart/form-data',
+                processData: false,
+                success: function (response) {
+
+                    socket.emit('sendMessage',{
+                        userBoss:name,
+                        ID_receiver:store.state.conversation.ID_receiver,
+                        type:'attachments',
+                        url:response,
+                        ID_sender:store.state.conversation.ID_sender
+                    },function(callback){
+                        store.commit('pushConversation',callback.data)
+                        store.state.list_chat = store.state.list_chat.map(e=>{
+
+                            if(e['ID_receiver'] === store.state.conversation['ID_receiver']){
+                                e.seen = true;
+                            }
+                            return e;
+
+                        });
+                        $("#scroll").animate({ scrollTop:1000000000}, 500);
+
+
+
+                    });
+                }
+            });
+            return false;
+        });
+    },
+    methods:{
+        send:function(){
+
+            let _ = store;
+            let mess = this.message;
+
+
+            socket.emit('sendMessage',{
+                userBoss:this.username,
+                ID_receiver:_.state.conversation.ID_receiver,
+                type:'text',
+                message:mess,
+                ID_sender:_.state.conversation.ID_sender
+
+            },function(callback){
+
+                if(callback.error !== null){
+                    alert(error)
+                    _.connect = false;
+                    return _.commit('statusUPDATE','Cookie expired')
+
+                }
+
+                $("#scroll").animate({ scrollTop: 10000000000000}, 500);
+
+
+                _.commit('pushConversation',callback.data)
+
+
+
+                return _.state.list_chat = _.state.list_chat.map(e=>{
+
+                    if(e['ID_receiver'] === store.state.conversation['ID_receiver']){
+                        e.seen = true;
+                    }
+                    return e;
+
+                });
+
+            });
+
+            $("#scroll").animate({ scrollTop:10000000000000}, 500);
+            this.message = '';
+        },
+        newTag:async function(obj){
+            this.welcome = false;
+            this.result = false;
+            this.loading = true;
+            this.introVisible = false;
+            this.chatVisible = true;
+            this.option = true;
+
+            let result = await axios.post('/api/getConversation',{ID_receiver:obj.ID_receiver,ID_sender:obj.ID_sender,seen:true});
+
+            store.commit('getConversation',result.data);
+            this.loading = false;
+            this.result = true;
+            if(result.data.status === 'active'){
+                this.input = true;
+            }
+            $("#scroll").animate({ scrollTop: 10000000000000}, 500);
+
+
+
+        },
+        activate:function(el){
+            this.active_el = el;
+        },
+        deleteChat:async function(){
+            let listID = this.trashArray;
+            for(let i = 0;i<listID.length;i++){
+                await axios.post('/api/removeChat',{id:listID[i]});
+                store.commit('dropConversation',listID[i]);
+
+            }
+
+            this.welcome = true;
+            this.result = false;
+            this.option = false;
+
+
+        },
+        deleteConversaton:async function(id){
+            this.trashArray.push(id);
+            this.deleteChat();
+            location.reload()
+        },
+        authorDisplay:async function(data){
+            data.sha = true;
+            data.ady = true;
+            return data;
+        },
+        authorHidden:async function(data){
+            data.sha = false;
+            data.ady = false;
+            return data;
+        },
+        cookiePopup:async function(){
+            $('.fullscreen.modal')
+                .modal('show')
+            ;
+            let allAccount = await axios.post('/api/getAllAccount');
+            let result = allAccount.data.data.filter(e=>{
+                if(e.type === 'cookie'){
+                    return e
+                }
+            });
+            return store.state.account = result
+        },
+        addfacebookaccount:async function(){
+            this.saveFont = false;
+            this.waitingCookie = true;
+            let _ = this;
+
+            let result = this.cookie.split('\n').map(e=>{
+                let objResult = {};
+                this.cookie.split(';').filter(e=>{
+                    if(e.trim().length >0){
+                        return e
+                    }
+                }).map(e=>{
+                    objResult[e.split('=')[0].trim()] = e.split('=')[1].trim()
+                });
+                return objResult
+            });
+
+            this.cookie = '';
+            alert('send');
+            let send = await axios.post('/api/account',{type:'cookie',data:result});
+            alert('done')
+            if(send.data.error === null){
+                alert('hello world')
+                this.container.account.push(send.data)
+            }else {
+                alert('bye bye ')
+                this.errorCookieIcon = true;
+
+                this.errorCookie = send.data.error;
+                setTimeout(function () {
+                    _.errorCookieIcon = false;
+                    _.errorCookie = '';
+                },24000)
+            }
+            this.saveFont = true;
+            this.waitingCookie = false;
+
+
+
+        },
+        removeCookie:async function(data){
+            this.tmpRemove = data;
+            this.listCookieShow = false;
+
+            this.confirmRemoveCookie = true;
+        },
+        confirmRemoveCookieAction:async function(){
+            let id = this.tmpRemove.ID_sender;
+            let del = await axios.post('/api/deleteAccount',{ID_sender:id});
+            store.state.account = store.state.account.filter(e=>{
+                if(e.ID_sender !== id){
+                    return e
+                }
+            });
+            this.listCookieShow = true;
+            this.confirmRemoveCookie = false;
+
+        },
+        cancelRemoveCookieAction:async function(){
+            this.tmpRemove = {};
+            this.confirmRemoveCookie = false;
+            this.listCookieShow = true;
+
+
+
+        },
+
+
+
+
+
+
+    },
+});
+
+
+
+
+
+
+

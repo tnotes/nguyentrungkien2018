@@ -198,7 +198,7 @@ module.exports = {
   accountINSERT : account=>{
 
     return new Promise(resolve=>{
-        ModelAccount.updateMany({ID_sender:account.ID_sender,userBoss:account.userBoss},account,{upsert:true},(err,res)=>{
+        ModelAccount.update({ID_sender:account.ID_sender,userBoss:account.userBoss},account,{upsert:true},(err,res)=>{
             resolve(res)
         })
     })

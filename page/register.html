@@ -30,157 +30,167 @@
 	<link href="/css/style-responsive.min.css" rel="stylesheet">
 	<link href="/css/default.css" rel="stylesheet" id="theme">
 	<!-- ================== END BASE CSS STYLE ================== -->
-	
+
 	<!-- ================== BEGIN BASE JS ================== -->
 	<script src="/js/pace.min.js"></script>
+    <style>
+        code{
+            background:none;
+
+        }
+    </style>
 	<!-- ================== END BASE JS ================== -->
 </head>
-<body class="pace-top bg-white">
-<div  id="bodyC">
-	<div  id="page-container"  class="fade">
-	    <!-- begin register -->
-        <div class="register register-with-news-feed">
-            <!-- begin news-feed -->
-            <div class="news-feed">
-                <div class="news-image" style="background-image: url(images/login-bg-9.jpg)"></div>
-                <div class="news-caption">
-                    <h4 class="caption-title"><b>Facebook  </b>  Management </h4>
-                    <p>
-                      Phần mềm quản lí tin nhắn đa tài khoản ,giúp bạn quản lí gửi và nhận Inbox của mình trên nhiều tài khoản Facebook cùng một lúc.
+<body class="pace-top bg-black-darker">
+
+<!-- begin #page-loader -->
+<div id="page-loader" class="fade show"><span class="spinner"></span></div>
+<!-- end #page-loader -->
+
+<!-- begin #page-container -->
+<div id="page-container" class="fade">
+    <!-- begin register -->
+    <div class="register register-with-news-feed">
+        <!-- begin news-feed -->
+        <div class="news-feed">
+            <div class="news-image" style="background-image: url(images/login-bg-9.jpg)"></div>
+            <div class="news-caption">
+                <h4 class="caption-title"><b>Facebook  </b>  Management </h4>
+                <p>
+                    Phần mềm quản lí tin nhắn đa tài khoản ,giúp bạn quản lí gửi và nhận Inbox của mình trên nhiều tài khoản Facebook cùng một lúc.
+                </p>
+            </div>
+        </div>
+        <!-- end news-feed -->
+        <!-- begin right-content -->
+        <div class="right-content">
+
+            <!-- begin register-header -->
+            <h1 class="register-header">
+                Tạo tài khoản
+                <small>Trải nghiệm công cụ quản lí tin nhắn một cách đầy đủ và tiện ích nhất.</small>
+            </h1>
+            <!-- end register-header -->
+            <!-- begin register-content -->
+            <div class="register-content">
+                <div class="margin-bottom-0">
+                    <label class="control-label">Họ và Tên <span class="text-danger">*</span><code v-show="nameShow" class="text-danger animated flash">Họ và Tên không được bỏ trống</code><code v-show="errorShow" class="text-warning animated flash">{{error}}</code></label>
+                    <div class="row m-b-15">
+                        <div class="col-md-12">
+                            <input spellcheck="false" type="text" name="fullname" autocomplete="off" v-model="name" class="form-control" placeholder="Họ và Tên" required>
+                        </div>
+                    </div>
+                    <label class="control-label">Email <span class="text-danger">*</span> <code v-show="emailShow" class="text-danger animated flash">Bắt buộc phải nhập email</code></label>
+                    <div class="row m-b-15">
+                        <div class="col-md-12">
+                            <input spellcheck="false" type="email" name="email" autocomplete="off" v-model="email" class="form-control" placeholder="Email" required>
+                        </div>
+                    </div>
+
+                    <label class="control-label">Password <span class="text-danger">*</span><code v-show="passwordShow" class="text-danger  animated flash">Bắt buộc phải nhập mật khẩu</code></label>
+                    <div class="row m-b-15">
+                        <div class="col-md-12">
+                            <input spellcheck="false" type="password" name="password" class="form-control" v-model="password" placeholder="Mật khẩu" required>
+                        </div>
+                    </div>
+
+                    <label class="control-label">Số điện thoại <span class="text-danger">*</span><code v-show="phoneShow" class="text-danger  animated flash">Vui lòng nhập chính xác số điện thoại của bạn</code></label>
+                    <div class="row m-b-15">
+                        <div class="col-md-12">
+                            <input spellcheck="false" type="text" name="phone" class="form-control" v-model="phone" placeholder="Số điện thoại" required>
+                        </div>
+                    </div>
+
+                    <div class="register-buttons">
+                        <button type="submit" @click="register" class="btn btn-primary btn-block btn-lg">Đăng Kí</button>
+                    </div>
+                    <div class="m-t-20 m-b-40 p-b-40 ">
+                        Đã có tài khoản? Click <a href="/">Đăng Nhập</a> .
+                    </div>
+                    <hr>
+                    <p class="text-center">
+                        &copy; Facebook Team All Right Reserved 2018
                     </p>
                 </div>
             </div>
-            <!-- end news-feed -->
-            <!-- begin right-content -->
-            <div class="right-content">
-
-                <!-- begin register-header -->
-                <h1 class="register-header">
-                    Tạo tài khoản
-                    <small>Trải nghiệm công cụ quản lí tin nhắn một cách đầy đủ và tiện ích nhất.</small>
-                </h1>
-                <!-- end register-header -->
-                <!-- begin register-content -->
-                <div class="register-content">
-                    <div class="margin-bottom-0">
-                        <label class="control-label">Họ và Tên <span class="text-danger">*</span><code v-show="nameShow" class="text-danger animated flash">Họ và Tên không được bỏ trống</code><code v-show="errorShow" class="text-warning animated flash">{{error}}</code></label>
-                        <div class="row m-b-15">
-                            <div class="col-md-12">
-                                <input type="text" name="fullname" autocomplete="off" v-model="name" class="form-control" placeholder="Họ và Tên" required>
-                            </div>
-                        </div>
-                        <label class="control-label">Email <span class="text-danger">*</span> <code v-show="emailShow" class="text-danger animated flash">Bắt buộc phải nhập email</code></label>
-                        <div class="row m-b-15">
-                            <div class="col-md-12">
-                                <input type="email" name="email" autocomplete="off" v-model="email" class="form-control" placeholder="Email" required>
-                            </div>
-                        </div>
-
-                        <label class="control-label">Password <span class="text-danger">*</span><code v-show="passwordShow" class="text-danger  animated flash">Bắt buộc phải nhập mật khẩu</code></label>
-                        <div class="row m-b-15">
-                            <div class="col-md-12">
-                                <input type="password" name="password" class="form-control" v-model="password" placeholder="Mật khẩu" required>
-                            </div>
-                        </div>
-
-                        <label class="control-label">Số điện thoại <span class="text-danger">*</span><code v-show="phoneShow" class="text-danger  animated flash">Vui lòng nhập chính xác số điện thoại của bạn</code></label>
-                        <div class="row m-b-15">
-                            <div class="col-md-12">
-                                <input type="text" name="phone" class="form-control" v-model="phone" placeholder="Số điện thoại" required>
-                            </div>
-                        </div>
-
-                        <div class="register-buttons">
-                            <button type="submit" @click="register" class="btn btn-primary btn-block btn-lg">Đăng Kí</button>
-                        </div>
-                        <div class="m-t-20 m-b-40 p-b-40 text-inverse">
-                            Đã có tài khoản? Click <a href="/">Đăng Nhập</a> .
-                        </div>
-                        <hr>
-                        <p class="text-center">
-                            &copy; Facebook Team All Right Reserved 2018
-                        </p>
-                    </div>
-                </div>
-                <!-- end register-content -->
-            </div>
-            <!-- end right-content -->
+            <!-- end register-content -->
         </div>
+        <!-- end right-content -->
+    </div>
 
-	</div>
 </div>
-	<!-- end page container -->
-	
-	<!-- ================== BEGIN BASE JS ================== -->
-	<script src="/js/jquery-3.2.1.min.js"></script>
-	<script src="/js/jquery-ui.min.js"></script>
-	<script src="/js/bootstrap.bundle.min.js"></script>
+<!-- end page container -->
 
-	<script src="/js/jquery.slimscroll.min.js"></script>
-	<script src="/js/js.cookie.js"></script>
-	<script src="/js/apple.min.js"></script>
-	<script src="/js/apps.min.js"></script>
-	<!-- ================== END BASE JS ================== -->
+<!-- ================== BEGIN BASE JS ================== -->
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
 
-	<script>
-		$(document).ready(function() {
-			App.init();
-		});
-	</script>
-    <script>
+<script src="js/jquery.slimscroll.min.js"></script>
+<script src="js/js.cookie.js"></script>
+<script src="js/transparent.min.js"></script>
+<script src="js/apps.min.js"></script>
+<!-- ================== END BASE JS ================== -->1
 
-        var app = new Vue({
-            el: "#bodyC",
-            data(){
-                return {
-                    text:'hello world',
-                    phoneShow:false,
-                    nameShow:false,
-                    emailShow:false,
-                    passwordShow:false,
-                    errorShow:false,
-                    phone:'',
-                    name:'',
-                    email:'',
-                    password:'',
-                    error:''
+<script>
+    $(document).ready(function() {
+        App.init();
+    });
+</script>
+<script>
+
+    var app = new Vue({
+        el: "#page-container",
+        data(){
+            return {
+                text:'hello world',
+                phoneShow:false,
+                nameShow:false,
+                emailShow:false,
+                passwordShow:false,
+                errorShow:false,
+                phone:'',
+                name:'',
+                email:'',
+                password:'',
+                error:''
+            }
+        },
+
+        methods:{
+            register:async function(){
+                this.phoneShow = false;
+                this.emailShow = false;
+                this.nameShow = false;
+                this.passwordShow = false;
+                if(this.name === ''){
+                    this.nameShow = true;
+                    return false;
                 }
-            },
-
-            methods:{
-                register:async function(){
-                    this.phoneShow = false;
-                    this.emailShow = false;
-                    this.nameShow = false;
-                    this.passwordShow = false;
-                    if(this.name === ''){
-                        this.nameShow = true;
-                        return false;
-                    }
-                    if(this.email.includes('@') === false){
-                        this.emailShow = true;
-                        return false;
-                    }
-                    if(this.password === ''){
-                        this.passwordShow = true;
-                        return false;
-                    }
-                    if(this.phone.length !== 10){
-                        this.phoneShow = true;
-                        return false
-                    }
-                    let send = await axios.post('/register',{name:this.name,email:this.email,password:this.password,phone:this.phone})
-                    if(send.data.status === 'Đăng kí thành công !'){
-                        window.location.href = "/";
-                    }else{
-                        this.errorShow = true;
-                        this.error = send.data.status;
-                    }
-
+                if(this.email.includes('@') === false){
+                    this.emailShow = true;
+                    return false;
                 }
-            },
-        });
-    </script>
+                if(this.password === ''){
+                    this.passwordShow = true;
+                    return false;
+                }
+                if(this.phone.length !== 10){
+                    this.phoneShow = true;
+                    return false
+                }
+                let send = await axios.post('/register',{name:this.name,email:this.email,password:this.password,phone:this.phone})
+                if(send.data.status === 'Đăng kí thành công !'){
+                    window.location.href = "/";
+                }else{
+                    this.errorShow = true;
+                    this.error = send.data.status;
+                }
+
+            }
+        },
+    });
+</script>
 
 </body>
 </html>

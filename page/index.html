@@ -11,36 +11,21 @@
     <meta content="" name="author">
 
     <!-- ================== BEGIN BASE CSS STYLE ================== -->
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
-    <script src="https://unpkg.com/vuex@3.0.1/dist/vuex.js"></script>
-    <script src="https://unpkg.com/vue/dist/vue.js"></script>
-    <script src="https://unpkg.com/vue-cookies@1.5.7/vue-cookies.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue-chat-scroll@1.3.3/dist/vue-chat-scroll.min.js"></script>
-    <script src="/js/jquery.min.js"></script>
-
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="store/index.js"></script>
-    <script src="/js/cookie.js"></script>
-    <link href="/css/css.css" rel="stylesheet">
-    <link href="/css/jquery-ui.min.css" rel="stylesheet">
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/fontawesome-all.min.css" rel="stylesheet">
-    <link href="/css/ionicons.min.css" rel="stylesheet">
-    <link href="/css/animate.min.css" rel="stylesheet">
-    <link href="/css/style.min.css" rel="stylesheet">
-    <link href="/css/style-responsive.min.css" rel="stylesheet">
-    <link href="/css/default.css" rel="stylesheet" id="theme">
-    <script src="/js/demo.js"></script>
+    <link href="css/css.css" rel="stylesheet">
+    <link href="css/jquery-ui.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/all.min.css" rel="stylesheet">
+    <link href="css/animate.min.css" rel="stylesheet">
+    <link href="css/style.min.css" rel="stylesheet">
+    <link href="css/style-responsive.min.css" rel="stylesheet">
+    <link href="css/default.css" rel="stylesheet" id="theme">
     <!-- ================== END BASE CSS STYLE ================== -->
 
     <!-- ================== BEGIN BASE JS ================== -->
-    <script src="/js/pace.min.js"></script>
+    <script src="js/pace.min.js"></script>
     <!-- ================== END BASE JS ================== -->
 </head>
-<body class="pace-top bg-white">
+<body class="pace-top bg-black-darker">
 <!-- begin #page-loader -->
 <div id="page-loader" class="fade show"><span class="spinner"></span></div>
 <!-- end #page-loader -->
@@ -74,43 +59,47 @@
             </div>
             <!-- end login-header -->
             <!-- begin login-content -->
-            <form method="post" action="/login" class="login-content">
-                <div   class="margin-bottom-0">
-                    <div class="form-group m-b-15">
-                        <input type="text" name="email" class="form-control form-control-lg" placeholder="Email" required>
-                    </div>
-                    <div class="form-group m-b-15">
-                        <input type="password" name="password" class="form-control form-control-lg" placeholder="Mật khẩu" required>
-                    </div>
+            <div class="login-content">
+                <form method="post" action="/login" class="margin-bottom-0">
+                    <div   class="margin-bottom-0">
+                        <div class="form-group m-b-15">
+                            <input type="text" name="email" class="form-control form-control-lg" placeholder="Email" required>
+                        </div>
+                        <div class="form-group m-b-15">
+                            <input type="password" name="password" class="form-control form-control-lg" placeholder="Mật khẩu" required>
+                        </div>
 
-                    <div class="login-buttons">
-                        <button   type="submit" class="btn btn-success btn-block btn-lg">Đăng Nhập</button>
+                        <div class="login-buttons">
+                            <button   type="submit" class="btn btn-primary btn-block btn-lg">Đăng Nhập</button>
+
+                        </div>
+                        <div class="m-t-20 m-b-40 p-b-40 ">
+                            Chưa có tài khoản click <a href="/register" class="text-primary">Đăng Kí</a> nhé.
+                        </div>
+                        <hr>
 
                     </div>
-                    <div class="m-t-20 m-b-40 p-b-40 text-inverse">
-                        Chưa có tài khoản click <a href="/register" class="text-success">Đăng Kí</a> nhé.
-                    </div>
-                    <hr>
-
-                </div>
-            </form>
+                </form>
+            </div>
             <!-- end login-content -->
         </div>
         <!-- end right-container -->
     </div>
+    <!-- end login -->
+
 
 </div>
 <!-- end page container -->
 
 <!-- ================== BEGIN BASE JS ================== -->
-<script src="/js/jquery-3.2.1.min.js"></script>
-<script src="/js/jquery-ui.min.js"></script>
-<script src="/js/bootstrap.bundle.min.js"></script>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
 
-<script src="/js/jquery.slimscroll.min.js"></script>
-<script src="/js/js.cookie.js"></script>
-<script src="/js/apple.min.js"></script>
-<script src="/js/apps.min.js"></script>
+<script src="js/jquery.slimscroll.min.js"></script>
+<script src="js/js.cookie.js"></script>
+<script src="js/transparent.min.js"></script>
+<script src="js/apps.min.js"></script>
 <!-- ================== END BASE JS ================== -->
 
 <script>
@@ -119,8 +108,5 @@
     });
 </script>
 
-
-
 </body>
 </html>
-

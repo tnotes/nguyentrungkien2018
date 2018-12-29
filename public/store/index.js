@@ -3,15 +3,37 @@ const store = new Vuex.Store({
         title:'Facebook manager',
         chat: [],
         account: [],
+        filterSelect:'all',
+
         list_chat:[],
         error:[],
-        conversation:'',
+        conversation:[],
+        component:'listchat'
+    },
+    getters: {
+        listInbox: state => {
+
+            if(state.filterSelect === 'all'){
+                return  state.list_chat;
+
+            }else {
+                return  state.list_chat.filter(e=>{
+                    if(e.facebook_name_sender === state.filterSelect){
+                        return e
+                    }
+                })
+            }
+        }
     },
     mutations: {
+        changeComponent(state,newComponent){
+           return  state.component = newComponent;
+        },
         executeConversation(state,dataChat){
 
             dataChat.map(e=>{
                 state.list_chat.push({
+                    _id:e._id,
                     ID_receiver:e.ID_receiver,
                     ID_sender:e.ID_sender,
                     facebook_name_sender:e.facebook_name_sender,
@@ -71,10 +93,10 @@ const store = new Vuex.Store({
 
             return true
         },
-        dropConversation(state,data){
+        dropConversation(state,id){
 
               state.list_chat = state.list_chat.filter(e=>{
-                if(e['ID_receiver'] !== data.ID_receiver){
+                if(e['_id'] !== id){
                     return e
                 }
             });

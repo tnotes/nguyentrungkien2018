@@ -5,7 +5,7 @@
 <!--<![endif]-->
 <head>
     <meta charset="utf-8">
-    <title> Nhắn tin theo kịch bản</title>
+    <title>Message Management</title>
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
     <meta content="" name="description">
     <meta content="" name="author">
@@ -14,209 +14,384 @@
     <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- ================== BEGIN BASE CSS STYLE ================== -->
     <link href="/css/css.css" rel="stylesheet">
     <link href="/css/jquery-ui.min.css" rel="stylesheet">
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/all.min.css" rel="stylesheet">
-    <link href="/css/ionicons.min.css" rel="stylesheet">
     <link href="/css/animate.min.css" rel="stylesheet">
     <link href="/css/style.min.css" rel="stylesheet">
     <link href="/css/style-responsive.min.css" rel="stylesheet">
     <link href="/css/default.css" rel="stylesheet" id="theme">
-    <script src="/js/socketconnect.js"></script>
-
+    <script src="/store/index.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
     <!-- ================== END BASE CSS STYLE ================== -->
-
-    <!-- ================== BEGIN PAGE LEVEL STYLE ================== -->
-    <link href="/css/dataTables.bootstrap.min.css" rel="stylesheet">
-    <link href="/css/fixedColumns.bootstrap.min.css" rel="stylesheet">
-    <!-- ================== END PAGE LEVEL STYLE ================== -->
 
     <!-- ================== BEGIN BASE JS ================== -->
     <script src="/js/pace.min.js"></script>
     <style>
-        table, th, td {
-            border: 1px solid #cccccc;
-            border-collapse: collapse;
-            text-align: center;
-        }
-        ::-webkit-scrollbar {
-            height: 4px;
-            width: 2px;
-        }
-        /* Track */
-        ::-webkit-scrollbar-track {
-            box-shadow: inset 0 0 2px #ffffff;
-            border-radius: 2px;
-        }
-
-        /* Handle */
-        ::-webkit-scrollbar-thumb {
-            background: #181a54;
-            border-radius: 2px;
-        }
-
-        /* Handle on hover */
-        ::-webkit-scrollbar-thumb:hover {
-            background: #181a54;
-        }
-        .removeKey{
-            background-color: white;color:#0d185f;font-weight:bold;border-radius: 15px;height:10px;padding: 0 5px
-        }
         .cur{
 
         }
         .cur:hover{
             cursor: pointer;
         }
-        .removeKey:hover{
-            background-color: red;
-            cursor: pointer;
-        }
     </style>
+    <!-- ================== END BASE JS ================== -->
 </head>
 <body>
+<!-- begin page-cover -->
+<div class="page-cover"></div>
+<!-- end page-cover -->
+
 <!-- begin #page-loader -->
 <div id="page-loader" class="fade show"><span class="spinner"></span></div>
+<!-- end #page-loader -->
 
-<div id="frame" class="animated bounce">
-    <div class="col-12 ">
-        <!-- begin panel -->
-        <div class="panel panel-inverse">
-            <!-- begin panel-heading -->
-            <div class="panel-heading ui-sortable-handle" style="background-color: #2c3e50">
-                <span class="panel-title" ><a href="/"><i class="fa fa-home"></i> Quay lại</a><span style="float: right;margin-top: -20px;margin-right: 600px;">Nhắn tin theo kịch bản</span></span>
-            </div>
-
-<div class="row">
-            <div class="panel-body col-md-4">
-                <div class="row row-space-10">
-                    <div  v-for="(data,index) in AllData" :key="index" @click="scenarioSection(data)" class="col-md-4 cur">
-                    <div class="alert alert-secondary fade show m-b-10" style="background-color: #cac8db;border:1px solid #2c3e50 ">
-                        {{data.nameScenario}}
-                    </div>
-
-                </div>
-                    <div @click="addScenario" class="col-md-4 cur" >
-                        <div class="alert alert-dark fade show m-b-10" style="background-color: #2c3e50;">
-                           <center style="color:white"><i class="fa fa-plus-square"></i></center>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <div class="panel-body col-md-8">
-                <!-- begin table-responsive -->
-                <div class="row" style="margin-bottom: 20px"><span style="margin-top:2px;margin-left:10px;margin-right: 30px;width:50px;border-radius:5px;padding-top:2px;font-size:10px;height:20px;color: white;background-color: #000029;text-align: center">Cú pháp:</span> <input style="width: 100px;border-radius:5px;height:25px;border:1px dotted #000044;color:#00047a;text-align: center;padding-top: 2px" v-model="main.syntax" spellcheck="false">  </div>
-                <span class="row">
-                <span style="margin-top:10px;margin-left:10px;margin-right: 10px">Tên kịch bản: </span><input v-model="main.nameScenario" spellcheck="false" type="text" class="form-control col-md-4"> <button @click="scenario" style="margin-left: 10px" class="btn btn-outline-primary">Xác nhận</button><button @click="removeScenatio" style="margin-left: 10px;margin-right: 20px" class="btn btn-outline-danger">Xóa</button> <br> <code v-show="errorShow" style="margin-left:10px;margin-top:10px" class="animated flash">{{error}}</code></span>
-                <br>
-                <span style="margin-top:10px;margin-right: 10px"><span style="margin-right: 2px">Nick áp dụng:</span>
-
-                    <span v-for="data in allAccount">
-
-  <label :for="data.FacebookName">{{data.FacebookName}}</label>
-  <input type="checkbox" :id="data.FacebookName" :value="data.ID_sender" v-model="main.checkedNames">
-                        </span>
-
-
-
-                </span>
-
-                <div  class="table-responsive">
-                    <table class="table table-striped table-condensed">
-                        <thead>
-                        <tr>
-                            <th>Thời gian</th>
-                            <th>Nội dung</th>
-                            <th>Hình ảnh</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        <tr v-for="element in main.dataArr">
-                            <td>
-                                <input type="number" v-model="element.time" style="width: 40px;text-align: center" min="1" max="999">
-                                <select v-model="element.timeName">
-                                    <option disabled value="Phút">Phút</option>
-                                    <option v-for="name in timeNameArr" :value="name">{{name}}</option>
-                                </select>
-
-
-                            </td>
-                            <td><input type="text" v-model="element.text" spellcheck="false" class="form-control"></td>
-                            <td @click="markIndex(element)"> <label :for="'upload-photo-'+ind"><i style="margin-top:10px" v-if="element.base64img === null" class="cur fas fa-camera-retro fa-lg"></i><img
-                                    v-if="element.base64img !== null" width="30px" height="30px" :src="element.base64img"  alt=""></label></td>
-
-                            <input style="display: none" @change="uploadFile"  type="file"  name="photo" :id="'upload-photo-'+ind" />
-                            <td @click="removeSceComponent(element)"><i style="margin-top:10px" class="fa fa-trash text-danger cur"></i></td>
-                        </tr>
-                        <tr v-if="dataShow">
-                            <td>
-                                <input type="number" v-model="data.time" style="width: 40px;text-align: center" min="1" max="999">
-                                <select v-model="data.timeName">
-                                    <option disabled value="Phút">Phút</option>
-                                    <option v-for="name in timeNameArr" :value="name">{{name}}</option>
-                                </select>
-
-
-                            </td>
-                            <td><input type="text" v-model="data.text" spellcheck="false" class="form-control"></td>
-                            <td @click="markIndex(null)"> <label :for="'upload-photo-'+ind"><i style="margin-top:10px" v-if="data.base64img === null" class="cur fas fa-camera-retro fa-lg"></i><img
-                                    v-if="data.base64img !== null" width="30px" height="30px" :src="data.base64img"  alt=""></label></td>
-
-                            <input style="display: none" @change="uploadFile"  type="file"  name="photo" :id="'upload-photo-'+ind" />
-                            <td></td>
-                        </tr>
-                        <tr><td><button class="btn btn-default" @click="addSce">Thêm</button></td></tr>
-
-
-                        </tbody>
-                    </table>
-                </div>
-                <!-- end table-responsive -->
-            </div>
-</div>
-
-
-
-            <!-- end panel -->
+<!-- begin #page-container -->
+<div id="page-container" class="fade page-sidebar-fixed page-header-fixed page-content-full-height">
+    <!-- begin #header -->
+    <div id="header" class="header navbar-default show-bg">
+        <!-- begin navbar-header -->
+        <div class="navbar-header">
+            <a  class="navbar-brand"><span class="navbar-logo"></span> <b>Facebook</b> Manager</a>
+            <button type="button" class="navbar-toggle" data-click="sidebar-toggled">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
         </div>
+        <!-- end navbar-header -->
+
+        <!-- begin header-nav -->
+        <ul class="navbar-nav navbar-right">
+            <li>
+                <form class="navbar-form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Enter keyword">
+                        <button type="submit" class="btn btn-search"><i class="fa fa-search"></i></button>
+                    </div>
+                </form>
+            </li>
+            <li class="dropdown">
+                <a href="javascript:;" data-toggle="dropdown" class="dropdown-toggle f-s-14">
+                    <i class="fa fa-bell"></i>
+                    <span class="label">5</span>
+                </a>
+                <ul class="dropdown-menu media-list dropdown-menu-right">
+                    <li class="dropdown-header">NOTIFICATIONS (5)</li>
+                    <li class="media">
+                        <a href="javascript:;">
+                            <div class="media-left">
+                                <i class="fa fa-bug media-object bg-silver-darker"></i>
+                            </div>
+                            <div class="media-body">
+                                <h6 class="media-heading">Server Error Reports <i class="fa fa-exclamation-circle text-danger"></i></h6>
+                                <div class="text-muted f-s-11">3 minutes ago</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="media">
+                        <a href="javascript:;">
+                            <div class="media-left">
+                                <img src="images/user-1.jpg" class="media-object" alt="">
+                                <i class="fab fa-facebook-messenger text-primary media-object-icon"></i>
+                            </div>
+                            <div class="media-body">
+                                <h6 class="media-heading">John Smith</h6>
+                                <p>Quisque pulvinar tellus sit amet sem scelerisque tincidunt.</p>
+                                <div class="text-muted f-s-11">25 minutes ago</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="media">
+                        <a href="javascript:;">
+                            <div class="media-left">
+                                <img src="images/user-2.jpg" class="media-object" alt="">
+                                <i class="fab fa-facebook-messenger text-primary media-object-icon"></i>
+                            </div>
+                            <div class="media-body">
+                                <h6 class="media-heading">Olivia</h6>
+                                <p>Quisque pulvinar tellus sit amet sem scelerisque tincidunt.</p>
+                                <div class="text-muted f-s-11">35 minutes ago</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="media">
+                        <a href="javascript:;">
+                            <div class="media-left">
+                                <i class="fa fa-plus media-object bg-silver-darker"></i>
+                            </div>
+                            <div class="media-body">
+                                <h6 class="media-heading"> New User Registered</h6>
+                                <div class="text-muted f-s-11">1 hour ago</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="media">
+                        <a href="javascript:;">
+                            <div class="media-left">
+                                <i class="fa fa-envelope media-object bg-silver-darker"></i>
+                                <i class="fab fa-google text-warning media-object-icon f-s-14"></i>
+                            </div>
+                            <div class="media-body">
+                                <h6 class="media-heading"> New Email From John</h6>
+                                <div class="text-muted f-s-11">2 hour ago</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="dropdown-footer text-center">
+                        <a href="javascript:;">View more</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="dropdown navbar-user">
+                <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
+                    <img src="images/user-13.jpg" alt="">
+                    <span class="d-none d-md-inline">{{fullname}}</span> <b class="caret"></b>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a href="javascript:;" class="dropdown-item">Chỉnh sửa thông tin</a>
+                    <a href="javascript:;" class="dropdown-item"><span class="badge badge-danger pull-right">2</span> Inbox</a>
+
+                    <div class="dropdown-divider"></div>
+                    <a href="/logout" class="dropdown-item">Đăng xuất</a>
+                </div>
+            </li>
+        </ul>
+        <!-- end header navigation right -->
+    </div>
+    <div id="sidebar" class="sidebar">
+        <!-- begin sidebar scrollbar -->
+        <div data-scrollbar="true" data-height="100%">
+            <!-- begin sidebar user -->
+            <ul class="nav">
+                <li class="nav-profile">
+                    <a href="javascript:;" data-toggle="nav-profile">
+
+                        <div class="info">
+                            <b class="caret pull-right"></b>
+                            {{fullname}}
+                            <small>Trial</small>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <ul class="nav nav-profile">
+                        <li><a href="javascript:;"><i class="fa fa-cog"></i> Cài Đặt</a></li>
+                        <li><a href="javascript:;"><i class="fa fa-pencil-alt"></i> Phản Hồi</a></li>
+                        <li><a href="javascript:;"><i class="fa fa-question-circle"></i> Trợ Giúp</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- end sidebar user -->
+            <!-- begin sidebar nav -->
+            <ul class="nav">
+                <li class="nav-header">Navigation</li>
+                <li class="has-sub ">
+                    <a href="javascript:;">
+                        <b class="caret"></b>
+                        <i class="fa fa-th-large"></i>
+                        <span>Quản lí tài khoản</span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li ><a href="/api/addCookie">Thêm bằng Cookie</a></li>
+                        <li><a href="/api/account">Thêm bằng User/Pass</a></li>
+                    </ul>
+                </li>
+                <li class="has-sub ">
+                    <a href="javascript:;">
+                        <span class="badge pull-right">10</span>
+                        <i class="fa fa-hdd"></i>
+                        <span>Trò Chuyện</span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li ><a href="email_inbox.html">Inbox</a></li>
+                        <li><a href="email_compose.html">Compose</a></li>
+                        <li><a href="email_detail.html">Detail</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="/api/autoChat">
+                        <i class="fab fa-simplybuilt"></i>
+                        <span>Trả lời tự động <span class="label label-theme m-l-5">NEW</span></span>
+                    </a>
+                </li>
+                <li class="has-sub active">
+                    <a href="/api/scenario">
+
+                        <i class="fa fa-gem"></i>
+                        <span>Kịch bản <span class="label label-theme m-l-5">NEW</span></span>
+                    </a>
+
+                </li>
+
+                <li class="has-sub">
+                    <a href="/api/mutiplesms">
+
+                        <i class="fa fa-list-ol"></i>
+                        <span>Hẹn Giờ <span class="label label-theme m-l-5">NEW</span></span>
+                    </a>
+
+                </li>
+
+                <!-- begin sidebar minify button -->
+                <li><a href="javascript:;" class="sidebar-minify-btn" data-click="sidebar-minify"><i class="fa fa-angle-double-left"></i></a></li>
+                <!-- end sidebar minify button -->
+            </ul>
+            <!-- end sidebar nav -->
+        </div>
+        <!-- end sidebar scrollbar -->
+    </div>
+    <div class="sidebar-bg"></div>
+
+    <div class="content content-full-width inbox" id="content">
+
+            <div class="panel panel-inverse" >
+                <div class="panel-heading ui-sortable-handle" style="background-color: #2c3e50">
+                    <div class="panel-heading-btn">
+                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>
+                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
+                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>
+                    </div>
+                    <h4  class="panel-title">Kịch bản tin nhắn</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form-horizontal" >
+                        <div class="form-group row m-b-15">
+                            <label class="col-md-4 col-sm-4 col-form-label" >Chương trình * :</label>
+                            <div class="col-md-8 col-sm-8">
+                                <div class="row">
+                                    <div  v-for="(data,index) in AllData" :key="index" @click="scenarioSection(data)" class="col-md-2 cur">
+                                        <div class="alert alert-secondary fade show m-b-10" style="background-color: #2c3e50;border:1px solid #8dc2ff ">
+                                            {{data.nameScenario}}
+                                        </div>
+
+                                    </div>
+                                    <div @click="addScenario" class="col-md-2 cur" >
+                                        <div class="alert alert-dark fade show m-b-10" style="background-color: #2c3e50;">
+                                            <center style="color:white"><i class="fa fa-plus-square"></i></center>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row m-b-15">
+                            <label class="col-md-4 col-sm-4 col-form-label">Cú pháp * :</label>
+                            <div class="col-md-8 col-sm-8">
+                                <input v-model="main.syntax" spellcheck="false" autocomplete="off" class="form-control" type="text"  name="email" data-parsley-type="email" placeholder="Cú pháp ... " data-parsley-required="true">
+                            </div>
+                        </div>
+                        <div class="form-group row m-b-15">
+                            <label class="col-md-4 col-sm-4 col-form-label">Tên kịch bản :</label>
+                            <div class="col-md-8 col-sm-8">
+                                <input v-model="main.nameScenario" spellcheck="false" autocomplete="off" class="form-control" type="text"  name="email" data-parsley-type="email" placeholder="Tên kịch bản ... " data-parsley-required="true">
+
+
+                            </div>
+                        </div>
+                        <div class="form-group row m-b-15">
+                            <label class="col-md-4 col-sm-4 col-form-label">Nội dung :</label>
+                            <div class="col-md-8 col-sm-8">
+                                <div  class="table-responsive">
+                                    <table class="table table-striped table-condensed">
+                                        <thead>
+                                        <tr>
+                                            <th>Thời gian</th>
+                                            <th>Nội dung</th>
+                                            <th>Hình ảnh</th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+
+                                        <tr v-for="element in main.dataArr">
+                                            <td>
+                                                <input type="number" v-model="element.time" style="width: 40px;text-align: center" min="1" max="999">
+                                                <select v-model="element.timeName">
+                                                    <option disabled value="Phút">Phút</option>
+                                                    <option v-for="name in timeNameArr" :value="name">{{name}}</option>
+                                                </select>
+
+
+                                            </td>
+                                            <td><input type="text" v-model="element.text" spellcheck="false" class="form-control"></td>
+                                            <td @click="markIndex(element)"> <label :for="'upload-photo-'+ind"><i style="margin-top:10px" v-if="element.base64img === null" class="cur fas fa-camera-retro fa-lg"></i><img
+                                                    v-if="element.base64img !== null" width="30px" height="30px" :src="element.base64img"  alt=""></label></td>
+
+                                            <input style="display: none" @change="uploadFile"  type="file"  name="photo" :id="'upload-photo-'+ind" />
+                                            <td @click="removeSceComponent(element)"><i style="margin-top:10px" class="fa fa-trash text-danger cur"></i></td>
+                                        </tr>
+                                        <tr v-if="dataShow">
+                                            <td>
+                                                <input type="number" v-model="data.time" style="width: 40px;text-align: center" min="1" max="999">
+                                                <select v-model="data.timeName">
+                                                    <option disabled value="Phút">Phút</option>
+                                                    <option v-for="name in timeNameArr" :value="name">{{name}}</option>
+                                                </select>
+
+
+                                            </td>
+                                            <td><input type="text" v-model="data.text" spellcheck="false" class="form-control"></td>
+                                            <td @click="markIndex(null)"> <label :for="'upload-photo-'+ind"><i style="margin-top:10px" v-if="data.base64img === null" class="cur fas fa-camera-retro fa-lg"></i><img
+                                                    v-if="data.base64img !== null" width="30px" height="30px" :src="data.base64img"  alt=""></label></td>
+
+                                            <input style="display: none" @change="uploadFile"  type="file"  name="photo" :id="'upload-photo-'+ind" />
+                                            <td></td>
+                                        </tr>
+                                        <tr><td><button class="btn btn-default" @click="addSce">Thêm</button></td></tr>
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group row m-b-15">
+                            <label class="col-md-4 col-sm-4 col-form-label" ></label>
+                            <div class="col-md-8 col-sm-8">
+                                <button @click="scenario" style="margin-left: 10px" class="btn btn-outline-primary">Xác nhận</button>
+                                <button @click="removeScenatio" style="margin-left: 10px;margin-right: 20px" class="btn btn-outline-danger">Xóa</button>
+
+
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+
 
     </div>
-
-
-
-
+    <a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top fade" data-click="scroll-top"><i class="fa fa-angle-up"></i></a>
     <!-- end scroll to top btn -->
 </div>
-
-
 <!-- end page container -->
+
 <!-- ================== BEGIN BASE JS ================== -->
 <script src="/js/jquery-3.3.1.min.js"></script>
 <script src="/js/jquery-ui.min.js"></script>
 <script src="/js/bootstrap.bundle.min.js"></script>
-
 <script src="/js/jquery.slimscroll.min.js"></script>
 <script src="/js/js.cookie.js"></script>
-<script src="/js/apple.min.js"></script>
+<script src="/js/transparent.min.js"></script>
 <script src="/js/apps.min.js"></script>
+<!-- ================== END BASE JS ================== -->
 
-<script src="/js/jquery.dataTables.js"></script>
-<script src="/js/dataTables.bootstrap.min.js"></script>
-<script src="/js/dataTables.fixedColumns.min.js"></script>
-<script src="/js/table-manage-fixed-columns.demo.min.js"></script>
+<!-- ================== BEGIN PAGE LEVEL JS ================== -->
+<script src="/js/email-inbox.demo.min.js"></script>
 <!-- ================== END PAGE LEVEL JS ================== -->
-
 <script>
     $(document).ready(function() {
         App.init();
-
+        InboxV2.init();
     });
 </script>
-
 <script>
     function readFile() {
         return new Promise(resolve=>{
@@ -263,7 +438,7 @@
 
 
     var app = new Vue({
-        el: '#frame',
+        el: '#page-container',
         data(){
             return {
                 time:'1',
@@ -281,7 +456,7 @@
                     nameScenario:null,
                     dataArr:[],
                     checkedNames:[]
-                    
+
                 },
                 data:{
                     time:'1',
@@ -290,11 +465,14 @@
                     base64img:null
                 },
                 dataShow:false,
-                
+                fullname:''
+
             }
         },
 
         created: async  function(){
+            let chat = await axios.post('/api/getAllConversation');
+            this.fullname = chat.data.result.user.name;
             let allAcc = await axios.post('/api/getAllAccount');
             this.allAccount = allAcc.data.data;
 
@@ -316,17 +494,17 @@
                         }else {
                             _.main.dataArr = _.main.dataArr.filter(em=>{
                                 if(em.text === this.mark.text && em.base64img === this.mark.base64img && em.time === this.mark.time && em.timeName === this.mark.timeName){
-                                     em.base64img = e.target.result;
+                                    em.base64img = e.target.result;
                                 }
                                 return em
                             })
                         }
                     };
                     reader.readAsDataURL(input.files[0]);
-                    }
+                }
             },
             markIndex:async function(element){
-               return this.mark = element;
+                return this.mark = element;
             },
             addSce:async function(){
                 this.errorShow = false;
@@ -394,9 +572,9 @@
                 let send = await axios.post('/api/setScenario',{data:this.main});
                 let _ = this;
                 this.AllData = this.AllData.filter(e=>{
-                   if(e.syntax !== _.main.syntax){
-                       return e
-                   }
+                    if(e.syntax !== _.main.syntax){
+                        return e
+                    }
                 });
                 this.AllData.push(this.main);
                 this.main = {
@@ -435,13 +613,13 @@
             },
             removeScenatio:async function(){
 
-              let remove = await axios.post('/api/removeScenario',{syntax:this.main.syntax});
+                let remove = await axios.post('/api/removeScenario',{syntax:this.main.syntax});
 
-               this.AllData = this.AllData.filter(e=>{
-                  if(e.syntax !== this.main.syntax){
-                      return e
-                  }
-              });
+                this.AllData = this.AllData.filter(e=>{
+                    if(e.syntax !== this.main.syntax){
+                        return e
+                    }
+                });
 
                 return this.main = {
                     syntax:null,
@@ -457,7 +635,7 @@
             scenarioSection:async function(data){
                 this.dataShow = false;
 
-               return this.main = data
+                return this.main = data
             }
         },
     })
