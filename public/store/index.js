@@ -4,21 +4,40 @@ const store = new Vuex.Store({
         chat: [],
         account: [],
         filterSelect:'all',
+        nickSelect:'all',
 
         list_chat:[],
         error:[],
         conversation:[],
-        component:'listchat'
+        component:'listchat',
+
+
     },
     getters: {
-        listInbox: state => {
-
+        listAllInbox: state => {
             if(state.filterSelect === 'all'){
-                return  state.list_chat;
+                 return state.list_chat;
 
+            }else if(state.filterSelect === 'unread'){
+                 return state.list_chat.filter(e=>{
+                    if(e.seen === false){
+                        return e
+                    }
+                })
+            } else if(state.filterSelect === 'read'){
+                 return state.list_chat.filter(e=>{
+                    if(e.seen === true){
+                        return e
+                    }
+                })
+            }
+        },
+        listAllInboxOfAllNick:state=> {
+            if(state.nickSelect === 'all'){
+                return  state.list_chat;
             }else {
-                return  state.list_chat.filter(e=>{
-                    if(e.facebook_name_sender === state.filterSelect){
+                return state.list_chat.filter(e=>{
+                    if(e.ID_sender === state.nickSelect){
                         return e
                     }
                 })
@@ -49,6 +68,7 @@ const store = new Vuex.Store({
             })
         },
         pushConversation(state,data){
+
             let check = false;
             if(data.ID_receiver === state.conversation.ID_receiver){
 
@@ -63,6 +83,7 @@ const store = new Vuex.Store({
                 });
                 state.conversation.chat = data.chat;
             }
+
             state.list_chat = state.list_chat.map(e=>{
                 if (e.ID_receiver === data.ID_receiver && e.ID_sender === data.ID_sender){
                     e.seen = data.seen;

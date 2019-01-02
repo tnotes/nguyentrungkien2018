@@ -1,5 +1,5 @@
-const login = require("facebook-chat-api");
-const {chatINSERT,accountFIND_manager,ModelScenarioID_INSERT_ID,ModelVocativeFIND,ModelScenarisCHECKsyntax,ModelScenarioDELETE,ModelVocativeINSERT,ModelScenarioID_FIND,ModelScenarioID_REMOVE_ID,accountREADall,ModelScenarioALL,AutoChatFINDall,AlarmFIND,AlarmFIND_aid,AlarmUPDATE,accountCHECK_manager,accountCREATE_manager,chatUPDATE,chatDELETE,chatFIND,chatREAD,accountDELETE,accountINSERT,accountFIND,accountREAD,seenUPDATE,statusUPDATE} = require('./db.js');
+ const login = require("facebook-chat-api");
+const {chatINSERT,accountFIND_manager,ModelScenarioID_INSERT_ID,ModelVocativeFIND,AlarmUPDATEstatus,ModelScenarisCHECKsyntax,ModelScenarioDELETE,ModelVocativeINSERT,ModelScenarioID_FIND,ModelScenarioID_REMOVE_ID,accountREADall,ModelScenarioALL,AutoChatFINDall,AlarmFIND,AlarmFIND_aid,AlarmUPDATE,accountCHECK_manager,accountCREATE_manager,chatUPDATE,chatDELETE,chatFIND,chatREAD,accountDELETE,accountINSERT,accountFIND,accountREAD,seenUPDATE,statusUPDATE} = require('./db.js');
 const express = require('express');
 let CronJob  = require('cron').CronJob;
 const fs = require('fs');
@@ -385,6 +385,7 @@ let process = async function(account){
                           });
                           await waitTime(dataSend.time*1000)
                       }
+                      await AlarmUPDATEstatus(account.userBoss,dataSend.aid,true)
                   }
 
 
@@ -468,10 +469,8 @@ let process = async function(account){
 
               let allScenario = await ModelScenarioALL(account.userBoss);
 
-              if(mess.includes('HUY') === true){
+              if(mess.includes('HUY') === true && mess.split(' ')[0] === 'HUY'){
                   let SceID = mess.replace(/HUY/g,'').trim();
-
-
 
                       let nameEvent = allScenario.filter(e=>{
 
@@ -506,7 +505,12 @@ let process = async function(account){
                       let listID = listSyntax[0]['_doc']['listID'];
                       if(listID.includes(ID_receiver) === false){
                           await ModelScenarioID_INSERT_ID(account.userBoss,scenario[0]['_doc'].syntax,ID_receiver);
+                          console.log(scenario[0]['_doc'].dataArr[0]);
                           let messageAlert = 'Quý khách đã đăng kí thành công Chương trình '+scenario[0]['_doc'].nameScenario+' của chúng tôi.Quý khách sẽ được cập nhật những thông tin mới nhất khi có sự kiện sắp diễn ra.Nếu muốn từ chối nhận tin nhắn vui lòng soạn HUY '+scenario[0]['_doc'].syntax.trim()+' gửi tới facebook quý khách dã nhắn trước đó.Trân trong cảm ơn !';
+
+                          if(scenario[0]['_doc'].dataArr[0].time == 0){
+                              messageAlert = scenario[0]['_doc'].dataArr[0].text;
+                          }
                           await sendMessExcute({
                               userBoss:account.userBoss,
                               ID_receiver:ID_receiver,
@@ -514,6 +518,7 @@ let process = async function(account){
                               message:messageAlert,
                               ID_sender:account.ID_sender
                           });
+
                           scenarioACTIVE(scenario,ID_receiver,mess);
                       }else {
                           let messageAlert = 'Quý khách đã đăng kí thành công Chương trình '+scenario[0]['_doc'].nameScenario+' trước đó của chúng tôi.Quý khách sẽ được cập nhật những thông tin mới nhất khi có sự kiện sắp diễn ra.Nếu muốn từ chối nhận tin nhắn vui lòng soạn HUY '+scenario[0]['_doc'].syntax.trim()+' gửi tới facebook quý khách dã nhắn trước đó.Trân trong cảm ơn';

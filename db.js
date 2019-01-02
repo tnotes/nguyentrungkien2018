@@ -128,6 +128,13 @@ module.exports = {
             })
         })
     },
+    AlarmUPDATEstatus:(userBoss,id,value)=>{
+        return new Promise(resolve => {
+            ModelAlarm.updateOne({userBoss:userBoss,aid:id},{status:value}).then(result=>{
+                resolve(id)
+            })
+        })
+    },
     AlarmFIND:userBoss=>{
       return new Promise(resolve=>{
           ModelAlarm.find({userBoss:userBoss},(err,result)=>{

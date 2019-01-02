@@ -37,196 +37,269 @@ function convertTime12to24(time12h) {
 
     return hours + ':' + minutes;
 }
-
+function pad(d) {
+    return (d < 10) ? '0' + d.toString() : d.toString();
+}
 Vue.component('mutiplesms', {
-    template:'<div class="content content-full-width inbox animated fadeIn" id="content">\n' +
-        '        <div class="col-md-12">\n' +
-        '            <div class="panel panel-inverse " >\n' +
-        '                <!-- begin panel-heading -->\n' +
-        '                <div class="panel-heading ui-sortable-handle" style="background-color: #2c3e50">\n' +
-        '                    <div class="panel-heading-btn">\n' +
-        '                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>\n' +
-        '                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>\n' +
-        '                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>\n' +
-        '                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>\n' +
-        '                    </div>\n' +
-        '                    <h4  class="panel-title">Hẹn giờ gửi tin nhắn</h4>\n' +
-        '                </div>\n' +
-        '                <!-- end panel-heading -->\n' +
-        '                <!-- begin panel-body -->\n' +
-        '                <div class="panel-body" data-sortable-id="form-plugins-1">\n' +
-        '                    <div class="form-horizontal" data-parsley-validate="true" name="demo-form" novalidate="">\n' +
+    template:' <div class="content" id="content">\n' +
         '\n' +
-        '                        <div class="form-group row m-b-15">\n' +
-        '                            <label class="col-md-4 col-sm-4 col-form-label" >Đặt giờ * :</label>\n' +
-        '                            <div class="col-md-3">\n' +
-        '                                <div class="input-group date" id="datetimepicker1">\n' +
-        '                                    <input  type="text" v-model="calendar" id="calendar" class="form-control">\n' +
-        '                                    <div class="input-group-addon">\n' +
-        '                                        <i class="fa fa-calendar"></i>\n' +
+        '                <div class="col-md-12">\n' +
+        '                        <div class="panel panel-inverse " >\n' +
+        '                                <!-- begin panel-heading -->\n' +
+        '                                <div class="panel-heading ui-sortable-handle" style="background-color: #330404">\n' +
+        '                                        <div class="panel-heading-btn">\n' +
+        '                                                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>\n' +
+        '                                                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>\n' +
+        '                                                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>\n' +
+        '                                                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>\n' +
+        '                                            </div>\n' +
+        '                                        <h4  class="panel-title">Hẹn giờ gửi tin nhắn</h4>\n' +
         '                                    </div>\n' +
-        '                                </div>\n' +
-        '                            </div>\n' +
-        '                        </div>\n' +
-        '                        <div class="form-group row m-b-15">\n' +
-        '                            <label class="col-md-4 col-sm-4 col-form-label">Nội dung tin nhắn :</label>\n' +
-        '                            <div class="col-md-8 col-sm-8">\n' +
-        '                                <textarea class="form-control" spellcheck="false" rows="4" v-model="message" ></textarea>\n' +
-        '                            </div>\n' +
-        '                        </div>\n' +
+        '                                <!-- end panel-heading -->\n' +
+        '                                <!-- begin panel-body -->\n' +
+        '                                <div class="panel-body" data-sortable-id="form-plugins-1">\n' +
+        '                                        <div class="form-horizontal" data-parsley-validate="true" name="demo-form" novalidate="">\n' +
+        '\n' +
+        '                                                <div class="form-group row m-b-15">\n' +
+        '                                                        <label class="col-md-4 col-sm-4 col-form-label" >Đặt giờ * :</label>\n' +
+        '                                                        <div class="col-md-3">\n' +
+        '                                                                <div class="input-group date" >\n' +
+        '                                                                    <input type="datetime-local" v-model="calendar" id="calendar"\n' +
+        '\n' +
+        '                                                                           class="form-control">\n' +
+        '\n' +
+        '                                                                    </div>\n' +
+        '                                                            </div>\n' +
+        '                                                    </div>\n' +
+        '                                                <div class="form-group row m-b-15">\n' +
+        '                                                        <label class="col-md-4 col-sm-4 col-form-label">Nội dung tin nhắn :</label>\n' +
+        '                                                        <div class="col-md-8 col-sm-8">\n' +
+        '                                                                <textarea class="form-control" spellcheck="false" rows="4" v-model="message" ></textarea>\n' +
+        '                                                            </div>\n' +
+        '                                                    </div>\n' +
         '\n' +
         '\n' +
-        '                        <div class="form-group row m-b-15">\n' +
-        '                            <label class="col-md-4 col-sm-4 col-form-label">Khoảng cách mỗi tin nhắn :</label>\n' +
-        '                            <div class="col-md-1 col-sm-1">\n' +
-        '                                <input v-model="time" class="form-control" type="number"   data-parsley-type="url" placeholder="... ">\n' +
-        '                            </div>\n' +
-        '                            <div class="col-md-1 col-sm-1" style="margin-top: 15px">\n' +
-        '                                <span >(s).</span>\n' +
-        '                            </div>\n' +
-        '                        </div>\n' +
+        '                                                <div class="form-group row m-b-15">\n' +
+        '                                                        <label class="col-md-4 col-sm-4 col-form-label">Khoảng cách mỗi tin nhắn :</label>\n' +
+        '                                                        <div class="col-md-1 col-sm-1">\n' +
+        '                                                                <input v-model="time" class="form-control" type="number"   data-parsley-type="url" placeholder="... ">\n' +
+        '                                                            </div>\n' +
+        '                                                        <div class="col-md-1 col-sm-1" style="margin-top: 15px">\n' +
+        '                                                                <span >(s).</span>\n' +
+        '                                                            </div>\n' +
+        '                                                    </div>\n' +
         '\n' +
         '\n' +
-        '                        <div class="form-group row m-b-0">\n' +
-        '                            <label class="col-md-4 col-sm-4 col-form-label">&nbsp;</label>\n' +
-        '                            <div class="col-md-8 col-sm-8">\n' +
+        '                                                <div class="form-group row m-b-0">\n' +
+        '                                                        <label class="col-md-4 col-sm-4 col-form-label">&nbsp;</label>\n' +
+        '                                                        <div class="col-md-8 col-sm-8">\n' +
         '\n' +
-        '                                <button v-show="submit" type="submit" @click="alarm" class="btn btn-sm btn-outline-primary m-r-5">Start</button>\n' +
-        '                                <button v-show="cancel" type="submit" @click="cancelAlarm" class="btn btn-sm btn-danger m-r-5">Stop</button>\n' +
-        '                                <code v-show="receiver_blank" class="animated flash" style="color:#ffbaa9;background: none;margin-top:20px">Bạn phải chọn ít nhất 1 người dể gửi.</code>\n' +
-        '                                <code v-show="message_blank" class="animated flash" style="color:#ffbaa9;background: none;margin-top:20px">Bạn không được để trống nội dung tin nhắn.</code>\n' +
-        '                                <code v-show="calendar_blank" class="animated flash" style="color:#ffbaa9;background: none;margin-top:20px">Bạn phải thiết lập thời gian hẹn giờ.</code>\n' +
+        '                                                                <button v-show="submit" type="submit" @click="alarmACTION" class="btn btn-sm btn-outline-primary m-r-5">Bắt đầu</button>\n' +
+        '                                                                <button v-show="cancel" type="submit" @click="cancelAlarm" class="btn btn-sm btn-danger m-r-5">Stop</button>\n' +
+        '                                                            <button v-show="reset" @click="resetAction" class="btn btn-sm btn-outline-primary m-r-5" data-toggle="modal">Làm lại</button>\n' +
         '\n' +
-        '                            </div>\n' +
-        '                        </div>\n' +
-        '                    </div>\n' +
-        '                </div>\n' +
+        '                                                            <a href="#modal-dialog" class="btn btn-sm btn-outline-primary m-r-5" data-toggle="modal">Lịch sử</a>\n' +
         '\n' +
+        '                                                                <code v-show="receiver_blank" class="animated flash" style="color:#ffbaa9;background: none;margin-top:20px">Bạn phải chọn ít nhất 1 người dể gửi.</code>\n' +
+        '                                                                <code v-show="message_blank" class="animated flash" style="color:#ffbaa9;background: none;margin-top:20px">Bạn không được để trống nội dung tin nhắn.</code>\n' +
+        '                                                                <code v-show="calendar_blank" class="animated flash" style="color:#ffbaa9;background: none;margin-top:20px">Bạn phải thiết lập thời gian hẹn giờ.</code>\n' +
+        '                                                            <div class="modal fade" id="modal-dialog" >\n' +
+        '                                                                <div class="modal-dialog"  style="max-width: 1000px;">\n' +
+        '                                                                    <div class="modal-content">\n' +
+        '                                                                        <div class="modal-header">\n' +
+        '                                                                            <h4 class="modal-title">Lịch sử</h4>\n' +
+        '                                                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\n' +
+        '                                                                        </div>\n' +
+        '                                                                        <div class="modal-body">\n' +
+        '                                                                            <div class="panel panel-inverse" style="background-color: #261313">\n' +
         '\n' +
-        '                <!-- end hljs-wrapper -->\n' +
-        '            </div>\n' +
-        '        </div>\n' +
-        '        <div class="col-md-12">\n' +
-        '            <div class="row">\n' +
-        '                <div class="col-md-4">\n' +
-        '                    <div class="panel panel-inverse" >\n' +
-        '                        <br>\n' +
-        '                        <span style="margin-left:20px">Xuất hiện {{listAcc.length}} tài khoản</span>\n' +
-        '                        <button style="float: right;margin-right: 15px;margin-top: 25px" class="btn btn-sm btn-default" @click="GetListFriend">Tìm bạn bè <i class="fa fa-angle-double-right"></i></button>\n' +
-        '                        <br><br> <br>\n' +
-        '                        <div class="panel-body">\n' +
-        '                            <div id="data-table-fixed-columns_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">\n' +
-        '                                <div class="table-responsive">\n' +
-        '                                    <table  class="table table-striped table-bordered">\n' +
-        '                                        <thead>\n' +
-        '                                        <tr>\n' +
-        '                                            <th width="1%"></th>\n' +
-        '                                            <th width="1%" data-orderable="false"></th>\n' +
-        '                                            <th class="text-nowrap">Tài khoản</th>\n' +
-        '                                            <th class="text-nowrap"></th>\n' +
-        '\n' +
-        '                                        </tr>\n' +
-        '                                        </thead>\n' +
-        '                                        <tbody>\n' +
-        '                                        <tr v-for="(data,index) in listAcc" :key="index" >\n' +
-        '\n' +
-        '\n' +
-        '                                            <td width="1%" class="f-s-600 ">{{index+1}}</td>\n' +
-        '                                            <td width="1%" class="with-img"><img :src="data.FacebookImage" class="img-rounded height-30"></td>\n' +
-        '                                            <td><a target="_blank" :href="data.FacebookUrl">{{data.FacebookName}}</a></td>\n' +
-        '                                            <td><input :value="data.ID_sender" v-model="listAccSelect" type="checkbox"></td>\n' +
-        '\n' +
-        '                                        </tr>\n' +
-        '\n' +
-        '                                        </tbody>\n' +
-        '                                    </table>\n' +
-        '                                </div>\n' +
-        '                            </div>\n' +
-        '                        </div>\n' +
-        '\n' +
-        '                        <!-- end panel-body -->\n' +
-        '                    </div>\n' +
-        '                </div>\n' +
-        '                <div class="col-md-8">\n' +
-        '                    <div class="panel panel-inverse" >\n' +
-        '                        <br>\n' +
-        '                        <div class="col-md-12 col-sm-12">\n' +
-        '                            <div class="row">\n' +
-        '                                <div class="col-md-6 col-sm-6">\n' +
-        '                                    <button  v-show="vocativeDefaultShow" style="margin-top:25px;float: left;" class="btn btn-sm btn-default col-md-6" @click="vocativeShow">Thay đổi xưng hô</button>\n' +
-        '\n' +
-        '                                    <button  v-show="vocativeChangeShow"  class="btn btn-sm btn-primary col-md-6" style="float: left" @click="vocationSubmit">Lưu xưng hô</button>\n' +
-        '                                    <br> <br> <br> <br>\n' +
-        '                                    <code style="color:white;border:1px solid #7d6461;background: none;float:left;">Xuất hiện {{listFriend.length}} bạn bè</code>\n' +
-        '\n' +
-        '                                </div>\n' +
-        '                                <div class="col-md-6 col-sm-6">\n' +
-        '\n' +
-        '                                    <div class="row" style="float: right"><span class="col-md-12" style="margin-top: 5px">Tìm kiếm: <input v-model="search"  type="text" class="form-control col-md-12"></span></div>\n' +
+        '                                                                                <div class="panel-body">\n' +
+        '                                                                                    <div class="table-responsive">\n' +
+        '                                                                                        <table  class="table table-striped table-bordered">\n' +
+        '                                                                                            <thead>\n' +
+        '                                                                                            <tr>\n' +
+        '                                                                                                <th width="1%">STT</th>\n' +
+        '                                                                                                <th class="text-nowrap">Đặt giờ</th>\n' +
+        '                                                                                                <th class="text-nowrap">Nội dung</th>\n' +
+        '                                                                                                <th class="text-nowrap">Khoảng cách</th>\n' +
+        '                                                                                                <th class="text-nowrap">Người nhận</th>\n' +
+        '                                                                                                <th class="text-nowrap">Trạng thái</th>\n' +
+        '                                                                                                <th></th>\n' +
+        '                                                                                                <th></th>\n' +
+        '                                                                                            </tr>\n' +
+        '                                                                                            </thead>\n' +
+        '                                                                                            <tbody>\n' +
+        '                                                                                            <tr v-for="(element,index) in  listAlarm" :key="index" style="color:white" class="odd gradeX">\n' +
+        '                                                                                                <td width="1%" class="f-s-600">{{index+1}}</td>\n' +
         '\n' +
         '\n' +
-        '                                    <button class="btn btn-sm btn-default col-md-6 col-sm-3" style="margin-top:10px;float: right" @click="selectAll">Chọn tất cả</button>\n' +
+        '                                                                                                <td  class="with-img">{{element.data.month}}/{{element.data.date}}/2019 {{element.data.hour}}:{{element.data.minute}}</td>\n' +
+        '                                                                                                <td>{{element.data.message}} </td>\n' +
+        '                                                                                                <td>{{element.data.time}} giây</td>\n' +
+        '                                                                                                <td>{{element.data.receiver.length}} người</td>\n' +
+        '                                                                                                <td><code v-if="element.status === true" style="color:green;padding:3px 3px">Hoàn thành</code><code v-if="element.status === false" style="padding:3px 3px">Chưa hoàn thành</code></td>\n' +
+        '                                                                                                <td @click="editHistory(element)"><i class="fas fa-pencil-alt fa-fw trashremove cur" style="color: #90ff81;"></i></td>\n' +
+        '                                                                                                <td @click="deleteHistory(element)"><i class="fa fa-trash-alt trashremove cur" style="color: red;"></i></td>\n' +
+        '                                                                                            </tr>\n' +
         '\n' +
         '\n' +
-        '                                </div>\n' +
         '\n' +
-        '                            </div>\n' +
-        '                        </div>\n' +
-        '                        <div>\n' +
-        '\n' +
-        '                            <!-- begin panel -->\n' +
-        '                            <div class="panel panel-inverse" style="margin-top: 10px">\n' +
-        '\n' +
-        '\n' +
-        '                                <div class="panel-body">\n' +
-        '                                    <div class="table-responsive">\n' +
-        '                                        <table  class="table table-striped table-bordered">\n' +
-        '                                            <thead>\n' +
-        '                                            <tr>\n' +
-        '                                                <th width="1%">STT</th>\n' +
-        '                                                <th width="1%" data-orderable="false"></th>\n' +
-        '                                                <th class="text-nowrap">User ID</th>\n' +
-        '                                                <th class="text-nowrap">Facebook</th>\n' +
-        '                                                <th class="text-nowrap">Xưng hô</th>\n' +
-        '                                                <th class="text-nowrap">Tình trạng</th>\n' +
-        '                                                <th class="text-nowrap"></th>\n' +
-        '\n' +
-        '                                            </tr>\n' +
-        '                                            </thead>\n' +
-        '                                            <tbody>\n' +
-        '                                            <tr v-for="(data,index) in filteredList" :key="index" class="odd gradeX">\n' +
-        '                                                <td width="1%" class="f-s-600" style="color: white">{{index+1}}</td>\n' +
-        '                                                <td width="1%" class="with-img"><img :src="data.profilePicture" class="img-rounded height-30"></td>\n' +
-        '                                                <td>{{data.userID}}</td>\n' +
-        '                                                <td>{{data.fullName}}</td>\n' +
-        '                                                <td style="text-align: center"><input type="text" spellcheck="false" v-show="dataVocative" style="width: 100px;text-align: center" v-model="data.vocative"><span v-show="dataVocativeText">{{data.vocative}}</span></td>\n' +
-        '                                                <td v-if="data.status === \'Chưa gửi\'" style="color:red">{{data.status}}</td>\n' +
-        '                                                <td v-if="data.status === \'Đã gửi\'" style="color:green">{{data.status}}</td>\n' +
-        '\n' +
-        '                                                <td><input type="checkbox" :value="data" v-model="listFriendSelect"></td>\n' +
-        '\n' +
-        '                                            </tr>\n' +
+        '                                                                                            </tbody>\n' +
+        '                                                                                        </table>\n' +
+        '                                                                                    </div>\n' +
+        '                                                                                </div>\n' +
+        '                                                                                <!-- end panel-body -->\n' +
+        '                                                                            </div>\n' +
+        '                                                                            <!-- end panel -->\n' +
+        '                                                                        </div>\n' +
         '\n' +
         '\n' +
-        '                                            </tbody>\n' +
-        '                                        </table>\n' +
+        '                                                                    </div>\n' +
+        '                                                                    <div class="modal-footer">\n' +
+        '                                                                        <a id="closeHistory" href="javascript:;" class="btn btn-white cur" data-dismiss="modal">Đóng</a>\n' +
+        '                                                                    </div>\n' +
+        '                                                                </div>\n' +
+        '                                                            </div>\n' +
+        '\n' +
+        '                                                            </div>\n' +
+        '                                                    </div>\n' +
+        '                                            </div>\n' +
         '                                    </div>\n' +
-        '                                </div>\n' +
-        '                                <!-- end panel-body -->\n' +
+        '\n' +
+        '\n' +
+        '                                <!-- end hljs-wrapper -->\n' +
         '                            </div>\n' +
-        '\n' +
-        '                        </div>\n' +
-        '\n' +
-        '\n' +
-        '                        <!-- end panel-body -->\n' +
         '                    </div>\n' +
+        '                <div class="col-md-12">\n' +
+        '                        <div class="row">\n' +
+        '                                <div class="col-md-4">\n' +
+        '                                        <div class="panel panel-inverse" >\n' +
+        '                                                <br>\n' +
+        '                                               <span style="float:left;margin-left:15px">Bạn đang quản lý {{listAcc.length}} tài khoản</span>\n' +
+        '                                                <br>\n' +
+        '\n' +
+        '                                               <button style="margin-top: 20px;float:left;margin-left:15px;margin-bottom: 20px" class="btn btn-sm btn-default" @click="GetListFriend">Tìm bạn bè <i class="fa fa-angle-double-right"></i></button>\n' +
+        '                                                <div class="panel-body">\n' +
+        '                                                        <div id="data-table-fixed-columns_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">\n' +
+        '                                                                <div class="table-responsive">\n' +
+        '                                                                        <table  class="table table-striped table-bordered">\n' +
+        '                                                                                <thead>\n' +
+        '                                                                                <tr>\n' +
+        '                                                                                        <th width="1%"></th>\n' +
+        '                                                                                        <th width="1%" data-orderable="false"></th>\n' +
+        '                                                                                        <th class="text-nowrap">Tài khoản</th>\n' +
+        '                                                                                        <th class="text-nowrap"></th>\n' +
+        '\n' +
+        '                                                                                    </tr>\n' +
+        '                                                                                </thead>\n' +
+        '                                                                                <tbody>\n' +
+        '                                                                                <tr v-for="(data,index) in listAcc" :key="index" >\n' +
+        '\n' +
+        '\n' +
+        '                                                                                        <td width="1%" class="f-s-600 ">{{index+1}}</td>\n' +
+        '                                                                                        <td width="1%" class="with-img"><img :src="data.FacebookImage" class="img-rounded height-30"></td>\n' +
+        '                                                                                        <td><a target="_blank" :href="data.FacebookUrl">{{data.FacebookName}}</a></td>\n' +
+        '                                                                                        <td><input :value="data.ID_sender" v-model="listAccSelect" type="checkbox"></td>\n' +
+        '\n' +
+        '                                                                                    </tr>\n' +
+        '\n' +
+        '                                                                                </tbody>\n' +
+        '                                                                            </table>\n' +
+        '                                                                    </div>\n' +
+        '                                                            </div>\n' +
+        '                                                    </div>\n' +
+        '\n' +
+        '                                                <!-- end panel-body -->\n' +
+        '                                            </div>\n' +
+        '                                    </div>\n' +
+        '                                <div class="col-md-8">\n' +
+        '                                    <div class="panel panel-inverse" >\n' +
+        '                                            <br>\n' +
+        '                                            <div class="col-md-12 col-sm-12">\n' +
+        '                                                    <div class="row">\n' +
+        '                                                            <div class="col-md-6 col-sm-6">\n' +
+        '                                                                    <span style="background: none;float:left;">Hiển thị <select style="background: none;border:1px solid #848280;color:#848280;padding-left:15px"  v-model="pagination">\n' +
+        '          <option value="50">50</option>\n' +
+        '          <option value="100">100</option>\n' +
+        '          <option value="500">500</option>\n' +
+        '          <option value="all">Tất cả</option>\n' +
+        '\n' +
+        '        </select> bạn bè</span>\n' +
+        '                                                        <br> <br>\n' +
+        '\n' +
+        '                                                                   <center> <button  v-show="vocativeDefaultShow" style="margin-top:0px;float: left;" class="btn btn-sm btn-default " @click="vocativeShow">Thay đổi xưng hô</button></center>\n' +
+        '\n' +
+        '                                                                   <center><button  v-show="vocativeChangeShow"  class="btn btn-sm btn-primary" style="float: left" @click="vocationSubmit">Lưu xưng hô</button></center>\n' +
+        '                                                                    <br>\n' +
+        '\n' +
+        '                                                                </div>\n' +
+        '                                                            <div class="col-md-6 col-sm-6">\n' +
+        '\n' +
+        '                                                                    <div class="row" style="float: right"><span style="margin-top:5px;margin-right: 10px">Tìm kiếm:</span> <input v-model="search" style="height:25px"  type="text" class="form-control col-md-8"></div>\n' +
+        '\n' +
+        '\n' +
+        '\n' +
+        '\n' +
+        '                                                                </div>\n' +
+        '\n' +
+        '                                                        </div>\n' +
+        '                                                </div>\n' +
+        '                                            <div>\n' +
+        '\n' +
+        '                                                    <!-- begin panel -->\n' +
+        '                                                    <div class="panel panel-inverse" style="margin-top: 10px">\n' +
+        '\n' +
+        '\n' +
+        '                                                            <div class="panel-body">\n' +
+        '                                                                    <div class="table-responsive">\n' +
+        '                                                                            <table  class="table table-striped table-bordered">\n' +
+        '                                                                                    <thead>\n' +
+        '                                                                                    <tr>\n' +
+        '                                                                                            <th width="1%">STT</th>\n' +
+        '                                                                                            <th width="1%" data-orderable="false"></th>\n' +
+        '                                                                                            <th class="text-nowrap">User ID</th>\n' +
+        '                                                                                            <th class="text-nowrap">Facebook</th>\n' +
+        '                                                                                            <th class="text-nowrap">Xưng hô</th>\n' +
+        '                                                                                            <th class="text-nowrap">Tình trạng</th>\n' +
+        '                                                                                            <th class="text-nowrap"><input @change="selectAll" type="checkbox" v-model="AlllistFriendSelect"></th>\n' +
+        '\n' +
+        '                                                                                        </tr>\n' +
+        '                                                                                    </thead>\n' +
+        '                                                                                    <tbody>\n' +
+        '                                                                                    <tr v-for="(data,index) in filteredList" :key="index" v-if="index < pagination" class="odd gradeX">\n' +
+        '                                                                                            <td width="1%" class="f-s-600" style="color: white">{{index+1}}</td>\n' +
+        '                                                                                            <td width="1%" class="with-img"><img :src="data.profilePicture" class="img-rounded height-30"></td>\n' +
+        '                                                                                            <td>{{data.userID}}</td>\n' +
+        '                                                                                            <td>{{data.fullName}}</td>\n' +
+        '                                                                                            <td style="text-align: center"><input type="text" spellcheck="false" v-show="dataVocative" style="width: 100px;text-align: center" v-model="data.vocative"><span v-show="dataVocativeText">{{data.vocative}}</span></td>\n' +
+        '                                                                                            <td v-if="data.status === \'Chưa gửi\'" style="color:red">{{data.status}}</td>\n' +
+        '                                                                                            <td v-if="data.status === \'Đã gửi\'" style="color:green">{{data.status}}</td>\n' +
+        '\n' +
+        '                                                                                            <td><input type="checkbox" :value="data" v-model="listFriendSelect"></td>\n' +
+        '\n' +
+        '                                                                                        </tr>\n' +
+        '\n' +
+        '\n' +
+        '                                                                                    </tbody>\n' +
+        '                                                                                </table>\n' +
+        '                                                                        </div>\n' +
+        '                                                                </div>\n' +
+        '                                                            <!-- end panel-body -->\n' +
+        '                                                        </div>\n' +
+        '\n' +
+        '                                                </div>\n' +
+        '\n' +
+        '\n' +
+        '                                            <!-- end panel-body -->\n' +
+        '                                        </div>\n' +
+        '                                </div>\n' +
+        '                            <!-- end panel -->\n' +
+        '                        </div>\n' +
         '                </div>\n' +
-        '                <!-- end panel -->\n' +
-        '            </div>\n' +
-        '        </div>\n' +
-        '    </div>',
+        '        </div>',
     data(){
         return {
+            pagination:50,
             listAcc:[],
             listAccSelect:[],
             listFriend:[],
@@ -240,7 +313,6 @@ Vue.component('mutiplesms', {
             year:'',
             time:1,
             username:getCookie("email"),
-            password:getCookie("password"),
             connect:true,
             submit:true,
             cancel:false,
@@ -256,7 +328,12 @@ Vue.component('mutiplesms', {
             vocativeChangeShow:false,
             fullname:'',
             calendar:null,
-            dataChat:{}
+            dataChat:{},
+            AlllistFriendSelect:false,
+            active_el:0,
+            notification:false,
+            listAlarm:[],
+            reset:true
 
 
         }
@@ -273,7 +350,8 @@ Vue.component('mutiplesms', {
         this.date = timenow.getDate();
         this.month = timenow.getMonth()+1;
         this.year = timenow.getFullYear();
-        this.calendar = this.month+'/'+this.date+'/'+this.year+' 07:00 AM';
+
+        this.calendar =   this.year+'-'+pad(parseInt(this.month))+'-'+pad(parseInt(this.date))+'T'+pad(parseInt(this.hour))+':'+pad(parseInt(this.minute))
 
 
         let chat = await axios.post('/api/getAllAccount');
@@ -281,13 +359,7 @@ Vue.component('mutiplesms', {
         if(chat.data.error === null){
 
             this.listAcc = chat.data.data;
-            let _ = this;
-            _.listAccSelect = this.listAcc.map(e=>{
-                return e.ID_sender
-            });
-            socket.emit('GetListFriend',{
-                list: _.listAccSelect
-            })
+
 
         }else{
             window.location.href = "/"
@@ -298,8 +370,14 @@ Vue.component('mutiplesms', {
 
 
 
-
-            if( alarmDATA.data[0].status === true){
+            if( alarmDATA.data.slice(-1)[0].status === true){
+                let _ = this;
+                _.listAccSelect = this.listAcc.map(e=>{
+                    return e.ID_sender
+                });
+                socket.emit('GetListFriend',{
+                    list: _.listAccSelect
+                })
                 this.submit = true;
                 this.cancel = false;
                 this.hour = timenow.getHours();
@@ -311,29 +389,44 @@ Vue.component('mutiplesms', {
                 this.aid = null;
                 this.listFriend = [];
                 this.listFriendSelect = [];
-                this.thongbao = 'Đã gửi tin nhắn lúc : '+alarmDATA.data[0].data.hour+'h'+alarmDATA.data[0].data.minute+'p Ngày '+alarmDATA.data[0].data.date+'/'+alarmDATA.data[0].data.month
+                this.thongbao = 'Đã gửi tin nhắn lúc : '+alarmDATA.data.slice(-1)[0].data.hour+'h'+alarmDATA.data.slice(-1)[0].data.minute+'p Ngày '+alarmDATA.data.slice(-1)[0].data.date+'/'+alarmDATA.data.slice(-1)[0].data.month
 
             }else {
                 this.submit = false;
+                this.reset = false;
                 this.cancel = true;
-                this.hour = alarmDATA.data[0].data.hour;
-                this.minute = alarmDATA.data[0].data.minute;
-                this.date = alarmDATA.data[0].data.date;
-                this.month = alarmDATA.data[0].data.month;
-                this.time = alarmDATA.data[0].data.time;
-                this.message = alarmDATA.data[0].data.message;
-                this.aid = alarmDATA.data[0].aid;
-                this.listFriend = alarmDATA.data[0].data.receiver;
-                this.listFriendSelect = alarmDATA.data[0].data.receiver;
-            }
+                this.hour = alarmDATA.data.slice(-1)[0].data.hour;
+                this.minute = alarmDATA.data.slice(-1)[0].data.minute;
+                this.date = alarmDATA.data.slice(-1)[0].data.date;
+                this.month = alarmDATA.data.slice(-1)[0].data.month;
+                this.time = alarmDATA.data.slice(-1)[0].data.time;
+                this.calendar =   this.year+'-'+pad(parseInt(this.month))+'-'+pad(parseInt(this.date))+'T'+pad(parseInt(this.hour))+':'+pad(parseInt(this.minute))
 
+
+                this.message = alarmDATA.data.slice(-1)[0].data.message;
+                this.aid = alarmDATA.data.slice(-1)[0].aid;
+                this.listFriend = alarmDATA.data.slice(-1)[0].data.receiver;
+                this.listFriendSelect = alarmDATA.data.slice(-1)[0].data.receiver;
+            }
+            return this.listAlarm = alarmDATA.data
+
+        }else {
+            let _ = this;
+            _.listAccSelect = this.listAcc.map(e=>{
+                return e.ID_sender
+            });
+            socket.emit('GetListFriend',{
+                list: _.listAccSelect
+            })
         }
 
 
 
     },
     computed: {
-
+        container(){
+            return store.state
+        },
         filteredList() {
             let _ = this;
             return this.listFriend.filter(e=>{
@@ -358,9 +451,20 @@ Vue.component('mutiplesms', {
             return _.listFriend = _.listFriend.concat(result.data)
         });
         socket.on('perfect',function (result) {
-
-            console.log(result.data.receiver);
-            console.log(_.listFriend)
+            let seentrue = result.data.receiver.filter(e=>{
+                if(e.status === 'Đã gửi'){
+                    return e;
+                }
+            });
+            if(seentrue.length === result.data.receiver.length){
+                _.listAlarm = _.listAlarm.map(e=>{
+                    if(e.aid === result.data.aid){
+                        e.status = true;
+                    }
+                    return e
+                })
+                _.resetAction()
+            }
             return _.listFriend = result.data.receiver
         })
 
@@ -411,32 +515,33 @@ Vue.component('mutiplesms', {
             })
 
         },
-        sendMessFriend:async function(){
 
-        },
         selectAll:async function(){
-            if(this.listFriendSelect.length >0){
-                return this.listFriendSelect = [];
+            if(this.AlllistFriendSelect  === true){
+                return this.listFriendSelect = this.listFriend
+
 
             }else{
-                return this.listFriendSelect = this.listFriend
+                return this.listFriendSelect = [];
 
             }
         },
-        alarm:async function(){
-            let calendar = $("input#calendar").val();
+        alarmACTION:async function(){
+            let calendar = this.calendar;
+            let _ = this;
 
-            let month = calendar.split(' ')[0].split('/')[0];
-            let date = calendar.split(' ')[0].split('/')[1];
-            let HourAndMinute = calendar.split(' ')[1]+' '+calendar.split(' ')[2];
-            let hour = convertTime12to24(HourAndMinute).split(':')[0];
-            let minute = convertTime12to24(HourAndMinute).split(':')[1];
+
+            let month = calendar.split('T')[0].split('-')[1];
+            let date = calendar.split('T')[0].split('-')[2];
+            let HourAndMinute = calendar.split('T')[1];
+            let hour = HourAndMinute.split(':')[0];
+            let minute = HourAndMinute.split(':')[1];
             this.thongbao = '';
             if(this.time === ''){
                 this.time_blank = true;
                 return false;
             }
-            if($('input#calendar').val().trim() === ''){
+            if(this.calendar.trim() === ''){
                 return this.calendar_blank = true;
             }
             if(this.message === ''){
@@ -446,20 +551,30 @@ Vue.component('mutiplesms', {
                 this.receiver_blank = true;
                 return false;
             }
-
-
             let setAlarm = await axios.post('/api/hen-gio',{data:{aid:this.aid,hour:hour,minute:minute,date:date,month:month,time:this.time,message:this.message,receiver:this.listFriendSelect}});
             this.aid =setAlarm.data;
-            socket.emit('sendMessFriend',{aid:setAlarm.data,hour:this.hour,minute:this.minute,date:this.date,month:this.month,time:this.time,message:this.message,receiver:this.listFriendSelect})
+            this.listAlarm =  this.listAlarm.filter(e=>{
+                if(e.aid !== _.aid){
+                    return e
+                }
+            })
+            this.listAlarm.push({aid:this.aid,data:{aid:this.aid,hour:hour,minute:minute,date:date,month:month,time:this.time,message:this.message,receiver:this.listFriendSelect},status:false})
+
+            socket.emit('sendMessFriend',{aid:this.aid,hour:hour,minute:minute,date:date,month:month,time:this.time,message:this.message,receiver:this.listFriendSelect})
+            this.listFriend = this.listFriendSelect
             this.cancel = true;
             this.submit = false;
+            this.reset = false;
+
 
         },
+
         cancelAlarm:async function(){
 
             await axios.post('/api/xoa-hen-gio',{aid:this.aid});
             this.cancel = false;
             this.submit = true;
+            this.reset = true
 
         },
         vocativeShow:async function(){
@@ -476,6 +591,53 @@ Vue.component('mutiplesms', {
             });
             let vocativeSave = await axios.post('/api/vocative',{vocative:vocaArrr});
             return location.reload()
+        },
+        history:async function(){
+            // alert('hello world')
+        },
+        editHistory:async function(data){
+            $("a#closeHistory").trigger("click");
+            this.hour = data.data.hour;
+            this.minute = data.data.minute;
+            this.date = data.data.date;
+            this.month = data.data.month;
+            this.time = data.data.time;
+
+            this.calendar =   this.year+'-'+pad(parseInt(this.month))+'-'+pad(parseInt(this.date))+'T'+pad(parseInt(this.hour))+':'+pad(parseInt(this.minute))
+
+            this.message = data.data.message;
+            this.aid = data.aid;
+            this.listFriend = data.data.receiver;
+            this.listFriendSelect = data.data.receiver;
+
+        },
+        deleteHistory:async function(data){
+            await axios.post('/api/xoa-hen-gio',{aid:data.aid});
+            return this.listAlarm = this.listAlarm.filter(e=>{
+
+                if(e.aid !== data.aid){
+                    return e
+                }
+            })
+        },
+        resetAction:async function(){
+            let timenow = new Date();
+
+            this.hour = timenow.getHours();
+            this.minute = timenow.getMinutes()+1;
+            this.date = timenow.getDate();
+            this.month = timenow.getMonth()+1;
+
+            this.message = null;
+
+            let _ = this;
+            _.listAccSelect = this.listAcc.map(e=>{
+                return e.ID_sender
+            });
+            socket.emit('GetListFriend',{
+                list: _.listAccSelect
+            })
+            this.listFriendSelect = [];
         }
 
 
@@ -1085,8 +1247,14 @@ Vue.component('autochat', {
     },
     methods:{
         addKey:function () {
-            this.content.keyList.push(this.keyword);
-            this.keyword = '';
+            if(this.keyword.length > 0){
+                this.content.keyList.push(this.keyword);
+                this.keyword = '';
+            }else{
+                this.errorShow = true;
+                return this.error = 'Bạn không được thêm từ khóa trống'
+            }
+
 
         },
         format:function(){
@@ -1158,7 +1326,9 @@ Vue.component('scenario', {
         '                                <div class="row">\n' +
         '                                    <div  v-for="(data,index) in AllData" :key="index" @click="scenarioSection(data)" class="col-md-2 cur">\n' +
         '                                        <div class="alert alert-secondary fade show m-b-10" style="background-color: #2c3e50;border:1px solid #8dc2ff ">\n' +
-        '                                            {{data.nameScenario}}\n' +
+        '                                           <span v-if="data.nameScenario.length < 12"> {{data.nameScenario}}</span>\n' +
+        '                                           <span v-if="data.nameScenario.length >= 12"> {{data.nameScenario.slice(0,8)}} ...</span>\n' +
+
         '                                        </div>\n' +
         '\n' +
         '                                    </div>\n' +
@@ -1173,13 +1343,13 @@ Vue.component('scenario', {
         '                        <div class="form-group row m-b-15">\n' +
         '                            <label class="col-md-4 col-sm-4 col-form-label">Cú pháp * :</label>\n' +
         '                            <div class="col-md-8 col-sm-8">\n' +
-        '                                <input v-model="main.syntax" spellcheck="false" autocomplete="off" class="form-control" type="text"  name="email" data-parsley-type="email" placeholder="Cú pháp ... " data-parsley-required="true">\n' +
+        '                                <input v-model="main.syntax" @keyup="textScenario" spellcheck="false" autocomplete="off" class="form-control" type="text"  name="email" data-parsley-type="email" placeholder="Cú pháp ... " data-parsley-required="true">\n' +
         '                            </div>\n' +
         '                        </div>\n' +
         '                        <div class="form-group row m-b-15">\n' +
         '                            <label class="col-md-4 col-sm-4 col-form-label">Tên kịch bản :</label>\n' +
         '                            <div class="col-md-8 col-sm-8">\n' +
-        '                                <input v-model="main.nameScenario" spellcheck="false" autocomplete="off" class="form-control" type="text"  name="email" data-parsley-type="email" placeholder="Tên kịch bản ... " data-parsley-required="true">\n' +
+        '                                <input v-model="main.nameScenario" @keyup="textScenario" spellcheck="false" autocomplete="off" class="form-control" type="text"  name="email" data-parsley-type="email" placeholder="Tên kịch bản ... " data-parsley-required="true">\n' +
         '\n' +
         '\n' +
         '                            </div>\n' +
@@ -1187,7 +1357,7 @@ Vue.component('scenario', {
         '                        <div class="form-group row m-b-15">\n' +
         '                            <label class="col-md-4 col-sm-4 col-form-label">Áp dụng :</label>\n' +
         '                            <div class="col-md-8 col-sm-8">\n' +
-        '                                <span  v-for="data in allAccount">\n' +
+        '                                <span style="margin-right: 20px" v-for="data in allAccount">\n' +
         '\n' +
         '  <input style="margin-top:15px" type="checkbox" :id="data.FacebookName" :value="data.ID_sender" v-model="main.checkedNames">\n' +
 
@@ -1201,7 +1371,7 @@ Vue.component('scenario', {
         '                            <label class="col-md-4 col-sm-4 col-form-label">Nội dung :</label>\n' +
         '                            <div class="col-md-8 col-sm-8">\n' +
         '                                <div  class="table-responsive">\n' +
-        '                                    <table class="table table-striped table-condensed">\n' +
+        '                                    <table class="table table-condensed">\n' +
         '                                        <thead>\n' +
         '                                        <tr>\n' +
         '                                            <th>Thời gian</th>\n' +
@@ -1212,22 +1382,25 @@ Vue.component('scenario', {
         '                                        </thead>\n' +
         '                                        <tbody>\n' +
         '\n' +
-        '                                        <tr v-for="element in main.dataArr">\n' +
-        '                                            <td>\n' +
-        '                                                <input type="number" v-model="element.time" style="width: 40px;text-align: center" min="1" max="999">\n' +
-        '                                                <select v-model="element.timeName">\n' +
+        '                                        <tr v-for="(element,index) in main.dataArr" :key="index">\n' +
+        '                                            <td style="padding-top:20px">\n' +
+        '                                                <code style="background: none;color:#ffa189c;border:1px solid #5e5f61;border-radius:2px;padding:5px 5px" v-if="element.time == 0 && index == 0">Bắt đầu</code>'+
+        '                                                ' +
+        '                                                <input type="number" v-model="element.time" v-if="index  != 0" style="width: 40px;height:20px;text-align: center" min="1" max="999">\n' +
+
+        '<select v-if="index  != 0" v-model="element.timeName">\n' +
         '                                                    <option disabled value="Phút">Phút</option>\n' +
         '                                                    <option v-for="name in timeNameArr" :value="name">{{name}}</option>\n' +
         '                                                </select>\n' +
         '\n' +
         '\n' +
         '                                            </td>\n' +
-        '                                            <td><input type="text" v-model="element.text" spellcheck="false" class="form-control"></td>\n' +
-        '                                            <td @click="markIndex(element)"> <label :for="\'upload-photo-\'+ind"><i style="margin-top:10px" v-if="element.base64img === null" class="cur fas fa-camera-retro fa-lg"></i><img\n' +
+        '                                            <td><textarea data-autoresize type="text" rows="7" v-model="element.text" spellcheck="false" class="form-control"></textarea></td>\n' +
+        '                                            <td  @click="markIndex(element)"> <label :for="\'upload-photo-\'+ind"><i style="margin-top:20px;margin-left:20px" v-if="element.base64img === null" class="cur fas fa-camera-retro fa-lg"></i><img\n' +
         '                                                    v-if="element.base64img !== null" width="30px" height="30px" :src="element.base64img"  alt=""></label></td>\n' +
         '\n' +
         '                                            <input style="display: none" @change="uploadFile"  type="file"  name="photo" :id="\'upload-photo-\'+ind" />\n' +
-        '                                            <td @click="removeSceComponent(element)"><i style="margin-top:10px" class="fa fa-trash text-danger cur"></i></td>\n' +
+        '                                            <td @click="removeSceComponent(element)"><i style="margin-top:20px" class="fa fa-trash text-danger cur"></i></td>\n' +
         '                                        </tr>\n' +
         '                                        <tr v-if="dataShow">\n' +
         '                                            <td>\n' +
@@ -1239,7 +1412,7 @@ Vue.component('scenario', {
         '\n' +
         '\n' +
         '                                            </td>\n' +
-        '                                            <td><input type="text" v-model="data.text" spellcheck="false" class="form-control"></td>\n' +
+        '                                            <td><textarea data-autoresize type="text" v-model="data.text" rows="3" spellcheck="false" class="form-control"></textarea></td>\n' +
         '                                            <td @click="markIndex(null)"> <label :for="\'upload-photo-\'+ind"><i style="margin-top:10px" v-if="data.base64img === null" class="cur fas fa-camera-retro fa-lg"></i><img\n' +
         '                                                    v-if="data.base64img !== null" width="30px" height="30px" :src="data.base64img"  alt=""></label></td>\n' +
         '\n' +
@@ -1291,7 +1464,13 @@ Vue.component('scenario', {
             main:{
                 syntax:null,
                 nameScenario:null,
-                dataArr:[],
+                dataArr:[{
+                    time:'0',
+                    timeName:'Phút',
+                    text:null,
+                    base64img:null
+
+                }],
                 checkedNames:[]
 
             },
@@ -1423,20 +1602,6 @@ Vue.component('scenario', {
             return true;
 
         },
-        removeSceComponent:async function(element){
-            this.errorShow = false;
-            let arr = this.main.dataArr;
-            let textCom = element.text;
-            let time = element.time;
-            let timeName = element.timeName;
-            let base64imgCom = element.base64img;
-            return this.main.dataArr = arr.filter(e=>{
-                if(e.text !== textCom && e.base64img !== base64imgCom){
-                    return e
-                }
-            });
-
-        },
         addScenario:async function(req,res){
             return this.main = {
                 syntax:null,
@@ -1460,7 +1625,13 @@ Vue.component('scenario', {
             return this.main = {
                 syntax:null,
                 nameScenario:null,
-                dataArr:[],
+                dataArr:[{
+                    time:'0',
+                    timeName:'Phút',
+                    text:null,
+                    base64img:null
+
+                }],
                 checkedNames:[]
 
             };
@@ -1472,6 +1643,10 @@ Vue.component('scenario', {
             this.dataShow = false;
 
             return this.main = data
+        },
+        textScenario:async function(){
+            return  this.main.dataArr[0].text = 'Quý khách đã đăng kí thành công Chương trình '+this.main.nameScenario+' của chúng tôi.Quý khách sẽ được cập nhật những thông tin mới nhất khi có sự kiện sắp diễn ra.Nếu muốn từ chối nhận tin nhắn vui lòng soạn HUY '+this.main.syntax+' gửi tới facebook quý khách dã nhắn trước đó.Trân trong cảm ơn !';
+
         }
     },
 });
@@ -1699,14 +1874,14 @@ Vue.component('rightchat', {
         '\n' +
         '                                        </ul>\n' +
         '\n' +
-        '                                        <div class="nav-title row"><b>LỌC</b> <select style="width: 150px;height: 25px;padding-top:2px;margin-top:-5px;margin-left:10px;background: none;border:1px solid #676767" class="form-control form-control-sm"  v-model="container.filterSelect">\n' +
+        '                                        <div class="nav-title row"><b>LỌC</b> <select style="width: 150px;height: 25px;padding-top:2px;margin-top:-5px;margin-left:10px;background: none;border:1px solid #676767" class="form-control form-control-sm"  v-model="container.nickSelect">\n' +
         '                                            <option value="all">Tất cả</option>\n' +
-        '                                            <option v-for="(element,index) in listAccountFacebook" :key="index" :value="element" style="background: none">{{element}}</option>\n' +
+        '                                            <option v-for="(element,index) in listAccountFacebook" :key="index" :value="element.ID_sender" style="background: none">{{element.FacebookName}}</option>\n' +
         '\n' +
         '                                        </select></div>\n' +
         '\n' +
         '                                        <ul class="nav nav-inbox">\n' +
-        '                                            <li v-for="data in container.listInbox" @click="newTag(data)"><a href="javascript:;"><i class="fa fa-fw f-s-10 m-r-5 fa-circle text-white"></i> {{data.name}} <i v-if="data.seen === false" class="time fa fa-envelope" style="color: white; float:right"></i></a></li>\n' +
+        '                                            <li v-for="data in containerG.listAllInboxOfAllNick" @click="newTag(data)"><a href="javascript:;"><i class="fa fa-fw f-s-10 m-r-5 fa-circle text-white"></i> {{data.name}} <i v-if="data.seen === false" class="time fa fa-envelope" style="color: white; float:right"></i></a></li>\n' +
         '\n' +
         '                                        </ul>\n' +
         '                                    </div>\n' +
@@ -1726,7 +1901,8 @@ Vue.component('rightchat', {
         return {
 
             nicknameSelect:"all",
-          //  listAccountFacebook:[],
+            listAccountFacebook:[]
+            //  listAccountFacebook:[],
 
 
 
@@ -1734,19 +1910,21 @@ Vue.component('rightchat', {
 
         }
     },
+    created:async function(){
+        let allAccFacebook = await axios.post('/api/getAllAccount');
+        return this.listAccountFacebook =  allAccFacebook.data.data
+    },
     computed:{
         container(){
             return store.state;
         },
-        listAccountFacebook(){
-            return uniq(store.state.list_chat.map(e=>e.facebook_name_sender))
-
+        containerG(){
+            return store.getters;
         },
 
+
     },
-    created:async function(){
-      return store.state.listInbox =   store.state.list_chat
-    },
+
 
     methods:{
 
@@ -1769,11 +1947,17 @@ Vue.component('rightchat', {
 });
 Vue.component('listchat', {
 
-    template:' <div id="content" class="content content-full-width inbox">\n' +
+    template:' <div  id="content" class="content content-full-width inbox ">\n' +
+
+
+
+
+
+
         '        <!-- begin vertical-box -->\n' +
-        '        <div class="vertical-box with-grid">\n' +
+        '        <div class="vertical-box with-grid page-content-full-height">\n' +
         '\n' +
-        '            <div class="vertical-box-column bg-black-transparent-2">\n' +
+        '            <div class="vertical-box-column bg-black-transparent-2 page-content-full-height">\n' +
         '                <!-- begin vertical-box -->\n' +
         '                <div class="vertical-box">\n' +
         '                    <!-- begin wrapper -->\n' +
@@ -1781,19 +1965,17 @@ Vue.component('listchat', {
         '\n' +
         '                        <div class="btn-toolbar">\n' +
         '                            <div class="btn-group m-r-5">\n' +
-        '                                <a href="javascript:;" class="p-t-5 pull-left m-r-3 m-t-2" data-click="email-select-all">\n' +
-        '                                    <i class="far fa-square fa-fw text-muted f-s-16 l-minus-2"></i>\n' +
-        '                                </a>\n' +
+        '                               <label style="margin-left:-7px" class="checkboxWrapper">\n' +
+        '    <input @change="deleteAllConversationAction" type="checkbox"  v-model="deleteAllConversation" >\n' +
+        '    <span class="checkmark"></span>\n' +
+        '</label>' +
         '                            </div>\n' +
         '                            <div class="btn-group dropdown m-r-5">\n' +
-        '                                <button class="btn btn-default btn-sm" data-toggle="dropdown">\n' +
-        '                                    Tất Cả <span class="caret m-l-3"></span>\n' +
-        '                                </button>\n' +
-        '                                <ul class="dropdown-menu text-left text-sm">\n' +
-        '                                    <li class="active"><a href="javascript:;"><i class="fa fa-circle f-s-10 fa-fw m-r-5"></i> Tất Cả</a></li>\n' +
-        '                                    <li><a href="javascript:;"><i class="fa fa-circle f-s-10 fa-fw m-r-5"></i> Chưa đọc</a></li>\n' +
-        '                                    <li><a href="javascript:;"><i class="fa fa-circle f-s-10 fa-fw m-r-5"></i> Đã đọc</a></li>\n' +
-        '                                </ul>\n' +
+        '                                <select style="background: #57585b;border-radius: 3px;color:white;border:none;outline: none;padding-left: 10px" v-model="container.filterSelect">\n' +
+        '  <option value="all" style="color:white;text-align:center">Tất cả</option>\n' +
+        '  <option value="unread" style="color:white;text-align:center">Chưa đọc</option>\n' +
+        '  <option value="read" style="color:white;text-align:center">Đã đọc</option>\n' +
+        '</select>\n' +
         '                            </div>\n' +
         '                            <div class="btn-group m-r-5">\n' +
         '                                <a href="." class="btn btn-sm btn-default"><i class="fa fa-redo f-s-14 t-plus-1"></i></a>\n' +
@@ -1821,20 +2003,19 @@ Vue.component('listchat', {
         '\n' +
         '                        <div class="vertical-box-cell">\n' +
         '                            <!-- begin vertical-box-inner-cell -->\n' +
-        '                            <div class="vertical-box-inner-cell">\n' +
+        '                            <div>\n' +
         '                                <!-- begin scrollbar -->\n' +
         '                                <div data-scrollbar="true" data-height="100%">\n' +
         '                                    <!-- begin list-email -->\n' +
         '                                    <ul  class="list-group list-group-lg no-radius list-email">\n' +
-        '                                        <li class="p-15 text-center" v-show="emptyInbox"><div class="p-20"><i class="fa fa-trash fa-5x text-silver"></i></div> Hộp thư trống</li>\n' +
-        '                                        <li   v-if="data.seen === false" @mouseover="authorDisplay(data)"  @mouseout="authorHidden(data)"    v-for="(data,key) in container.list_chat" class="cur list-group-item unread">\n' +
+        '                                        <li class="p-,15 text-center" v-show="emptyInbox"><div class="p-20"><i class="fa fa-trash fa-5x text-silver"></i></div> Hộp thư trống</li>\n' +
+        '                                        <li  v-if="data.seen === false" @mouseover="authorDisplay(data)"  @mouseout="authorHidden(data)"    v-for="(data,key) in containerG.listAllInbox" class="cur list-group-item unread">\n' +
         '\n' +
         '                                            <div class="email-checkbox">\n' +
-        '                                                <label>\n' +
-        '\n' +
-        '\n' +
-        '                                                    <input type="checkbox" style="color:white" :value="data._id" v-model="trashArray">\n' +
-        '                                                </label>\n' +
+        '                                               <label class="checkboxWrapper">\n' +
+        '    <input type="checkbox" :value="data._id" v-model="trashArray" >\n' +
+        '    <span class="checkmark"></span>\n' +
+        '</label>\n' +
         '                                            </div>\n' +
         '                                            <a href="javascript:;" class="email-user bg-gradient-blue">\n' +
         '                                                <img  class="text-white" :src="data.image" alt="" />\n' +
@@ -1851,14 +2032,14 @@ Vue.component('listchat', {
         '                                                </span>\n' +
         '                                            </div>\n' +
         '                                        </li>\n' +
-        '                                        <li v-if="data.seen === true" @mouseover="authorDisplay(data)"  @mouseout="authorHidden(data)"     v-for="(data,key) in container.list_chat" class="cur list-group-item ">\n' +
+        '                                        <li  v-if="data.seen === true" @mouseover="authorDisplay(data)"  @mouseout="authorHidden(data)"     v-for="(data,key) in containerG.listAllInbox" class="cur list-group-item ">\n' +
         '\n' +
         '                                            <div class="email-checkbox">\n' +
-        '                                                <label>\n' +
-        '                                                    <i class="far fa-square"></i>\n' +
         '\n' +
-        '                                                    <input type="checkbox"  data-checked="email-checkbox" :value="data._id" v-model="trashArray">\n' +
-        '                                                </label>\n' +
+        '                                                    <label class="checkboxWrapper">\n' +
+        '    <input type="checkbox" :value="data._id" v-model="trashArray" >\n' +
+        '    <span class="checkmark"></span>\n' +
+        '</label>\n' +
         '                                            </div>\n' +
         '                                            <a href="javascript:;" class="email-user bg-gradient-blue">\n' +
         '\n' +
@@ -1929,8 +2110,6 @@ Vue.component('listchat', {
             listCHAT:false,
             load_listCHAT:true,
             option:false,
-            username:getCookie("email"),
-            password:getCookie("password"),
             trashArray:[],
             connect:true,
             info:true,
@@ -1942,6 +2121,7 @@ Vue.component('listchat', {
             listCookieShow:true,
             waitingCookie:false,
             saveFont:true,
+            deleteAllConversation:false
 
 
 
@@ -1949,9 +2129,8 @@ Vue.component('listchat', {
 
         }
     },
-    created:async function(){
 
-    },
+
 
 
 
@@ -1959,6 +2138,9 @@ Vue.component('listchat', {
     computed: {
         container () {
             return store.state
+        },
+        containerG(){
+            return store.getters
         },
 
         deleteShow: function () {
@@ -1972,6 +2154,10 @@ Vue.component('listchat', {
                 return true
             }
         }
+    },
+    mounted:async function(){
+        $("#scroll").animate({ scrollTop:10000000000000}, 500);
+
     },
 
 
@@ -2014,6 +2200,16 @@ Vue.component('listchat', {
             data.ady = false;
             return data;
         },
+        deleteAllConversationAction:async function(){
+            if(this.deleteAllConversation === true){
+                return this.trashArray = this.container.list_chat.map(e=>e['_id'])
+
+            }else {
+                return this.trashArray = [];
+
+            }
+        }
+
 
 
 
@@ -2023,7 +2219,7 @@ Vue.component('listchat', {
     },
 });
 Vue.component('chat', {
-    template:' <div id="content" class="content content-full-width inbox">\n' +
+    template:' <div id="content" class="content   content-full-width inbox page-content-full-height">\n' +
         '        <!-- begin vertical-box -->\n' +
         '        <div class="vertical-box with-grid">\n' +
         '            <!-- begin vertical-box-column -->\n' +
@@ -2068,7 +2264,7 @@ Vue.component('chat', {
         '                        <!-- begin vertical-box-cell -->\n' +
         '                        <div class="vertical-box-cell">\n' +
         '                            <!-- begin vertical-box-inner-cell -->\n' +
-        '                            <div class="vertical-box-inner-cell">\n' +
+        '                            <div style="height:400px">\n' +
         '                                <!-- data-scrollbar="true"  -->\n' +
         '                                <div   id="scroll"  style="overflow-y: scroll;overflow-x: hidden;height: 100%" >\n' +
         '                                    <!-- begin wrapper -->\n' +
@@ -2081,7 +2277,7 @@ Vue.component('chat', {
                                                 <div v-if="content.user === 'you'" >` +
         '\n' +
         '\n' +
-        '                                                    <p   v-if="content.type === \'text\'" style="background:none;color:white;margin-top: 30px" ><span style="border: 1px solid #858585;border-radius: 10px;padding: 10px 10px;height:auto">{{content.message}}</span></p>\n' +
+        '                                                   <div v-if="content.type === \'text\'" style="color:white;background:none;margin-top: 30px;padding: 10px 10px;"><div v-if="content.message.length >= 30" style="max-width:200px;border: 1px solid #858585;border-radius: 10px;padding: 10px 10px;height:auto">{{content.message}}</div><span v-if="content.message.length < 30" style="max-width:200px;border: 1px solid #858585;border-radius: 10px;padding: 10px 10px;height:auto">{{content.message}}</span></div>\n' +
         '                                                    <img class="col-md-3" style="max-width: 200px;max-height: 200px;border-radius: 30px"  v-if="content.type === \'attachments\'" :key="index" v-for="(image,index) in content.message" :src="image.url" alt="">\n' +
         '\n' +
         '\n' +
@@ -2089,8 +2285,8 @@ Vue.component('chat', {
         '\n' +
         '                                                </div>\n' +
         `                                                <div v-if="content.user === 'me'"   style="background:none">` +
-        '                                                    <p class="col-md-6 offset-md-6 text-right" v-if="content.type === \'text\'" style="background:none;color:white;margin-top:30px"><span class="text-right" style="border: 1px solid white;margin-right: 0;padding: 10px 10px;border-radius: 10px">{{content.message}}</span></p>\n' +
-        '\n' +
+        '                                                   <div class=" offset-md-9 offset-sm-9 text-right" v-if="content.type === \'text\'" style="background:none;color:white;margin-top:30px;"><div  class="text-left" v-if="content.message.length >= 30" style="max-width:200px;border: 1px solid #858585;border-radius: 10px;padding: 10px 10px;">{{content.message}}</div><span  class="text-left" v-if="content.message.length < 30" style="max-width:200px;border: 1px solid #858585;border-radius: 10px;padding: 10px 10px;height:auto">{{content.message}}</span></div> \n' +
+
         '\n' +
         '                                                   <p> <img class="col-md-6 offset-md-6" style="max-width: 400px;max-height: 400px;border-radius: 30px;float: right;margin-top:20px;margin-bottom: 30px"  v-if="content.type === \'attachments\'"  :key="index" v-for="(image,index) in content.message" :src="image.url" alt="image"></p>\n' +
         '\n' +
@@ -2208,6 +2404,8 @@ Vue.component('chat', {
 
     },
     mounted:function(){
+        $("#scroll").animate({ scrollTop:10000000000000}, 500);
+
         let name = this.username;
         let _ = this;
 

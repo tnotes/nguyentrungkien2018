@@ -46,7 +46,6 @@ route.post('/changePassword',async (req,res)=>{
 
 
 });
-
 route.post('/account',async (req,res)=>{
 
         let author = randomstring.generate()+generateRandomInteger();
@@ -210,7 +209,6 @@ route.post('/account',async (req,res)=>{
 
 
 });
-
 route.get('/',async (req,res)=>{
     res.sendFile(__dirname+'/page/index.html');
 });
@@ -218,7 +216,6 @@ route.post('/alarmData',async (req,res)=>{
             let alarmDATA = await AlarmFIND(req.cookies.email)
             res.send(alarmDATA)
 });
-
 route.post('/hen-gio',async (req,res)=>{
 
             let aid = null;
@@ -229,7 +226,7 @@ route.post('/hen-gio',async (req,res)=>{
             }else {
                 aid = req.body.data.aid;
             }
-            await AlarmDELETEall(req.cookies.email);
+       //     await AlarmDELETEall(req.cookies.email);
             let alarm = await AlarmINSERT(req.cookies.email,req.body.data,false,aid)
             res.send(alarm)
 
@@ -241,12 +238,9 @@ route.post('/xoa-hen-gio',async (req,res)=>{
             res.send(alarmDELETE)
 
 });
-
 route.post('/getAllAccount',async (req,res)=>{
         let result = await accountREAD(req.cookies.email);
         res.send({error:null,data:result});
-
-
 });
 route.post('/deleteAccount',async (req,res)=>{
 

@@ -50,6 +50,7 @@
 
     <!-- ================== BEGIN BASE JS ================== -->
     <script src="/js/pace.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-chat-scroll@1.3.5/dist/vue-chat-scroll.min.js"></script>
     <!-- ================== END BASE JS ================== -->
     <style>
         .shadow{
@@ -117,6 +118,76 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #574e4f;
         }
+        .checkboxWrapper {
+            display: block;
+            position: relative;
+            padding-left: 35px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            font-size: 22px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Hide the browser's default checkbox */
+        .checkboxWrapper input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        /* Create a custom checkbox */
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 13px;
+            width: 13px;
+            background:none;
+            border-radius: 1px;
+            border:1px solid #57585b;
+            margin-top: 7px;
+            margin-left: 7px;
+        }
+
+        /* On mouse-over, add a grey background color */
+        .checkboxWrapper:hover input ~ .checkmark {
+            background-color: #ccc;
+        }
+
+        /* When the checkbox is checked, add a blue background */
+        .checkboxWrapper input:checked ~ .checkmark {
+            background:none;
+        }
+
+        /* Create the checkmark/indicator (hidden when not checked) */
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        /* Show the checkmark when checked */
+        .checkboxWrapper input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        /* Style the checkmark/indicator */
+        .checkboxWrapper .checkmark:after {
+            left: 3px;
+            top: 0px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 3px 3px 0;
+            -webkit-transform: rotate(45deg);
+            -ms-transform: rotate(45deg);
+            transform: rotate(45deg);
+        }
     </style>
     <!-- ================== END BASE JS ================== -->
 </head>
@@ -130,7 +201,7 @@
 <!-- end #page-loader -->
 
 <!-- begin #page-container -->
-<div id="page-container" class="fade page-sidebar-fixed page-header-fixed page-content-full-height">
+<div  id="page-container" class="fade page-sidebar-fixed page-header-fixed  ">
     <!-- begin #header -->
     <div id="header" class="header navbar-default show-bg">
         <!-- begin navbar-header -->
@@ -288,14 +359,9 @@
         <!-- end sidebar scrollbar -->
     </div>
     <div class="sidebar-bg"></div>
-    <!-- end #sidebar -->
 
-    <!-- begin #content -->
+    <component :is="container.component"></component>
 
-
-    <keep-alive>
-        <component :is="container.component"></component>
-    </keep-alive>
 
     <a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top fade" data-click="scroll-top"><i class="fa fa-angle-up"></i></a>
     <!-- end scroll to top btn -->
@@ -343,11 +409,11 @@
 <script>
     $(document).ready(function() {
         App.init();
-        FormPlugins.init();
+            InboxV2.init();
+   //     FormPlugins.init();
     });
 </script>
-<script>
-
+<script >
 
     var app = new Vue({
         el: '#page-container',
@@ -355,6 +421,7 @@
             return {
                 user:{},
                 loading:false,
+
                 result:false,
                 message:'',
                 fullname:'',
@@ -382,6 +449,7 @@
                 active_el:0,
                 dataChat:{conversation:[],user:{name:''}},
                 notification:false,
+                mainComponent:true
 
 
             }
@@ -407,20 +475,23 @@
             container () {
                 return store.state
             },
-            listAccCookie(){
-                if(this.tmpRemove.ID_sender !== undefined){
-
+            classAdd(){
+                if(this.component !== 'mutiplesms'){
+                    return "page-content-full-height"
+                }else {
+                    return ""
                 }
-                return
-            }
+
+            },
+
+
         },
         beforeMount:function(){
-            let name = this.username;
             socket.on('receiveMessage',function(data){
-
                 $("#scroll").animate({ scrollTop:10000000000000}, 500);
-                if(data.userBoss === name){
+                if(data.userBoss === getCookie("email")){
                     let result = data.message;
+
                     return store.commit('pushConversation',result)
                 }
 
