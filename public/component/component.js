@@ -338,7 +338,7 @@ Vue.component('mutiplesms', {
             notification:false,
             listAlarm:[],
             reset:true,
-            loadingFriendIcon:true
+
 
 
         }
@@ -437,6 +437,13 @@ Vue.component('mutiplesms', {
             })
 
         },
+        loadingFriendIcon(){
+            if(store.state.listFriend.length >0){
+                return false
+            }else{
+                return true
+            }
+        }
 
 
     },
@@ -450,7 +457,6 @@ Vue.component('mutiplesms', {
                     return e
                 }
             });
-            _.loadingFriendIcon = false;
             return store.state.listFriend = store.state.listFriend.concat(result.data)
         });
         socket.on('perfect',function (result) {

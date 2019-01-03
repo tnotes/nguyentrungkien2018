@@ -385,7 +385,7 @@ let process = async function(account){
 
                           await sendMessText(sendAlarmContent[i]);
                           dataSend.receiver = dataSend.receiver.map(e=>{
-                              if(e.userID === send[i].userID){
+                              if(e.userID === sendAlarmContent[i].userID){
                                   e.status = 'Đã gửi'
                               }
                               return e
