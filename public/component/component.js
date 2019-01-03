@@ -596,7 +596,10 @@ Vue.component('mutiplesms', {
                 }
             });
             let vocativeSave = await axios.post('/api/vocative',{vocative:vocaArrr});
-            return location.reload()
+            this.vocativeDefaultShow = true;
+            this.vocativeChangeShow = false;
+            this.dataVocativeText = true;
+            this.dataVocative = false;
         },
         history:async function(){
             // alert('hello world')
@@ -725,8 +728,8 @@ Vue.component('addcookie', {
         '<div :id="\'ex\'+index" class="modal animated bounceIn" style="width: 250px">\n' +
         '    <p>Bạn có chắc chắn muốn xóa ?.</p>\n' +
 
-        ' <center><a class="btn btn-primary" rel="modalProl:close" style="color:white" @click="removeCookie(data.ID_sender)">Xóa</a> '+
-        '        <a class="btn btn-danger" href="#"  >Hủy</a></center> \n' +
+        ' <center><a class="btn btn-primary" rel="modalPro:close" style="color:white" @click="removeCookie(data.ID_sender)">Xóa</a> '+
+        '        <a class="btn btn-danger" href="javascript:;" rel="modalPro:close"  >Hủy</a></center> \n' +
         '    </div>\n' +
         '\n' +
 
@@ -1153,7 +1156,7 @@ Vue.component('autochat', {
         '    <p>Bạn có chắc chắn muốn xóa ?.</p>\n' +
 
         ' <center><a class="btn btn-primary" rel="modalPro:close" style="color:white" @click="removeContent(data)">Xóa</a> '+
-        '        <a class="btn btn-danger" href="#"  >Hủy</a></center> \n' +
+        '        <a class="btn btn-danger" href="javascript:;" rel="modalPro:close"  >Hủy</a></center> \n' +
         '    </div>\n' +
         '                                    </tr>\n' +
         '                                    </tbody>\n' +
@@ -1432,7 +1435,7 @@ Vue.component('scenario', {
         '    <p>Bạn có chắc chắn muốn xóa ?.</p>\n' +
 
         ' <center><a class="btn btn-primary" rel="modalPro:close" style="color:white" @click="removeSceComponent(element)">Xóa</a> '+
-        '        <a class="btn btn-danger" href="#"  >Hủy</a></center> \n' +
+        '        <a class="btn btn-danger" href="javascript:;" rel="modalPro:close"  >Hủy</a></center> \n' +
         '    </div>\n' +
 
 
@@ -1457,7 +1460,7 @@ Vue.component('scenario', {
         '    <p>Bạn có chắc chắn muốn xóa ?.</p>\n' +
 
         ' <center><a class="btn btn-primary" rel="modalPro:close" style="color:white" @click="removeScenatio" >Xóa</a> '+
-        '        <a class="btn btn-danger" href="#"  >Hủy</a></center> \n' +
+        '        <a class="btn btn-danger" href="javascript:;" rel="modalPro:close"  >Hủy</a></center> \n' +
         '    </div>\n' +
         '                                <span class="animated flash" v-show="errorShow">{{error}}</span>\n' +
 
@@ -2048,7 +2051,7 @@ Vue.component('listchat', {
         '    <p>Bạn có chắc chắn muốn xóa ?.</p>\n' +
 
         ' <center><a class="btn btn-primary" rel="modalPro:close" style="color:white" @click="deleteChat">Xóa</a> '+
-        '        <a class="btn btn-danger" href="#"  >Hủy</a></center> \n' +
+        '        <a class="btn btn-danger" href="javascript:;" rel="modalPro:close" >Hủy</a></center> \n' +
         '    </div>\n' +
 
         '                            </div>\n' +
@@ -2329,7 +2332,7 @@ Vue.component('chat', {
         '    <p>Bạn có chắc chắn muốn xóa ?.</p>\n' +
 
         ' <center><a class="btn btn-primary" rel="modalPro:close" style="color:white" @click="deleteConversaton(container.conversation[\'_id\'])">Xóa</a> '+
-        '        <a class="btn btn-danger" href="#"  >Hủy</a></center> \n' +
+        '        <a class="btn btn-danger" href="javascript:;" rel="modalPro:close"  >Hủy</a></center> \n' +
         '    </div>\n' +
 
 

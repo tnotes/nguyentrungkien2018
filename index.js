@@ -373,11 +373,17 @@ let process = async function(account){
                   let listAlarm = await AlarmFIND_aid(account.userBoss,dataSend.aid);
 
                   if(listAlarm.length > 0){
-                      for(let i = 0;i<send.length;i++){
-                          let obj = {type:'text'};
-                          obj['ID_receiver'] = send[i].userID;
-                          obj['message'] = dataSend.message;
-                          await sendMessText(obj);
+                      let messageAlarm = listAlarm[0]['_doc'].data.message;
+                      let sendAlarmContent = listAlarm[0]['_doc'].data.receiver.map(e=>{
+                          return {
+                              type:'text',
+                              ID_receiver:e.userID,
+                              message:messageAlarm
+                          }
+                      })
+                      for(let i = 0;i<sendAlarmContent.length;i++){
+
+                          await sendMessText(sendAlarmContent[i]);
                           dataSend.receiver = dataSend.receiver.map(e=>{
                               if(e.userID === send[i].userID){
                                   e.status = 'Đã gửi'
@@ -386,10 +392,13 @@ let process = async function(account){
                           });
 
                           await AlarmUPDATE(account.userBoss,dataSend.aid,dataSend);
+
                           io.sockets.emit("perfect",{
                               data:dataSend
                           });
+
                           await waitTime(dataSend.time*1000)
+
                       }
                       await AlarmUPDATEstatus(account.userBoss,dataSend.aid,true)
                   }
