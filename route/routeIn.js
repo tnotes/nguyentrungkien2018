@@ -263,14 +263,16 @@ route.post('/getConversation',async (req,res)=>{
 
 });
 route.post('/getAutoChat',async (req,res)=>{
-    let chatBotKey = await AutoChatFINDall(req.cookies.email);
     let AllAccount = await accountREAD(req.cookies.email);
+    let chatBotKey = await AutoChatFINDall(req.cookies.email);
     res.send({chatBotKey:chatBotKey,AllAccount:AllAccount})
 
 });
 route.post('/addAutoChat',async (req,res)=>{
     let AddAutoChat = await AutoChatINSERT(req.cookies.email,randomstring.generate(),req.body.keyList,req.body.message,req.body.select);
-    res.send(AddAutoChat)
+    let chatBotKey = await AutoChatFINDall(req.cookies.email);
+
+    res.send(chatBotKey)
 });
 route.post('/deleteAutoChat',async (req,res)=>{
 

@@ -88,6 +88,7 @@ let process = async function(account){
       }
   }
   function voca(e,vocative){
+
       if(vocative.length > 0){
           let vocativeArr = vocative[0]['_doc'].vocative;
           let listVocative = vocativeArr.map(e=>e.userID);
@@ -127,7 +128,7 @@ let process = async function(account){
       };
       if(info.gender === 1){
           obje.gender = 'female_singular';
-      }else if(info.gender === 20){
+      }else if(info.gender === 2){
           obje.gender = 'male_singular';
       }
       let loadVocative = await voca(obje,vocative);
@@ -284,6 +285,11 @@ let process = async function(account){
     };
   let scenarioACTIVE = async (scenario,ID_receiver,mess)=>{
       let scenarioArr = scenario[0]['_doc'].dataArr;
+      scenarioArr = scenarioArr.filter(e=>{
+          if(e.key !== null){
+              return e
+          }
+      })
       for(let f = 0;f<scenarioArr.length;f++){
           let messageScenario = scenarioArr[f].text;
           let timeNameScenario =  scenarioArr[f].timeName;
@@ -505,7 +511,6 @@ let process = async function(account){
                       let listID = listSyntax[0]['_doc']['listID'];
                       if(listID.includes(ID_receiver) === false){
                           await ModelScenarioID_INSERT_ID(account.userBoss,scenario[0]['_doc'].syntax,ID_receiver);
-                          console.log(scenario[0]['_doc'].dataArr[0]);
                           let messageAlert = 'Quý khách đã đăng kí thành công Chương trình '+scenario[0]['_doc'].nameScenario+' của chúng tôi.Quý khách sẽ được cập nhật những thông tin mới nhất khi có sự kiện sắp diễn ra.Nếu muốn từ chối nhận tin nhắn vui lòng soạn HUY '+scenario[0]['_doc'].syntax.trim()+' gửi tới facebook quý khách dã nhắn trước đó.Trân trong cảm ơn !';
 
                           if(scenario[0]['_doc'].dataArr[0].time == 0){

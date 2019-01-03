@@ -5,7 +5,7 @@ const store = new Vuex.Store({
         account: [],
         filterSelect:'all',
         nickSelect:'all',
-
+        listFriend:[],
         list_chat:[],
         error:[],
         conversation:[],
