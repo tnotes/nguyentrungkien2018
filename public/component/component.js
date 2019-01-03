@@ -1801,7 +1801,7 @@ Vue.component('changepassword', {
         '                                <div class="form-group row m-b-15">\n' +
         '                                    <label class="col-md-4 col-sm-4 col-form-label" >Nhập lại mật khẩu * :</label>\n' +
         '                                    <div class="col-md-8 col-sm-8">\n' +
-        '                                        <input spellcheck="false" v-model="repassword" class="form-control" type="text" v-model="info.phone" name="email" data-parsley-type="email" placeholder="Re-Password" data-parsley-required="true">\n' +
+        '                                        <input spellcheck="false" v-model="repassword" class="form-control" type="text"  name="email" data-parsley-type="email" placeholder="Re-Password" data-parsley-required="true">\n' +
         '                                    </div>\n' +
         '                                </div>\n' +
         '\n' +
