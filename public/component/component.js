@@ -659,13 +659,13 @@ Vue.component('mutiplesms', {
     },
 });
 Vue.component('addcookie', {
-    template:'<div class="content content-full-width inbox animated fadeIn" id="content">\n' +
+    template:'<div class="content  animated fadeIn" id="content">\n' +
         '        <div class="row">\n' +
         '\n' +
         '            <div class="col-lg-12 ui-sortable ">\n' +
         '                <div class="panel panel-inverse">\n' +
         '                    <!-- begin panel-heading -->\n' +
-        '                    <div class="panel-heading ui-sortable-handle" style="background-color: #2c3e50">\n' +
+        '                    <div class="panel-heading ui-sortable-handle" style="background-color: #330404">\n' +
         '                        <div class="panel-heading-btn">\n' +
         '                            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>\n' +
         '                            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>\n' +
@@ -842,13 +842,13 @@ Vue.component('addcookie', {
 
 });
 Vue.component('addpassword', {
-    template:' <div class="content content-full-width inbox animated fadeIn" id="content">\n' +
+    template:' <div class="content  animated fadeIn" id="content">\n' +
         '        <div class="row">\n' +
         '\n' +
         '            <div class="col-lg-12 ui-sortable ">\n' +
         '                <div class="panel panel-inverse">\n' +
         '                    <!-- begin panel-heading -->\n' +
-        '                    <div class="panel-heading ui-sortable-handle" style="background-color: #2c3e50">\n' +
+        '                    <div class="panel-heading ui-sortable-handle" style="background-color: #330404">\n' +
         '                        <div class="panel-heading-btn">\n' +
         '                            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>\n' +
         '                            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>\n' +
@@ -1029,10 +1029,10 @@ Vue.component('addpassword', {
     },
 });
 Vue.component('autochat', {
-    template:' <div class="content content-full-width inbox  animated fadeIn" id="content">\n' +
+    template:' <div class="content   animated fadeIn" id="content">\n' +
         '        <div class="panel panel-inverse">\n' +
         '            <!-- begin panel-heading -->\n' +
-        '            <div class="panel-heading ui-sortable-handle" style="background-color: #2c3e50">\n' +
+        '            <div class="panel-heading ui-sortable-handle" style="background-color: #330404">\n' +
         '                <div class="panel-heading-btn">\n' +
         '                    <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>\n' +
         '                    <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>\n' +
@@ -1341,10 +1341,10 @@ Vue.component('autochat', {
     },
 });
 Vue.component('scenario', {
-    template:'  <div class="content content-full-width inbox  animated fadeIn " id="content">\n' +
+    template:'  <div class="content   animated fadeIn " id="content">\n' +
         '\n' +
         '            <div class="panel panel-inverse" >\n' +
-        '                <div class="panel-heading ui-sortable-handle" style="background-color: #2c3e50">\n' +
+        '                <div class="panel-heading ui-sortable-handle" style="background-color: #330404">\n' +
         '                    <div class="panel-heading-btn">\n' +
         '                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>\n' +
         '                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>\n' +
@@ -1360,7 +1360,7 @@ Vue.component('scenario', {
         '                            <div class="col-md-8 col-sm-8">\n' +
         '                                <div class="row">\n' +
         '                                    <div  v-for="(data,index) in AllData" :key="index" @click="scenarioSection(data)" class="col-md-2 cur">\n' +
-        '                                        <div class="alert alert-secondary fade show m-b-10" style="background-color: #2c3e50;border:1px solid #8dc2ff ">\n' +
+        '                                        <div class="alert alert-secondary fade show m-b-10" style="background-color: #330404;border:1px solid #8dc2ff ">\n' +
         '                                           <span v-if="data.nameScenario.length < 12"> {{data.nameScenario}}</span>\n' +
         '                                           <span v-if="data.nameScenario.length >= 12"> {{data.nameScenario.slice(0,8)}} ...</span>\n' +
 
@@ -1368,7 +1368,7 @@ Vue.component('scenario', {
         '\n' +
         '                                    </div>\n' +
         '                                    <div @click="addScenario" class="col-md-2 cur" >\n' +
-        '                                        <div class="alert alert-dark fade show m-b-10" style="background-color: #2c3e50;">\n' +
+        '                                        <div class="alert alert-dark fade show m-b-10" style="background-color: #330404;">\n' +
         '                                            <center style="color:white"><i class="fa fa-plus-square"></i></center>\n' +
         '                                        </div>\n' +
         '                                    </div>\n' +
@@ -1721,7 +1721,7 @@ Vue.component('scenario', {
     },
 });
 Vue.component('changepassword', {
-    template:'<div id="content" class="content content-full-width inbox">\n' +
+    template:'<div id="content" class="content ">\n' +
         '        <!-- begin vertical-box -->\n' +
         '        <div class="row">\n' +
         '            <!-- begin col-6 -->\n' +
@@ -1729,7 +1729,7 @@ Vue.component('changepassword', {
         '                <!-- begin panel -->\n' +
         '                <div class="panel panel-inverse" data-sortable-id="form-validation-1">\n' +
         '                    <!-- begin panel-heading -->\n' +
-        '                    <div style="background-color: #2c3e50" class="panel-heading ui-sortable-handle">\n' +
+        '                    <div style="background-color: #330404" class="panel-heading ui-sortable-handle">\n' +
         '                        <div class="panel-heading-btn">\n' +
         '                            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>\n' +
         '                            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>\n' +
@@ -1779,7 +1779,7 @@ Vue.component('changepassword', {
         '                </div>\n' +
         '                    <div class="panel panel-inverse" >\n' +
         '                        <!-- begin panel-heading -->\n' +
-        '                        <div style="background-color: #2c3e50" class="panel-heading ui-sortable-handle">\n' +
+        '                        <div style="background-color: #330404" class="panel-heading ui-sortable-handle">\n' +
         '                            <div class="panel-heading-btn">\n' +
         '                                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>\n' +
         '                                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>\n' +
@@ -2017,7 +2017,7 @@ Vue.component('rightchat', {
 });
 Vue.component('listchat', {
 
-    template:' <div  id="content" class="content content-full-width inbox ">\n' +
+    template:' <div  id="content" class="content  ">\n' +
 
 
 
@@ -2297,7 +2297,7 @@ Vue.component('listchat', {
     },
 });
 Vue.component('chat', {
-    template:' <div id="content" class="content   content-full-width inbox page-content-full-height">\n' +
+    template:' <div id="content" class="content    page-content-full-height">\n' +
         '        <!-- begin vertical-box -->\n' +
         '        <div class="vertical-box with-grid">\n' +
         '            <!-- begin vertical-box-column -->\n' +
