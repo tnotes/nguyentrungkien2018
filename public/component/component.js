@@ -659,7 +659,7 @@ Vue.component('mutiplesms', {
     },
 });
 Vue.component('addcookie', {
-    template:'<div class="content  animated fadeIn" id="content">\n' +
+    template:'<div class="content  inbox animated fadeIn" id="content">\n' +
         '        <div class="row">\n' +
         '\n' +
         '            <div class="col-lg-12 ui-sortable ">\n' +
@@ -842,7 +842,7 @@ Vue.component('addcookie', {
 
 });
 Vue.component('addpassword', {
-    template:' <div class="content  animated fadeIn" id="content">\n' +
+    template:' <div class="content  inbox animated fadeIn" id="content">\n' +
         '        <div class="row">\n' +
         '\n' +
         '            <div class="col-lg-12 ui-sortable ">\n' +
@@ -1029,7 +1029,7 @@ Vue.component('addpassword', {
     },
 });
 Vue.component('autochat', {
-    template:' <div class="content   animated fadeIn" id="content">\n' +
+    template:' <div class="content  inbox  animated fadeIn" id="content">\n' +
         '        <div class="panel panel-inverse">\n' +
         '            <!-- begin panel-heading -->\n' +
         '            <div class="panel-heading ui-sortable-handle" style="background-color: #330404">\n' +
@@ -1341,7 +1341,7 @@ Vue.component('autochat', {
     },
 });
 Vue.component('scenario', {
-    template:'  <div class="content   animated fadeIn " id="content">\n' +
+    template:'  <div class="content  inbox  animated fadeIn " id="content">\n' +
         '\n' +
         '            <div class="panel panel-inverse" >\n' +
         '                <div class="panel-heading ui-sortable-handle" style="background-color: #330404">\n' +
@@ -1721,7 +1721,7 @@ Vue.component('scenario', {
     },
 });
 Vue.component('changepassword', {
-    template:'<div id="content" class="content ">\n' +
+    template:'<div id="content" class="content  inbox">\n' +
         '        <!-- begin vertical-box -->\n' +
         '        <div class="row">\n' +
         '            <!-- begin col-6 -->\n' +
@@ -2017,7 +2017,7 @@ Vue.component('rightchat', {
 });
 Vue.component('listchat', {
 
-    template:' <div  id="content" class="content  ">\n' +
+    template:' <div  id="content" class="content  inbox ">\n' +
 
 
 
@@ -2297,7 +2297,7 @@ Vue.component('listchat', {
     },
 });
 Vue.component('chat', {
-    template:' <div id="content" class="content    page-content-full-height">\n' +
+    template:' <div id="content" class="content    inbox page-content-full-height">\n' +
         '        <!-- begin vertical-box -->\n' +
         '        <div class="vertical-box with-grid">\n' +
         '            <!-- begin vertical-box-column -->\n' +
