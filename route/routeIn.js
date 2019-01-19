@@ -54,9 +54,9 @@ route.post('/account',async (req,res)=>{
         let limit = parseInt(infoBoss[0]['_doc'].FacebookCount);
         let present = accountCountNow.length;
         let listIDactive = accountCountNow.map(e=>{
-
-            return e['_doc']['ID_sender']
+            return e['_doc']
         });
+
 
 
 
@@ -68,7 +68,7 @@ route.post('/account',async (req,res)=>{
                         error:"Tài khoản facebook này đã được thêm bởi một tài khoản nào đó đang sử dụng trên Facebook manager!",
                     })
                 }else {
-                    if(present < limit || listIDactive.includes(req.body.email) === true){
+                    if(present < limit){
                         let result = await accountINSERT({
                             status: 'active',
                             type: 'pass',
@@ -97,10 +97,6 @@ route.post('/account',async (req,res)=>{
                             });
                             result.error = null;
                             res.send(result);
-                        } else {
-                            res.send({
-                                error: "Tài khoản Facebook này đã xuất hiện trong danh sách của bạn !",
-                            })
                         }
                     }else {
                         res.send({
@@ -163,19 +159,24 @@ route.post('/account',async (req,res)=>{
                             "creation": "2018-08-22T03:12:25.187Z",
                             "lastAccessed": "2018-08-22T03:12:28.968Z"
                         }];
-                    if(present < limit || listIDactive.includes(req.body.data[i]['c_user']) === true){
-                        let result = await accountINSERT({
-                            ID_sender: req.body.data[i]['c_user'],
-                            status: 'active',
-                            author:author,
-                            type:'cookie',
-                            userBoss: req.cookies.email,
+                    if(present < limit){
 
-                            cookie: OBJ_template
+                        let exists = listIDactive.filter(e=>{
+                            if(e.ID_sender == req.body.data[i]['c_user']){
+                                return e
+                            }
                         });
 
-                        if(result.upserted !== undefined){
+                        if(exists.length === 0 || exists[0].status !== 'active'){
+                            let result = await accountINSERT({
+                                ID_sender: req.body.data[i]['c_user'],
+                                status: 'active',
+                                author:author,
+                                type:'cookie',
+                                userBoss: req.cookies.email,
 
+                                cookie: OBJ_template
+                            });
                             let account = await process({
                                 ID_sender: req.body.data[i]['c_user'],
                                 status: 'active',
@@ -188,10 +189,6 @@ route.post('/account',async (req,res)=>{
                             account.error = null;
                             res.send(account);
 
-                        }else {
-                            res.send({
-                                error:"Tài khoản Facebook này đã xuất hiện trong danh sách của bạn !",
-                            })
                         }
                     }else {
                         res.send({
@@ -204,6 +201,7 @@ route.post('/account',async (req,res)=>{
 
 
                 }
+                return res.send({error:null})
             }
 
 
@@ -269,7 +267,7 @@ route.post('/getAutoChat',async (req,res)=>{
 
 });
 route.post('/addAutoChat',async (req,res)=>{
-    let AddAutoChat = await AutoChatINSERT(req.cookies.email,randomstring.generate(),req.body.keyList,req.body.message,req.body.select);
+    let AddAutoChat = await AutoChatINSERT(req.cookies.email,randomstring.generate(),req.body.keyList,req.body.message,req.body.select,req.body.nameSelect);
     let chatBotKey = await AutoChatFINDall(req.cookies.email);
 
     res.send(chatBotKey)

@@ -92,9 +92,9 @@ module.exports = {
             })
         })
     },
-    AutoChatINSERT:(userBoss,KeySecure,keyList,message,select)=>{
+    AutoChatINSERT:(userBoss,KeySecure,keyList,message,select,nameSelect)=>{
       return new Promise(resolve=>{
-          AutoChat.updateOne({userBoss:userBoss,KeySecure:KeySecure},{KeySecure:KeySecure,keyList:keyList,message:message,select:select},{upsert:true}).then(result=>{
+          AutoChat.updateOne({userBoss:userBoss,KeySecure:KeySecure},{KeySecure:KeySecure,keyList:keyList,message:message,select:select,nameSelect:nameSelect},{upsert:true}).then(result=>{
               resolve(result)
           })
       })

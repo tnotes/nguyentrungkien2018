@@ -22,6 +22,13 @@ function getCookie(cname) {
 function uniq(a) {
     return Array.from(new Set(a));
 }
+function waitTime(time){
+    return new Promise(resolve=>{
+        setTimeout(function () {
+            resolve(time)
+        },time)
+    })
+}
 function convertTime12to24(time12h) {
     const [time, modifier] = time12h.split(' ');
 
@@ -789,10 +796,18 @@ Vue.component('addcookie', {
     methods:{
 
         addfacebookaccount:async function(){
+            if(this.cookie.length === 0){
+                this.errorShow = true;
+                this.error = 'Không được để trống cookie';
+                await waitTime(2000);
+                this.errorShow = false;
+
+                return true
+            }
+
             this.buttonAdd = false;
             this.loadingAdd = true;
             let _ = this;
-
             let result = this.cookie.split('\n').map(e=>{
                 let objResult = {};
                 this.cookie.split(';').filter(e=>{
@@ -810,17 +825,24 @@ Vue.component('addcookie', {
             let send = await axios.post('/api/account',{type:'cookie',data:result})
 
             if(send.data.error === null){
+                this.container.account =  this.container.account.filter(e=>{
+                    if(e.ID_sender !== send.data.ID_sender){
+                        return e
+                    }
+                });
+                if(send.data.ID_sender !== undefined){
+                    this.container.account.push(send.data)
 
-                this.container.account.push(send.data)
+                }
             }else {
                 this.errorShow = true;
                 this.error = send.data.error;
-                setTimeout(function () {
-                    _.error = '';
-                },15000)
+                await waitTime(5000);
+                this.errorShow = false;
             }
             this.buttonAdd = true;
             this.loadingAdd = false;
+            return window.location.href = '/'
 
 
         },
@@ -1081,7 +1103,7 @@ Vue.component('autochat', {
         '\n' +
         '\n' +
         '\n' +
-        '                                <span :key="index" v-for="(data,index) in account" style="margin-right: 30px">\n' +
+        '                                <span :key="index" v-for="(data,index) in container.account" style="margin-right: 30px">\n' +
         '\n' +
         '                                     <input  v-model="content.select" :value="data.ID_sender" class="form-check-input" data-parsley-mincheck="2"\n' +
         '                                            data-parsley-multiple="mincheck"\n' +
@@ -1109,11 +1131,11 @@ Vue.component('autochat', {
         '\n' +
         '\n' +
         '                        </div>\n' +
-        '                        </div>\n' +
-        '                        <div v-show="errorShow" class="col-md-6 col-sm-6">\n' +
+        '                        </div><span v-show="updateSuccess" style="margin-top:25px;color:#6ba56b">Update thành công !</span>\n' +
+        '                        <div v-show="errorShow" class="col-md-6 col-sm-6 animated flash">\n' +
         '                            <div class="form-check">\n' +
-        '                                <br>\n' +
-        '                                <code style="background: none;color:white;border:1px solid red;margin-left: -20px;" class="animated flash" v-show="errorShow">{{error}}</code>\n' +
+        '                                <br></code>\n' +
+        '                                <code style="background: none;color:white;border:1px solid red;margin-left: -20px;" >{{error}}</code>\n' +
         '\n' +
         '\n' +
         '\n' +
@@ -1140,10 +1162,10 @@ Vue.component('autochat', {
         '                                    <thead>\n' +
         '                                    <tr>\n' +
         '                                        <th width="1%">STT</th>\n' +
+        '                                        <th class="text-nowrap">Từ khóa</th>\n' +
+        '                                        <th class="text-nowrap">Nội dung</th>\n' +
+        '                                        <th class="text-nowrap">Facebook trả lời</th>\n' +
         '                                        <th class="text-nowrap"></th>\n' +
-        '                                        <th class="text-nowrap">ID</th>\n' +
-        '                                        <th class="text-nowrap">Facebook</th>\n' +
-        '                                        <th class="text-nowrap">Tình trạng</th>\n' +
         '                                        <th class="text-nowrap"></th>\n' +
         '                                    </tr>\n' +
         '                                    </thead>\n' +
@@ -1155,7 +1177,7 @@ Vue.component('autochat', {
         '\n' +
         '                                        </td>\n' +
         '                                        <td>{{data.message}}</td>\n' +
-        '                                        <td><span v-for="data2 in data.select">{{findName(data2)}},</span></td>\n' +
+        '                                        <td><span v-for="ele in data.nameSelect">{{ele}},</span></td>\n' +
         '                                        <td><i @click="editContent(data)" class="cur fa fa-edit text-danger"></i></td>\n' +
         '                                        <td><a href="#ex1" rel="modalPro:open"><i class="cur fa fa-trash text-primary"></i></a></td>\n' +
         '<div id="ex1" class="modal animated bounceIn" style="width: 250px">\n' +
@@ -1215,23 +1237,18 @@ Vue.component('autochat', {
             keyword:'',
             name:'testing',
             account:[],
+            updateSuccess:false,
             error:'test',
             content:{
                 keyList:[],
                 message:'',
-                select:[]
+                select:[],
+
             },
             contentArr:[],
             pc:true,
             mobile:false,
             errorShow:false,
-            findName:(id)=>{
-                return this.account.filter(e=>{
-                    if(e.ID_sender === id){
-                        return e
-                    }
-                })[0].FacebookName
-            },
             fullname: '',
             pagination:false
         }
@@ -1255,6 +1272,9 @@ Vue.component('autochat', {
         return this.account = result.data.AllAccount
     },
     computed: {
+        container(){
+          return store.state
+        },
 
         filteredList() {
             let _ = this;
@@ -1313,6 +1333,15 @@ Vue.component('autochat', {
                 this.errorShow = true;
                 return this.error = 'Bạn phải chọn nội dung trả lời tự động'
             }
+            this.content.nameSelect = this.content.select.map(e=>{
+                let user = store.state.account.filter(i=>{
+                    if(i.ID_sender == e){
+                        return e
+                    }
+                })[0].FacebookName;
+                return user
+            });
+            console.log(this.content)
 
             let sendContent = await axios.post('/api/addAutoChat', this.content);
             this.contentArr = sendContent.data;
@@ -1335,7 +1364,10 @@ Vue.component('autochat', {
         },
         updateContent:async function(){
             let sendContent = await axios.post('/api/updateAutoChat',this.content);
-            return location.reload();
+            this.updateSuccess = true;
+            await waitTime(1000);
+            this.updateSuccess = false;
+
         }
 
     },
@@ -1378,13 +1410,13 @@ Vue.component('scenario', {
         '                        <div class="form-group row m-b-15">\n' +
         '                            <label class="col-md-4 col-sm-4 col-form-label">Cú pháp * :</label>\n' +
         '                            <div class="col-md-8 col-sm-8">\n' +
-        '                                <input v-model="main.syntax" @keyup="textScenario" spellcheck="false" autocomplete="off" class="form-control" type="text"  name="email" data-parsley-type="email" placeholder="Cú pháp ... " data-parsley-required="true">\n' +
+        '                                <input v-model="main.syntax"  spellcheck="false" autocomplete="off" class="form-control" type="text"  name="email" data-parsley-type="email" placeholder="Cú pháp ... " data-parsley-required="true">\n' +
         '                            </div>\n' +
         '                        </div>\n' +
         '                        <div class="form-group row m-b-15">\n' +
         '                            <label class="col-md-4 col-sm-4 col-form-label">Tên kịch bản :</label>\n' +
         '                            <div class="col-md-8 col-sm-8">\n' +
-        '                                <input v-model="main.nameScenario" @keyup="textScenario" spellcheck="false" autocomplete="off" class="form-control" type="text"  name="email" data-parsley-type="email" placeholder="Tên kịch bản ... " data-parsley-required="true">\n' +
+        '                                <input v-model="main.nameScenario" spellcheck="false" autocomplete="off" class="form-control" type="text"  name="email" data-parsley-type="email" placeholder="Tên kịch bản ... " data-parsley-required="true">\n' +
         '\n' +
         '\n' +
         '                            </div>\n' +
@@ -1392,7 +1424,7 @@ Vue.component('scenario', {
         '                        <div class="form-group row m-b-15">\n' +
         '                            <label class="col-md-4 col-sm-4 col-form-label">Áp dụng :</label>\n' +
         '                            <div class="col-md-8 col-sm-8">\n' +
-        '                                <span style="margin-right: 20px" v-for="data in allAccount">\n' +
+        '                                <span style="margin-right: 20px" v-for="data in container.account">\n' +
         '\n' +
         '  <input style="margin-top:15px" type="checkbox" :id="data.FacebookName" :value="data.ID_sender" v-model="main.checkedNames">\n' +
 
@@ -1523,12 +1555,16 @@ Vue.component('scenario', {
 
     created: async  function(){
 
-        let allAcc = await axios.post('/api/getAllAccount');
-        this.allAccount = allAcc.data.data;
+
 
         let alldata = await axios.post('/api/getAllScenario');
 
         return this.AllData = alldata.data;
+    },
+    computed:{
+      container(){
+          return store.state
+      }
     },
 
     methods:{
@@ -1695,8 +1731,7 @@ Vue.component('scenario', {
 
         },
         removeSceComponent:async function(data){
-            console.log(data);
-            console.log(this.main.dataArr)
+
             if(data.key === null){
                 this.error = 'Đây là kịch bản bắt buộc bạn không thể xóa kịch bản này !!!';
                 return this.errorShow = true;
@@ -1714,10 +1749,7 @@ Vue.component('scenario', {
 
             return this.main = data
         },
-        textScenario:async function(){
-            return  this.main.dataArr[0].text = 'Quý khách đã đăng kí thành công Chương trình '+this.main.nameScenario+' của chúng tôi.Quý khách sẽ được cập nhật những thông tin mới nhất khi có sự kiện sắp diễn ra.Nếu muốn từ chối nhận tin nhắn vui lòng soạn HUY '+this.main.syntax+' gửi tới facebook quý khách dã nhắn trước đó.Trân trong cảm ơn !';
 
-        }
     },
 });
 Vue.component('changepassword', {
@@ -1935,7 +1967,7 @@ Vue.component('rightchat', {
         '                                        <div class="nav-title"><b>FOLDERS</b></div>\n' +
         '\n' +
         '                                        <ul class="nav nav-inbox">\n' +
-        '                                            <li class="active"><a href="email_inbox.html"><i class="fa fa-inbox fa-fw m-r-5"></i> Inbox <span class="badge pull-right">{{container.list_chat.filter(e=>{\n' +
+        '                                            <li class="active"><a href="javascript:;"><i class="fa fa-inbox fa-fw m-r-5"></i> Inbox <span class="badge pull-right">{{container.list_chat.filter(e=>{\n' +
         '                                                if(e.seen === false){\n' +
         '                                                return e\n' +
         '                                                }\n' +
@@ -2320,7 +2352,7 @@ Vue.component('chat', {
         '                                            {{container.conversation.name}}\n' +
         '                                        </div>\n' +
         '                                        <div class="email-to">\n' +
-        '                                            To:  {{container.conversation.facebook_name_sender}}\n' +
+        '                                            From:  {{container.conversation.facebook_name_sender}}\n' +
         '                                        </div>\n' +
         '                                    </div>\n' +
         '                                </div>\n' +
@@ -2396,15 +2428,20 @@ Vue.component('chat', {
         '                    </div>\n' +
         '\n' +
         '                    <div class="row">\n' +
-        '                        <div class="input-field col s12">\n' +
+        '                        <div v-if="inputExists" class="input-field col s12">\n' +
         '\n' +
-        '                            <textarea id="txta1" v-model="message" @keyup.13="send" placeholder="Nhập văn bản ..." style="resize:none;width:95%;outline:none;border:1px solid #707070;background: none;color: white" spellcheck="false" class="wrapper bg-black-transparent-2-lighter text-left clearfix "></textarea>\n' +
+        '                            <textarea  id="txta1" v-model="message" @keyup.13="send" placeholder="Nhập văn bản ..." style="resize:none;width:95%;outline:none;border:1px solid #707070;background: none;color: white" spellcheck="false" class="wrapper bg-black-transparent-2-lighter text-left clearfix "></textarea>\n' +
         '                            <form for="txtal" style="float: right;margin-right: 10px;margin-top:20px">\n' +
         '\n' +
         '                                <label for="fusk" style="background:none">  <i style="font-size: 20px" class="fa fa-image" aria-hidden="true"></i></label>\n' +
         '                                <input id="fusk" type="file" name="sampleFile" style="display: none;">\n' +
         '                            </form>\n' +
         '                        </div>\n' +
+        '                        <div v-if="inputExists === false" class="input-field col s12"><i style="margin-left:20px;;">Cookie nhắn tin tới nick {{container.conversation.facebook_name_sender}} đã hết hạn !</i> \n' +
+        '\n' +
+
+        '                        </div>\n' +
+
         '                    </div>\n' +
         '\n' +
         '                    <!-- end wrapper -->\n' +
@@ -2449,7 +2486,8 @@ Vue.component('chat', {
             saveFont:true,
             dataChat:{conversation:[],user:{name:''}},
             nicknameSelect:null,
-            component:null
+            component:null,
+
 
 
 
@@ -2469,6 +2507,14 @@ Vue.component('chat', {
 
             if(this.container.list_chat.length === 0){
                 return true
+            }
+        },
+        inputExists(){
+            if(store.state.conversation.status === 'active'){
+                return true
+
+            }else{
+                return false
             }
         }
     },

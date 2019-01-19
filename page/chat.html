@@ -206,6 +206,8 @@
 <!-- begin #page-container -->
 <div  id="page-container" class="fade page-sidebar-fixed page-header-fixed  ">
     <!-- begin #header -->
+
+
     <div id="header" class="header navbar-default show-bg">
         <!-- begin navbar-header -->
         <div class="navbar-header">
@@ -216,11 +218,13 @@
                 <span class="icon-bar"></span>
             </button>
         </div>
+
         <!-- end navbar-header -->
 
         <!-- begin header-nav -->
         <ul class="navbar-nav navbar-right">
             <li v-show="container.component == 'listChat'">
+
                 <form class="navbar-form">
                     <div class="form-group">
                         <input type="text" class="form-control" placeholder="Tìm kiếm tin nhắn">
@@ -228,22 +232,24 @@
                     </div>
                 </form>
             </li>
+            <li class="navbar-menu"><a href="https://www.massocorp.com/huong-dan-su-dung-zinbee-inbox/" target="class=&quot;navbar-brand&quot;">Hướng dẫn</a></li>
+            <li class="navbar-menu"><a href="https://www.facebook.com/zinbeeauto/" target="class=&quot;navbar-brand&quot;">Hỗ trợ</a></li>
             <li class="dropdown">
-                <a href="javascript:;" data-toggle="dropdown" class="dropdown-toggle f-s-14">
+                <a href="javascript:;" data-toggle="dropdown" :class="cookieExpire.length > 0 ? 'animated wobble':''" class="dropdown-toggle f-s-14">
                     <i class="fa fa-bell"></i>
-                    <span v-show="notification" class="label"></span>
+                    <span v-if="cookieExpire.length > 0" class="label">{{cookieExpire.length}}</span>
                 </a>
                 <ul class="dropdown-menu media-list dropdown-menu-right">
                     <li class="dropdown-header">THÔNG BÁO</li>
 
-                    <li class="media">
+                    <li class="media" v-for="data in cookieExpire">
                         <a href="javascript:;">
                             <div class="media-left">
-                                <i class="fa fa-envelope media-object bg-silver-darker"></i>
-                                <i class="fab fa-google text-warning media-object-icon f-s-14"></i>
+                                <img :src="data.image" alt="no-image">
                             </div>
                             <div class="media-body">
-                                <h6 class="media-heading"> Hiện chưa có thông báo gì </h6>
+                                <h6 class="media-heading">{{data.facebook_name_sender}} <i class="fa fa-exclamation-circle text-danger"></i></h6>
+                                <div class="text-muted f-s-11">{{data.status}}</div>
                             </div>
                         </a>
                     </li>
@@ -460,7 +466,13 @@
 
         created: async  function(){
 
-
+            let allAccount = await axios.post('/api/getAllAccount');
+            let result = allAccount.data.data.filter(e=>{
+                if(e.type === 'cookie'){
+                    return e
+                }
+            });
+             store.state.account = result
             let chat = await axios.post('/api/getAllConversation');
             if(chat.data.error === null){
                 this.load_listCHAT = false;
@@ -486,6 +498,18 @@
                 }
 
             },
+            cookieExpire(){
+                let list_ID_sender_account = store.state.account.map(e=>{
+                    return e['ID_sender']
+                });
+
+                return store.state.list_chat.filter(e=>{
+
+                    if(e['status'] === 'Cookie đã hết hạn.Vui lòng lấy lại Cookie' && list_ID_sender_account.includes(e['ID_receiver'])){
+                        return e
+                    }
+                })
+            }
 
 
         },
@@ -502,6 +526,7 @@
             socket.on('error',function (data) {
 
                 let ID_sender = data['ID_sender'];
+
 
                 return store.commit('statusUPDATEpro',ID_sender)
             })

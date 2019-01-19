@@ -6,7 +6,7 @@
 <!--<![endif]-->
 <head>
     <meta charset="utf-8">
-    <title>Hẹn giờ - Phần mềm quản lí tin nhắn Facebook Manager</title>
+    <title>Phần mềm quản lí tin nhắn Facebook Manager</title>
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
     <meta content="" name="description">
     <meta content="" name="author">
@@ -42,6 +42,10 @@
         .trashremove:hover{
             cursor: pointer;
         }
+        option{
+            color:white
+        }
+
     </style>
 </head>
 <body>
@@ -85,25 +89,25 @@
                                 <div class="panel-body">
                                     <div class="form-horizontal" data-parsley-validate="true" >
                                         <div class="form-group row m-b-15">
-                                            <label class="col-md-3 col-sm-3 col-form-label" for="fullname">Họ và Tên * :</label>
+                                            <label class="col-md-3 col-sm-3 col-form-label" style="color:black" for="fullname">Họ và Tên * :</label>
                                             <div class="col-md-9 col-sm-9">
-                                                <input  class="form-control" type="text" v-model="editINFO.name" id="fullname" name="fullname" placeholder="Required" data-parsley-required="true">
+                                                <input  class="form-control" style="color:black" type="text" v-model="editINFO.name" id="fullname" name="fullname" placeholder="Required" data-parsley-required="true">
                                             </div>
                                         </div>
                                         <div class="form-group row m-b-15">
-                                            <label class="col-md-3 col-sm-3 col-form-label" for="email">Email * :</label>
+                                            <label class="col-md-3 col-sm-3 col-form-label" style="color:black" for="email">Email * :</label>
                                             <div class="col-md-9 col-sm-9">
-                                                <input class="form-control" disabled type="email"  v-model="editINFO.email" id="email" name="email" data-parsley-type="email" placeholder="Email" data-parsley-required="true">
+                                                <input class="form-control" style="color:black" disabled type="email"  v-model="editINFO.email" id="email" name="email" data-parsley-type="email" placeholder="Email" data-parsley-required="true">
                                             </div>
                                         </div>
                                         <div class="form-group row m-b-15">
-                                            <label class="col-md-3 col-sm-3 col-form-label" for="website">Số điện thoại :</label>
+                                            <label class="col-md-3 col-sm-3 col-form-label" style="color:black" for="website">Số điện thoại :</label>
                                             <div class="col-md-9 col-sm-9">
-                                                <input class="form-control" v-model="editINFO.phone" type="text" id="website" name="website" data-parsley-type="url" placeholder="url">
+                                                <input class="form-control" style="color:black" v-model="editINFO.phone" type="text" id="website" name="website" data-parsley-type="url" placeholder="url">
                                             </div>
                                         </div>
                                         <div class="form-group row m-b-15">
-                                            <label class="col-md-3 col-sm-3 col-form-label" for="website">Phục hồi :</label>
+                                            <label class="col-md-3 col-sm-3 col-form-label" style="color:black" for="website">Phục hồi :</label>
                                             <div class="col-md-9 col-sm-9">
                                                 <button @click="deleteFacebook" class="btn btn-primary" style="background-color: #2c3e50;margin-top:5px;"><i class="fas fa-sync " v-bind:class="{ 'fa-spin': spinDeleteFacebook }"></i>  Xóa tài khoản Facebook</button>
                                                 <button @click="deleteMessage" class="btn btn-primary" style="background-color: #2c3e50;margin-top:5px;"><i class="fas fa-redo " v-bind:class="{ 'fa-spin': spinDeleteConversations }"></i>  Xóa tất cả tin nhắn</button>
@@ -112,26 +116,26 @@
                                         </div>
 
                                         <div class="form-group row m-b-15">
-                                            <label class="col-md-3 col-sm-3 col-form-label" for="message">Ngày đăng kí :</label>
+                                            <label class="col-md-3 col-sm-3 col-form-label" style="color:black" for="message">Ngày đăng kí :</label>
                                             <div class="col-md-9 col-sm-9">
                                                 <span class="row"> <input class="form-control" disabled style="width: 80px;text-align: center;margin-left:10px;background-color: #2c3e50;color:white"  v-model="editINFO.TimeStartHour" type="text">  <input class="form-control" disabled style="width: 65px;margin-left:15px;background-color: #2c3e50;color:white" v-model="editINFO.TimeStartDay" type="text"> <input class="form-control" disabled style="width: 65px;margin-left:3px;background-color: #2c3e50;color:white" v-model="editINFO.TimeStartMonth" type="text"><input class="form-control" disabled style="width: 80px;background-color: #2c3e50;color:white;margin-left:10px;" v-model="editINFO.TimeStartYear" type="text"></span>
                                             </div>
                                         </div>
                                         <div class="form-group row m-b-15">
-                                            <label class="col-md-3 col-sm-4 col-form-label" for="message">Ngày hết hạn :</label>
+                                            <label class="col-md-3 col-sm-4 col-form-label" style="color:black" for="message">Ngày hết hạn :</label>
                                             <div class="col-md-9 col-sm-8">
                                                 <span class="row"> <input class="form-control" disabled style="width: 80px;text-align: center;margin-left:10px;background-color: #2c3e50;color:white"  v-model="editINFO.TimeEndHour" type="text">
                                                     <select  class="form-control" style="width: 65px;margin-left:15px;background-color: #2c3e50;color:white" v-model="editINFO.TimeEndDay" >
-                                                        <option v-for="day in 31" :value="day.toString().padStart(2,0)">{{day.toString().padStart(2,0)}}</option>
+                                                        <option style="color:white" v-for="day in 31" :value="day.toString().padStart(2,0)">{{day.toString().padStart(2,0)}}</option>
                                                     </select>
 
 
                                                      <select  class="form-control" style="width: 65px;margin-left:3px;background-color: #2c3e50;color:white" v-model="editINFO.TimeEndMonth" >
-                                                        <option v-for="month in 12" :value="month.toString().padStart(2,0)">{{month.toString().padStart(2,0)}}</option>
+                                                        <option style="color:white" v-for="month in 12" :value="month.toString().padStart(2,0)">{{month.toString().padStart(2,0)}}</option>
                                                     </select>
 
                                                      <select  class="form-control" style="width: 80px;margin-left:10px;background-color: #2c3e50;color:white" v-model="editINFO.TimeEndYear" >
-                                                        <option v-for="year in 2030" v-if="year > 2017" :value="year.toString().padStart(2,0)">{{year.toString().padStart(2,0)}}</option>
+                                                        <option style="color:white" v-for="year in 2030" v-if="year > 2017" :value="year.toString().padStart(2,0)">{{year.toString().padStart(2,0)}}</option>
                                                     </select>
 
 
@@ -142,16 +146,16 @@
                                             </div>
                                         </div>
                                         <div class="form-group row m-b-15">
-                                            <label class="col-md-3 col-sm-4 col-form-label" for="message">Gói cước :</label>
+                                            <label class="col-md-3 col-sm-4 col-form-label" style="color:black" for="message">Gói cước :</label>
                                             <div class="col-md-9 col-sm-8">
                                                 <span class="row">
                                                     <select style="width: 80px;margin-left:10px;background-color: #2c3e50;color:#ff958c" class="form-control" v-model="editINFO.package">
-                                                        <option value="Trial">Trial </option>
-                                                        <option value="F90">F90 </option>
-                                                        <option value="F365">F365 </option>
+                                                        <option style="color:white" value="Trial">Trial </option>
+                                                        <option style="color:white" value="F90">F90 </option>
+                                                        <option style="color:white" value="F365">F365 </option>
 
                                                     </select>
-                                            <label class="col-md-3 col-sm-4 col-form-label" for="message">Số lượng :</label>
+                                            <label class="col-md-3 col-sm-4 col-form-label" style="color:black" for="message">Số lượng :</label>
                                                     <input v-model="editINFO.FacebookCount" class="form-control" style="width: 80px;background-color: #2c3e50;color:white;margin-left:10px" type="number" min="2">
 
                                                 </span>
@@ -159,7 +163,7 @@
                                         </div>
 
                                         <div class="form-group row m-b-15">
-                                            <label class="col-md-3 col-sm-4 col-form-label" for="message">Lịch sử thanh toán :</label>
+                                            <label class="col-md-3 col-sm-4 col-form-label" style="color:black" for="message">Lịch sử thanh toán :</label>
                                             <div class="col-md-9 col-sm-8">
                                                 <br>
                                                  <center><i style="color:#96564e">Chưa thanh toán</i></center>
@@ -189,7 +193,7 @@
                         <thead>
                         <tr>
                             <th width="1%">STT</th>
-                            <th class="text-nowrap">Họ và Tên</th>
+                            <th class="text-nowrap" >Họ và Tên</th>
                             <th class="text-nowrap">Email</th>
                             <th class="text-nowrap">Số điện thoại</th>
                             <th>Mật khẩu</th>

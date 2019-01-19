@@ -380,7 +380,7 @@ let process = async function(account){
                               ID_receiver:e.userID,
                               message:messageAlarm
                           }
-                      })
+                      });
                       for(let i = 0;i<sendAlarmContent.length;i++){
 
                           await sendMessText(sendAlarmContent[i]);
@@ -535,7 +535,7 @@ let process = async function(account){
 
                           scenarioACTIVE(scenario,ID_receiver,mess);
                       }else {
-                          let messageAlert = 'Quý khách đã đăng kí thành công Chương trình '+scenario[0]['_doc'].nameScenario+' trước đó của chúng tôi.Quý khách sẽ được cập nhật những thông tin mới nhất khi có sự kiện sắp diễn ra.Nếu muốn từ chối nhận tin nhắn vui lòng soạn HUY '+scenario[0]['_doc'].syntax.trim()+' gửi tới facebook quý khách dã nhắn trước đó.Trân trong cảm ơn';
+                          let messageAlert = 'Quý khách đã đăng kí thành công Chương trình '+scenario[0]['_doc'].nameScenario+' trước đó của chúng tôi.Nếu muốn từ chối nhận tin nhắn vui lòng soạn HUY '+scenario[0]['_doc'].syntax.trim()+' gửi tới facebook quý khách dã nhắn trước đó.Trân trong cảm ơn';
                           await sendMessExcute({
                               userBoss:account.userBoss,
                               ID_receiver:ID_receiver,

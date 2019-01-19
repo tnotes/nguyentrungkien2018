@@ -132,6 +132,12 @@ const store = new Vuex.Store({
               }
 
               return e
+            });
+            state.account = state.account.map(e=>{
+                if(e['ID_sender'] === ID_sender){
+                    e['status'] = 'Cookie đã hết hạn.Vui lòng lấy lại Cookie';
+                }
+                return e
             })
 
 
