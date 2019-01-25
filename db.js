@@ -8,12 +8,63 @@ const ModelChat = mongoose.model('conversation',SchemaChat);
 const ModelAccount = mongoose.model('account',SchemaChat);
 const ModelAccountManager = mongoose.model('accountManager',SchemaChat);
 const ModelAlarm = mongoose.model('alarm',SchemaChat);
+const ModelAlarmVictimGroup = mongoose.model('alarmvictimgroup',SchemaChat);
 const ModelScenario = mongoose.model('scenario',SchemaChat);
 const ModelScenarioID = mongoose.model('scenarioID',SchemaChat);
+const ModelScenarioKeyword = mongoose.model('scenarioKeyword',SchemaChat);
 const ModelVocative = mongoose.model('vocative',SchemaChat);
 const AutoChat = mongoose.model('autoChat',SchemaChat);
 
 module.exports = {
+    ModelAlarmVictimGroupINSERT:(userBoss,nameGroup,ListMember)=>{
+        return new Promise(resolve=>{
+            ModelAlarmVictimGroup.updateMany({userBoss:userBoss,nameGroup:nameGroup},{userBoss:userBoss,nameGroup:nameGroup,ListMember:ListMember},{upsert:true},(err,result)=>{
+                resolve(result)
+            })
+        })
+    },
+    ModelAlarmVictimGroupDELETE:(userBoss,nameGroup)=>{
+        return new Promise(resolve=>{
+            ModelAlarmVictimGroup.deleteMany({userBoss:userBoss,nameGroup:nameGroup},(err,result)=>{
+                resolve(result)
+            })
+        })
+    },
+    ModelAlarmVictimGroupFINDALL:(userBoss)=>{
+        return new Promise(resolve=>{
+            ModelAlarmVictimGroup.find({userBoss:userBoss},(err,result)=>{
+                resolve(result)
+            })
+        });
+    },
+    ModelScenarioKeywordINSERT:(keyword,value,userBoss)=>{
+      return new Promise(resolve=>{
+          ModelScenarioKeyword.updateMany({userBoss:userBoss,keyword:keyword},{userBoss:userBoss,keyword:keyword,value:value},{upsert:true},(err,result)=>{
+              resolve(result)
+          })
+      })
+    },
+    ModelScenarioKeywordINSERT_receiver:(keyword,userBoss,receiver)=>{
+        return new Promise(resolve=>{
+            ModelScenarioKeyword.updateMany({userBoss:userBoss,keyword:keyword},{receiver:receiver},(err,result)=>{
+                resolve(result)
+            })
+        })
+    },
+    ModelScenarioKeywordDELETE:(userBoss,keyword)=>{
+        return new Promise(resolve=>{
+            ModelScenarioKeyword.deleteMany({userBoss:userBoss,keyword:keyword},(err,result)=>{
+                resolve(result)
+            })
+        })
+    },
+    ModelScenarioKeywordFINDALL:(userBoss)=>{
+        return new Promise(resolve=>{
+            ModelScenarioKeyword.find({userBoss:userBoss},(err,result)=>{
+                resolve(result)
+            })
+        });
+    },
     ModelVocativeINSERT:(userBoss,vocative)=>{
       return new Promise(resolve=>{
           ModelVocative.updateMany({userBoss:userBoss},{userBoss:userBoss,vocative:vocative},{upsert:true},(err,result)=>{

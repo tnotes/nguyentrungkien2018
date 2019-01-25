@@ -1,5 +1,5 @@
  const login = require("facebook-chat-api");
-const {chatINSERT,accountFIND_manager,ModelScenarioID_INSERT_ID,ModelVocativeFIND,AlarmUPDATEstatus,ModelScenarisCHECKsyntax,ModelScenarioDELETE,ModelVocativeINSERT,ModelScenarioID_FIND,ModelScenarioID_REMOVE_ID,accountREADall,ModelScenarioALL,AutoChatFINDall,AlarmFIND,AlarmFIND_aid,AlarmUPDATE,accountCHECK_manager,accountCREATE_manager,chatUPDATE,chatDELETE,chatFIND,chatREAD,accountDELETE,accountINSERT,accountFIND,accountREAD,seenUPDATE,statusUPDATE} = require('./db.js');
+const {chatINSERT,ModelScenarioKeywordINSERT_receiver,ModelScenarioKeywordFINDALL,ModelScenarioID_INSERT_ID,ModelVocativeFIND,AlarmUPDATEstatus,ModelScenarisCHECKsyntax,ModelScenarioDELETE,ModelVocativeINSERT,ModelScenarioID_FIND,ModelScenarioID_REMOVE_ID,accountREADall,ModelScenarioALL,AutoChatFINDall,AlarmFIND,AlarmFIND_aid,AlarmUPDATE,accountCHECK_manager,accountCREATE_manager,chatUPDATE,chatDELETE,chatFIND,chatREAD,accountDELETE,accountINSERT,accountFIND,accountREAD,seenUPDATE,statusUPDATE} = require('./db.js');
 const express = require('express');
 let CronJob  = require('cron').CronJob;
 const fs = require('fs');
@@ -136,6 +136,20 @@ let process = async function(account){
       let lastname = info.name.split(' ').slice(0, -1).join(' ');
       let firstname = info.name.split(' ').slice(-1).join(' ');
       data.message = data.message.replace(/{{lastname}}/g,lastname).replace(/{{firstname}}/g,firstname).replace(/{{xungho}}/g,vocativeUse);
+      let all = await ModelScenarioKeywordFINDALL(account.userBoss);
+      for(let s = 0;s<all.length;s++){
+          let e = all[s];
+          if(data.message.includes('{{'+e["_doc"].keyword+'}}')){
+              let receiver_list = e["_doc"].receiver || [];
+              if(!receiver_list.includes(data.ID_receiver)){
+                  receiver_list.push(data.ID_receiver)
+              }
+              await ModelScenarioKeywordINSERT_receiver(e["_doc"].keyword,account.userBoss,receiver_list);
+
+              data.message = data.message.replace(new RegExp('{{'+e["_doc"].keyword+'}}', 'g'), e["_doc"].value)
+          }
+      }
+
       let msg ={
           body:data.message
       };

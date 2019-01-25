@@ -8,6 +8,7 @@ const store = new Vuex.Store({
         listFriend:[],
         list_chat:[],
         error:[],
+        ListKeyword:[],
         conversation:[],
         component:'listchat',
 

@@ -5,7 +5,7 @@ const moment = require('moment-timezone');
 const process = require('./../index');
 var randomstring = require("randomstring");
 
-const {accountFIND_manager,accountALL_manager, ModelVocativeINSERT,ModelScenarioID_FIND,ModelScenarioID_DELETE,ModelScenarioID_INSERT,ModelScenarioDELETE,ModelScenarioALL,ModelScenarioINSERT,ModelScenarisCHECKsyntax,accountREADfull,AlarmDELETEall,accountUPDATE_manager,AlarmFIND,AutoChatFINDall,AutoChatDELETE,AutoChatINSERT,accountINSERT,chatFIND,AlarmINSERT,AlarmDELETE,accountCREATE_manager,changePASSWORD,statusUPDATE,accountCHECK_manager,chatREAD,accountREAD,accountDELETE,seenUPDATE,chatDELETE} = require('./../db');
+const {accountFIND_manager,accountALL_manager,ModelAlarmVictimGroupINSERT,ModelAlarmVictimGroupDELETE,ModelAlarmVictimGroupFINDALL,ModelScenarioKeywordINSERT,ModelScenarioKeywordDELETE,ModelScenarioKeywordFINDALL, ModelVocativeINSERT,ModelScenarioID_FIND,ModelScenarioID_DELETE,ModelScenarioID_INSERT,ModelScenarioDELETE,ModelScenarioALL,ModelScenarioINSERT,ModelScenarisCHECKsyntax,accountREADfull,AlarmDELETEall,accountUPDATE_manager,AlarmFIND,AutoChatFINDall,AutoChatDELETE,AutoChatINSERT,accountINSERT,chatFIND,AlarmINSERT,AlarmDELETE,accountCREATE_manager,changePASSWORD,statusUPDATE,accountCHECK_manager,chatREAD,accountREAD,accountDELETE,seenUPDATE,chatDELETE} = require('./../db');
 function generateRandomInteger() {
     let min = 0;
     let max=1000000000000;
@@ -214,6 +214,24 @@ route.post('/alarmData',async (req,res)=>{
             let alarmDATA = await AlarmFIND(req.cookies.email)
             res.send(alarmDATA)
 });
+route.post('/alarm-victim-group',async (req,res)=>{
+    let insertGroup = await ModelAlarmVictimGroupINSERT(req.cookies.email,req.body.nameGroup,req.body.ListMember);
+    res.send(insertGroup)
+});
+route.post('/alarm-victim-group-findall',async (req,res)=>{
+    let findAllGroup = await ModelAlarmVictimGroupFINDALL(req.cookies.email);
+    res.send(findAllGroup)
+});
+route.post('/alarm-victim-group-delete',async (req,res)=>{
+    let removeGroup = await ModelAlarmVictimGroupDELETE(req.cookies.email,req.body.nameGroup);
+    res.send(removeGroup)
+});
+route.post('/alarm-victim-group-update',async (req,res)=>{
+    await ModelAlarmVictimGroupDELETE(req.cookies.email,req.body.OldNameGroup);
+    let insertGroup = await ModelAlarmVictimGroupINSERT(req.cookies.email,req.body.NewNameGroup,req.body.ListMember);
+    res.send(insertGroup)
+
+});
 route.post('/hen-gio',async (req,res)=>{
 
             let aid = null;
@@ -278,7 +296,7 @@ route.post('/deleteAutoChat',async (req,res)=>{
    res.send(DeleteAutoChat);
 });
 route.post('/updateAutoChat',async (req,res)=>{
-    let UpdateAutoChat = await AutoChatINSERT(req.cookies.email,req.body.KeySecure,req.body.keyList,req.body.message,req.body.select);
+    let UpdateAutoChat = await AutoChatINSERT(req.cookies.email,req.body.KeySecure,req.body.keyList,req.body.message,req.body.select,req.body.nameSelect);
     res.send(UpdateAutoChat);
 });
 route.post('/removeChat',async (req,res)=>{
@@ -286,6 +304,18 @@ route.post('/removeChat',async (req,res)=>{
         await chatDELETE(req.body.id,req.cookies.email);
         res.send(true)
 
+});
+route.post('/setScenario-keyword',async (req,res)=>{
+    let result = await ModelScenarioKeywordINSERT(req.body.keyword,req.body.value,req.cookies.email);
+    res.send(result)
+});
+route.post('/setScenario-remove',async (req,res)=>{
+    let result = await ModelScenarioKeywordDELETE(req.cookies.email,req.body.keyword);
+    res.send(result)
+});
+route.post('/setScenario-all',async (req,res)=>{
+   let result = await ModelScenarioKeywordFINDALL(req.cookies.email);
+   res.send(result)
 });
 route.post('/getAllScenario',async (req,res)=>{
     let alldata = await ModelScenarioALL(req.cookies.email);

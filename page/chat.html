@@ -27,34 +27,13 @@
     <!-- ================== END BASE CSS STYLE ================== -->
 
     <!-- ================== BEGIN PAGE LEVEL STYLE ================== -->
-    <link href="/css/bootstrap-datepicker.css" rel="stylesheet">
-    <link href="/css/bootstrap-datepicker3.css" rel="stylesheet">
-    <link href="/css/ion.rangeSlider.css" rel="stylesheet">
-    <link href="/css/ion.rangeSlider.skinNice.css" rel="stylesheet">
-    <link href="/css/bootstrap-colorpicker.min.css" rel="stylesheet">
-    <link href="/css/bootstrap-timepicker.min.css" rel="stylesheet">
-    <link href="/css/password-indicator.css" rel="stylesheet">
-    <link href="/css/bootstrap-combobox.css" rel="stylesheet">
-    <link href="/css/bootstrap-select.min.css" rel="stylesheet">
-    <link href="/css/bootstrap-tagsinput.css" rel="stylesheet">
-    <link href="/css/jquery.tagit.css" rel="stylesheet">
-    <link href="/css/daterangepicker.css" rel="stylesheet">
-    <link href="/css/select2.min.css" rel="stylesheet">
-    <link href="/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
-    <link href="/css/bootstrap-colorpalette.css" rel="stylesheet">
-    <link href="/css/jquery.simplecolorpicker.css" rel="stylesheet">
-    <link href="/css/jquery.simplecolorpicker-fontawesome.css" rel="stylesheet">
-    <link href="/css/jquery.simplecolorpicker-glyphicons.css" rel="stylesheet">
-    <script src="/store/index.js"></script>
-    <!-- ================== END PAGE LEVEL STYLE ================== -->
 
-    <!-- ================== BEGIN BASE JS ================== -->
-    <script src="/js/pace.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
-    <script src="/js/jquery.modal.min.js"></script>
     <link rel="stylesheet" href="/css/jquery.modal.min.css" />
+    <link rel="stylesheet" href="/css/jquery.atwho.css" />
 
-    <!-- ================== END BASE JS ================== -->
+
+    <script src="/store/index.js"></script>
+
     <style>
         .shadow{
             box-shadow: 1px 1px 15px #59799b
@@ -191,8 +170,14 @@
             -ms-transform: rotate(45deg);
             transform: rotate(45deg);
         }
+        .keywordButton{
+            margin-left: 10px;border:1px dotted #523e17;padding:0px 20px;border-radius: 20px;border-left: none;border-right: none;
+            cursor: pointer;
+        }
+        .keywordButton:hover{
+            background-color: #520d11;
+        }
     </style>
-    <!-- ================== END BASE JS ================== -->
 </head>
 <body>
 <!-- begin page-cover -->
@@ -245,10 +230,10 @@
                     <li class="media" v-for="data in cookieExpire">
                         <a href="javascript:;">
                             <div class="media-left">
-                                <img :src="data.image" alt="no-image">
+                                <img :src="data.FacebookImage" alt="no-image">
                             </div>
                             <div class="media-body">
-                                <h6 class="media-heading">{{data.facebook_name_sender}} <i class="fa fa-exclamation-circle text-danger"></i></h6>
+                                <h6 class="media-heading">{{data.FacebookName}} <i class="fa fa-exclamation-circle text-danger"></i></h6>
                                 <div class="text-muted f-s-11">{{data.status}}</div>
                             </div>
                         </a>
@@ -313,7 +298,7 @@
                 <li class="has-sub cur" :class="{ active : active_el == 1 }" @click="activate(1)">
                     <a href="javascript:;">
                         <b class="caret"></b>
-                        <i class="fa fa-th-large"></i>
+                        <i class="fa fa-th-large" style="color:white"></i>
                         <span>Quản lí tài khoản</span>
                     </a>
                     <ul class="sub-menu">
@@ -323,12 +308,12 @@
                 </li>
                 <li class="has-sub cur" :class="{ active : active_el == 2 }" @click="activate(2)">
                     <a href="javascript:;">
-                        <span class="badge pull-right">{{container.list_chat.filter(e=>{
+                        <span style="background-color: #640404;color:white" class="badge pull-right">{{container.list_chat.filter(e=>{
 						if(e.seen === false){
 						return e
 						}
 						}).length}}</span>
-                        <i class="fa fa-hdd"></i>
+                        <i class="fa fa-hdd" style="color:white"></i>
                         <span>Trò Chuyện</span>
                     </a>
                     <ul class="sub-menu">
@@ -338,23 +323,23 @@
                 </li>
                 <li class="has-sub cur" :class="{ active : active_el == 3 }" @click="container.component = 'autochat',activate(3)">
                     <a href="javascript:;" >
-                        <i class="fab fa-simplybuilt"></i>
-                        <span >Trả lời tự động <span class="label label-theme m-l-5">NEW</span></span>
+                        <i class="fab fa-simplybuilt" style="color:white"></i>
+                        <span >Trả lời tự động <span  style="background-color: #640404;color:white" class="label label-theme m-l-5">NEW</span></span>
                     </a>
                 </li>
                 <li class="has-sub cur" :class="{ active : active_el == 4 }" @click="container.component = 'scenario',activate(4)">
                     <a href="javascript:;">
 
-                        <i class="fa fa-gem"></i>
-                        <span >Kịch bản <span class="label label-theme m-l-5">NEW</span></span>
+                        <i class="fa fa-gem" style="color:white"></i>
+                        <span >Kịch bản <span  style="background-color: #640404;color:white" class="label label-theme m-l-5">NEW</span></span>
                     </a>
 
                 </li>
                 <li class="has-sub cur" :class="{ active : active_el == 5 }" @click="container.component = 'mutiplesms',activate(5)" >
                     <a href="javascript:;">
 
-                        <i class="fa fa-list-ol"></i>
-                        <span>Hẹn Giờ <span class="label label-theme m-l-5">NEW</span></span>
+                        <i class="fa fa-list-ol" style="color:white"></i>
+                        <span>Hẹn Giờ <span style="background-color: #640404;color:white" class="label label-theme m-l-5">NEW</span></span>
                     </a>
 
                 </li>
@@ -379,7 +364,16 @@
 
 
 <!-- ================== BEGIN BASE JS ================== -->
-<script src="/js/jquery-3.3.1.min.js"></script>
+
+
+
+</body>
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+<script type="text/javascript" src="/js/jquery.caret.js"></script>
+<script type="text/javascript" src="/js/jquery.atwho.js"></script>
+<script src="/js/jquery.modal.min.js"></script>
+
+
 <script src="/component/component.js"></script>
 
 <script src="/js/jquery-migrate-1.1.0.min.js"></script>
@@ -388,38 +382,12 @@
 
 <script src="/js/jquery.slimscroll.min.js"></script>
 <script src="/js/js.cookie.js"></script>
-<script src="/js/transparent.min.js"></script>
 <script src="/js/apps.min.js"></script>
-<!-- ================== END BASE JS ================== -->
 
-<!-- ================== BEGIN PAGE LEVEL JS ================== -->
-<script src="/js/bootstrap-datepicker.js"></script>
-<script src="/js/ion.rangeSlider.min.js"></script>
-<script src="/js/bootstrap-colorpicker.min.js"></script>
-<script src="/js/masked-input.min.js"></script>
-<script src="/js/bootstrap-timepicker.min.js"></script>
-<script src="/js/password-indicator.js"></script>
-<script src="/js/bootstrap-combobox.js"></script>
-<script src="/js/bootstrap-select.min.js"></script>
-<script src="/js/bootstrap-tagsinput.min.js"></script>
-<script src="/js/bootstrap-tagsinput-typeahead.js"></script>
-<script src="/js/tag-it.min.js"></script>
-<script src="/js/moment.js"></script>
-<script src="/js/daterangepicker.js"></script>
-<script src="/js/select2.min.js"></script>
-<script src="/js/bootstrap-datetimepicker.min.js"></script>
-<script src="/js/bootstrap-show-password.js"></script>
-<script src="/js/bootstrap-colorpalette.js"></script>
-<script src="/js/jquery.simplecolorpicker.js"></script>
-<script src="/js/clipboard.min.js"></script>
-<script src="/js/form-plugins.demo.min.js"></script>
-<!-- ================== END BASE JS ================== -->
 
 <script>
     $(document).ready(function() {
         App.init();
-
-        FormPlugins.init();
     });
 </script>
 <script >
@@ -465,14 +433,15 @@
         },
 
         created: async  function(){
+            let allScenarioKeyword = await axios.post('/api/setScenario-all');
+            store.state.ListKeyword = allScenarioKeyword.data;
 
             let allAccount = await axios.post('/api/getAllAccount');
-            let result = allAccount.data.data.filter(e=>{
+            store.state.account = allAccount.data.data.filter(e=>{
                 if(e.type === 'cookie'){
                     return e
                 }
             });
-             store.state.account = result
             let chat = await axios.post('/api/getAllConversation');
             if(chat.data.error === null){
                 this.load_listCHAT = false;
@@ -499,16 +468,22 @@
 
             },
             cookieExpire(){
-                let list_ID_sender_account = store.state.account.map(e=>{
-                    return e['ID_sender']
-                });
 
-                return store.state.list_chat.filter(e=>{
 
-                    if(e['status'] === 'Cookie đã hết hạn.Vui lòng lấy lại Cookie' && list_ID_sender_account.includes(e['ID_receiver'])){
+
+                let listID_expire =  store.state.list_chat.filter(e=>{
+
+
+                    if(e['status'] === 'Cookie đã hết hạn.Vui lòng lấy lại Cookie'){
                         return e
                     }
-                })
+                }).map(e=>e['ID_sender']);
+                let result =   store.state.account.filter(e=>{
+                    if(listID_expire.includes(e['ID_sender'])){
+                        return e
+                    }
+                });
+                return result
             }
 
 
@@ -533,92 +508,7 @@
 
 
         },
-        mounted:function(){
-            let name = this.username;
-            let _ = this;
-
-            $("form").change(function(evt){
-                evt.preventDefault();
-                var formData = new FormData($(this)[0]);
-                $.ajax({
-                    url: '/api/uploadIMAGE',
-                    type: 'POST',
-                    data: formData,
-                    async: false,
-                    cache: false,
-                    contentType: false,
-                    enctype: 'multipart/form-data',
-                    processData: false,
-                    success: function (response) {
-
-                        socket.emit('sendMessage',{
-                            userBoss:name,
-                            ID_receiver:store.state.conversation.ID_receiver,
-                            type:'attachments',
-                            url:response,
-                            ID_sender:store.state.conversation.ID_sender
-                        },function(callback){
-                            store.commit('pushConversation',callback.data)
-                            return store.state.list_chat = store.state.list_chat.map(e=>{
-
-                                if(e['ID_receiver'] === store.state.conversation['ID_receiver']){
-                                    e.seen = true;
-                                }
-                                return e;
-
-                            });
-
-
-                        });
-                    }
-                });
-                return false;
-            });
-        },
         methods:{
-            send:function(){
-
-                let _ = store;
-                let mess = this.message;
-
-
-                socket.emit('sendMessage',{
-                    userBoss:this.username,
-                    ID_receiver:_.state.conversation.ID_receiver,
-                    type:'text',
-                    message:mess,
-                    ID_sender:_.state.conversation.ID_sender
-
-                },function(callback){
-
-                    if(callback.error !== null){
-                        alert(error)
-                        _.connect = false;
-                        return _.commit('statusUPDATE','Cookie expired')
-
-                    }
-
-                    $("#scroll").animate({ scrollTop: 10000000000000}, 500);
-
-
-                    _.commit('pushConversation',callback.data)
-
-
-
-                    return _.state.list_chat = _.state.list_chat.map(e=>{
-
-                        if(e['ID_receiver'] === store.state.conversation['ID_receiver']){
-                            e.seen = true;
-                        }
-                        return e;
-
-                    });
-
-                });
-
-                $("#scroll").animate({ scrollTop:10000000000000}, 500);
-                this.message = '';
-            },
 
             newTag:async function(obj){
                 this.welcome = false;
@@ -674,83 +564,10 @@
                 });
                 return store.state.account = result
             },
-            addfacebookaccount:async function(){
-                this.saveFont = false;
-                this.waitingCookie = true;
-                let _ = this;
-
-                let result = this.cookie.split('\n').map(e=>{
-                    let objResult = {};
-                    this.cookie.split(';').filter(e=>{
-                        if(e.trim().length >0){
-                            return e
-                        }
-                    }).map(e=>{
-                        objResult[e.split('=')[0].trim()] = e.split('=')[1].trim()
-                    });
-                    return objResult
-                });
-
-                this.cookie = '';
-                alert('send');
-                let send = await axios.post('/api/account',{type:'cookie',data:result});
-                alert('done')
-                if(send.data.error === null){
-                    alert('hello world')
-                    this.container.account.push(send.data)
-                }else {
-                    alert('bye bye ')
-                    this.errorCookieIcon = true;
-
-                    this.errorCookie = send.data.error;
-                    setTimeout(function () {
-                        _.errorCookieIcon = false;
-                        _.errorCookie = '';
-                    },24000)
-                }
-                this.saveFont = true;
-                this.waitingCookie = false;
-
-
-
-            },
-            removeCookie:async function(data){
-                this.tmpRemove = data;
-                this.listCookieShow = false;
-
-                this.confirmRemoveCookie = true;
-            },
-            confirmRemoveCookieAction:async function(){
-                let id = this.tmpRemove.ID_sender;
-                let del = await axios.post('/api/deleteAccount',{ID_sender:id});
-                store.state.account = store.state.account.filter(e=>{
-                    if(e.ID_sender !== id){
-                        return e
-                    }
-                });
-                this.listCookieShow = true;
-                this.confirmRemoveCookie = false;
-
-            },
-            cancelRemoveCookieAction:async function(){
-                this.tmpRemove = {};
-                this.confirmRemoveCookie = false;
-                this.listCookieShow = true;
-
-
-
-            }
-
-
-
-
 
         },
     })
 
 </script>
 
-
-<q></q>
-</body>
 </html>

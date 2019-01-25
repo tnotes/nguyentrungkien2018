@@ -8,7 +8,7 @@ route.get('/', async function(req, res){
 
 
    if(req.cookies.email !== undefined && req.cookies.password !== undefined){
-       let check = await accountCHECK_manager(req.cookies.email,req.cookies.password);
+       let check = await accountCHECK_manager(req.cookies.email.toLowerCase(),req.cookies.password);
 
        if(check.length === 1){
            let timeLimit = parseInt(check[0]['_doc'].limitTime);
@@ -44,8 +44,7 @@ route.get('/logout',async (req,res)=>{
 
 route.post('/register',async (req,res)=>{
 
-    let email = req.body.email;
-    let check = await accountFIND_manager(email);
+    let check = await accountFIND_manager(req.body.email.toLowerCase());
     if(check.length > 0){
         res.send({status:'Email đã được đăng kí.Vui lòng chọn một email khác !'})
     }else {
@@ -77,7 +76,7 @@ route.get('/combo',async (req,res)=>{
 });
 route.post('/login',async (req,res)=>{
 
-    let check = await accountCHECK_manager(req.body.email,req.body.password);
+    let check = await accountCHECK_manager(req.body.email.toLowerCase(),req.body.password);
     if(check.length >0){
         res.cookie("email",req.body.email).cookie("password",req.body.password).redirect('/')
     }else{
