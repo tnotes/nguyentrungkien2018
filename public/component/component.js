@@ -1503,7 +1503,13 @@ Vue.component('autochat', {
 
             let sendContent = await axios.post('/api/addAutoChat', this.content);
             this.contentArr = sendContent.data;
-            return this.content = {}
+            return this.content = {
+                _id:null,
+                keyList:[],
+                message:'',
+                select:[],
+
+            }
         },
         editContent:function(data){
             this.updateDisplay = true;
@@ -1547,6 +1553,13 @@ Vue.component('autochat', {
             this.updateSuccess = true;
             await waitTime(1000);
             this.updateSuccess = false;
+            return this.content = {
+                _id:null,
+                keyList:[],
+                message:'',
+                select:[],
+
+            }
 
         }
 
