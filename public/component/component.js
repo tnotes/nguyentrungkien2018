@@ -545,6 +545,9 @@ Vue.component('mutiplesms', {
         var names = store.state.ListKeyword.map((e,i)=>{
             return {'id':i,'name':e.keyword,'value':e.value}
         });
+        names.push({'name':'firstname','value':''})
+        names.push({'name':'lastname','value':''})
+        names.push({'name':'xungho','value':''})
 
 
         var at_config = {
