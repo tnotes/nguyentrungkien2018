@@ -237,7 +237,7 @@ Vue.component('mutiplesms', {
         '                                                                                                </div>\n' +
         '                                                                                        <div class="col-md-6 col-sm-6" style="float: right">\n' +
         '                                \n' +
-        '                                                                                                  <select  style="background: none;float:right;margin-left:10px;margin-bottom:10px;color:white;width:150px;height:28px;text-align: center" @change="searchShow" type="text"  v-model="selectShowGroup"  ><option value="" style="background-color:#393535;" >Hiển thị theo nhóm</option><option v-for="data in allGroup" style="background-color:#393535;color:white" :value="data">{{data.nameGroup}} </option></select><button @click="showFriendTag" style="float: right;margin-right:7px" :class="(mode === \'showFriendTag\')?\'btn-outline-danger\':\'btn-outline-light\'" class="btn btn-sm  " ><i class="fa fa-tag"></i> Hiển thị theo thẻ</button>\n' +
+        '                                                                                                  <select  style="background: none;float:right;margin-left:10px;margin-bottom:10px;color:white;width:150px;height:28px;text-align: center" @change="searchShow" type="text"  v-model="selectShowGroup"  ><option value="" style="background-color:#393535;" >Hiển thị theo nhóm</option><option v-for="data in allGroup" style="background-color:#393535;color:white" :value="data">{{data.nameGroup}} </option></select><select  style="background: none;float:right;margin-bottom:10px;color:white;width:150px;height:28px;text-align: center" @change="tagChangeAction" type="text"  v-model="tagChange"  ><option value="" style="background-color:#393535;" >Hiển thị theo thẻ</option><option v-for="data in listTag" style="background-color:#393535;color:white" :value="data">{{data}} </option></select>\n' +
         '                                \n' +
         '                                \n' +
         '                                \n' +
@@ -257,7 +257,7 @@ Vue.component('mutiplesms', {
         '        \n' +
         '                </select> bạn bè</span>\n' +
         '                                                                            <div class="panel panel-inverse" style="margin-top: 10px">\n' +
-        '                            \n<div class="row" style="margin-left:15px;"><span style="margin-top:10px;margin-right:5px">Tìm kiếm:</span> <input v-model="search" style="height:20px;margin-top:7px"  type="text" class="form-control col-md-3"><select  style="background: none;float:left;margin-left:10px;margin-top:7px;margin-bottom:10px;color:white" @change="searchShow" type="text" v-model="typesearch"   ><option style="background-color:#393535" value="tenfacebook">Tên facebook</option><option style="background-color:#393535"  value="xungho"> Xưng hô</option><option style="background-color:#393535"  value="the">Thẻ</option></select></div>' +
+        '                            \n<div class="row" style="margin-left:15px;"><span style="margin-top:10px;margin-right:5px">Tìm kiếm:</span> <input v-model="search" style="height:20px;margin-top:7px"  type="text" class="form-control col-md-3"></div>' +
         '                            \n' +
         '                                                                                        <div class="panel-body">\n' +
         '                                                                                                    <div class="table-responsive">\n' +
@@ -357,12 +357,14 @@ Vue.component('mutiplesms', {
             reset:true,
             listTmp:[],
             mode:'default',
+            tagChange:'',
             errorGroup:'',
             allGroup:[],
             selectShowGroup:'',
             ButtonUpdateGroup:false,
             ButtonDeleteGroup:false,
-            oldNameGroup:null
+            oldNameGroup:null,
+            list : []
 
 
 
@@ -371,6 +373,17 @@ Vue.component('mutiplesms', {
     },
 
     created: async  function(){
+        let _ = this;
+        let allKeywordSetup = await axios.post('/api/setScenario-all');
+        allKeywordSetup.data.map(e=>{
+            if(e.receiver){
+                let result =  e.receiver.map(i=>{
+                    return {userID:i,tag:e.keyword}
+                });
+                _.list = _.list.concat(result)
+            }
+            return e
+        });
         let chata = await axios.post('/api/getAllConversation');
         let allGroupData = await axios.post('/api/alarm-victim-group-findall');
         this.allGroup = allGroupData.data;
@@ -468,6 +481,11 @@ Vue.component('mutiplesms', {
             })
 
         },
+        listTag(){
+
+            let listTagArr = this.list.map(e=>e.tag);
+            return Array.from(new Set(listTagArr));
+        },
 
         loadingFriendIcon(){
             if(store.state.listFriend.length >0){
@@ -543,28 +561,20 @@ Vue.component('mutiplesms', {
     },
     methods:{
 
-        showFriendTag:async function(){
-            if(this.mode === 'showFriendTag'){
-                this.mode = 'default'
-
+        tagChangeAction:async function(){
+            if(this.tagChange === ''){
                 return store.state.listFriend = this.listTmp
-
             }
-            let list = [];
-            let allKeywordSetup = await axios.post('/api/setScenario-all');
-            allKeywordSetup.data.map(e=>{
-                if(e.receiver){
-                    let result =  e.receiver.map(i=>{
-                        return {userID:i,tag:e.keyword}
-                    });
-                    list = list.concat(result)
+            let _ = this;
+            let listF = _.list.filter(e=>{
+                if(e.tag === _.tagChange){
+                    return e
                 }
-                return e
             });
             let result = this.filteredList.map(e=>{
-                let m = list.filter(i=>{
+                let m = listF.filter(i=>{
 
-                    if(i.userID === e.userID){
+                    if(i.userID === e.userID ){
                         return i
                     }
                 });
@@ -577,7 +587,6 @@ Vue.component('mutiplesms', {
                     return e
                 }
             });
-            this.mode = 'showFriendTag'
             return store.state.listFriend = result
 
         },
@@ -601,6 +610,7 @@ Vue.component('mutiplesms', {
             }
         },
         searchShow:async function(data){
+
             let inGroup = this.selectShowGroup.ListMember;
             if(inGroup === undefined) {
 
@@ -614,7 +624,7 @@ Vue.component('mutiplesms', {
             this.NameGroup = this.selectShowGroup.nameGroup;
             this.oldNameGroup = this.selectShowGroup.nameGroup;
 
-             store.state.listFriend =  store.state.listFriend.filter(e=>{
+             store.state.listFriend =  this.listTmp.filter(e=>{
                 if (inGroup.includes(e.userID)){
                     return e
                 }
